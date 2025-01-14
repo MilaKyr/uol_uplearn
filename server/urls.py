@@ -15,8 +15,27 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+
+from rest_framework import routers
+
+from elearning import views
+
+router = routers.DefaultRouter()
+router.register(r'course', views.CourseView, basename="course")
+router.register(r'student', views.StudentView, basename="students")
+router.register(r'teacher', views.TeacherView, basename="teachers")
+router.register(r'topic', views.TopicView, basename="topics")
+router.register(r'lesson', views.LessonView, basename="lessons")
+
+# Wire up our API using automatic URL routing.
+# Additionally, we include login URLs for the browsable API.
 
 urlpatterns = [
+
+    path('api/course/<int:id>', views.CourseView.as_view({'get': 'retrieve'}), name="course-detail"),
+    path('api/lessons_in_topic', views.LessonView.as_view({'get': 'by_topic'}), name='lessons-by-topic'),
+    path('api/', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
 ]
