@@ -1,5 +1,7 @@
 from django.db.models import Avg
 from rest_framework import serializers, fields
+from allauth.account.adapter import get_adapter
+from dj_rest_auth.registration.serializers import RegisterSerializer
 
 from elearning.models import Course, User, Feedback, StudyItem, Topic, ItemContent
 
@@ -297,3 +299,30 @@ class LessonOrderSerializer(serializers.Serializer):
             lesson.order = order_n + 1
             lesson.save()
         return instance
+
+
+class CustomRegisterSerializer(RegisterSerializer):
+    ROLE_CHOICES = (
+        ('teacher', 'Teacher'),
+        ('student', 'Student'),
+    )
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    photo = serializers.ImageField()
+    role = serializers.ChoiceField(ROLE_CHOICES)
+
+
+    class Meta:
+        model = User
+        fields = ['email', 'username', 'first_name',
+                  'last_name', 'password1', 'password2', 'photo', 'role']
+
+    def save(self, request):
+        adapter = get_adapter()
+        user = adapter.new_user(request)
+        self.cleaned_data = self.get_cleaned_data()
+        user.first_name = self.cleaned_data.get('first_name')
+        user.last_name = self.cleaned_data.get('last_name')
+        user.save()
+        adapter.save_user(request, user, self)
+        return user

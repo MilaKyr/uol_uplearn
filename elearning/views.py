@@ -7,12 +7,13 @@ from rest_framework import permissions, views, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+from dj_rest_auth.registration.views import RegisterView
 
 from elearning.models import Course, User, Topic, StudyItem, Feedback
 from elearning.serializers import CourseSerializer, TopicSerializer, CourseShortSerializer, \
     LessonSerializer, StudentSerializer, TeacherSerializer, FeedbackSerializer, StudentFeedbackSerializer, \
     CourseCreateFeedback, LessonCreateSerializer, TopicCreateSerializer, LessonContentCreateSerializer, \
-    LessonContentOrderSerializer, LessonOrderSerializer
+    LessonContentOrderSerializer, LessonOrderSerializer, CustomRegisterSerializer
 
 
 class InstanceNotFoundError(BaseException):
@@ -231,5 +232,7 @@ class FeedbackView(viewsets.ModelViewSet):
             return Response(data=f"{e}", status=status.HTTP_400_BAD_REQUEST)
 
 
-
+class CustomRegistrationView(RegisterView):
+    serializer_class = CustomRegisterSerializer
+    permission_classes = [permissions.AllowAny]
 
