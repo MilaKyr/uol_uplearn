@@ -27,14 +27,19 @@ router.register(r'student', views.StudentView, basename="students")
 router.register(r'teacher', views.TeacherView, basename="teachers")
 router.register(r'topic', views.TopicView, basename="topics")
 router.register(r'lesson', views.LessonView, basename="lessons")
+router.register(r'feedback', views.FeedbackView, basename="feedbacks")
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 
 urlpatterns = [
-
-    path('api/course/<int:id>', views.CourseView.as_view({'get': 'retrieve'}), name="course-detail"),
+    path('api/topic/<int:pk>/change_lesson_order', views.TopicView.as_view({'put': 'change_lesson_order'}), name='topic-change-lesson-order'),
     path('api/lessons_in_topic', views.LessonView.as_view({'get': 'by_topic'}), name='lessons-by-topic'),
+    path('api/lesson/add_content', views.LessonView.as_view({'post': 'add_content'}), name='lessons-add-content'),
+    path('api/lesson/<int:pk>/change_content_order', views.LessonView.as_view({'put': 'change_content_order'}),
+         name='lessons-change-content-order'),
+    path('api/feedback/by_course', views.FeedbackView.as_view({'get': 'by_course'}), name='feedback-by-course'),
+    path('api/feedback/by_student', views.FeedbackView.as_view({'get': 'by_student'}), name='feedback-by-student'),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),

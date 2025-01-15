@@ -11,6 +11,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=150, blank=False)
     last_name = models.CharField(max_length=150, blank=False)
     email = models.EmailField(blank=False)
+    status = models.CharField(max_length=256, blank=True)
     role = models.CharField(max_length=15, choices=ROLE_CHOICES)
     photo = models.ImageField()
 
@@ -42,7 +43,7 @@ class StudyItem(models.Model):
 
 def course_topic_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT / user_<id>/<filename>
-    return 'course_{0}/topic_{1}/{2}'.format( instance.topic.course.id, instance.topic.id, filename)
+    return 'course_{0}/topic_{1}/{2}'.format( instance.item.topic.course.id, instance.item.id, filename)
 
 class ItemContent(models.Model):
     TYPE_CHOICES = (
