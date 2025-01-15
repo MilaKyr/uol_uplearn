@@ -173,3 +173,4 @@ cython_debug/
 # No images or files
 *.jpg
 *.pdf
+.idea/

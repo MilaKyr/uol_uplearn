@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Group
 from django.db.models import Avg
 from rest_framework import serializers, fields
 from allauth.account.adapter import get_adapter
@@ -306,9 +307,9 @@ class CustomRegisterSerializer(RegisterSerializer):
         ('teacher', 'Teacher'),
         ('student', 'Student'),
     )
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-    photo = serializers.ImageField()
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+    photo = serializers.ImageField(required=True)
     role = serializers.ChoiceField(ROLE_CHOICES)
 
 
@@ -317,12 +318,31 @@ class CustomRegisterSerializer(RegisterSerializer):
         fields = ['email', 'username', 'first_name',
                   'last_name', 'password1', 'password2', 'photo', 'role']
 
+    def get_cleaned_data(self):
+        return {
+            'username': self.validated_data.get('username', ''),
+            'password1': self.validated_data.get('password1', ''),
+            'password2': self.validated_data.get('password2', ''),
+            'email': self.validated_data.get('email', ''),
+            'first_name': self.validated_data.get('first_name'),
+            'last_name': self.validated_data.get('last_name'),
+            'photo': self.validated_data.get('photo'),
+            'role': self.validated_data.get('role'),
+
+        }
+
     def save(self, request):
         adapter = get_adapter()
         user = adapter.new_user(request)
         self.cleaned_data = self.get_cleaned_data()
+        user.username = self.cleaned_data.get('username')
         user.first_name = self.cleaned_data.get('first_name')
         user.last_name = self.cleaned_data.get('last_name')
+        user.role = self.cleaned_data.get('role')
+        user.photo = self.cleaned_data.get('photo')
+        role_name = "Teacher" if user.role == "teacher" else "Student"
         user.save()
         adapter.save_user(request, user, self)
+        user_group = Group.objects.get(name=role_name)
+        user_group.user_set.add(user)
         return user
