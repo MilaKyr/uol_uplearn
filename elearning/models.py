@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from elearning.validators import validate_course_duration, \
+    validate_topic_duration
 
 
 class User(AbstractUser):
@@ -9,12 +11,12 @@ class User(AbstractUser):
         ('teacher', 'Teacher'),
         ('student', 'Student'),
     )
-    first_name = models.CharField(max_length=150, blank=False)
-    last_name = models.CharField(max_length=150, blank=False)
-    email = models.EmailField(blank=False)
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    email = models.EmailField()
     status = models.CharField(max_length=256, blank=True)
     role = models.CharField(max_length=15, choices=ROLE_CHOICES)
-    photo = models.ImageField()
+    photo = models.ImageField(null=True)
 
 
 class Course(models.Model):
@@ -22,16 +24,22 @@ class Course(models.Model):
     is_active = models.BooleanField(default=False)
     photo = models.ImageField()
     title = models.CharField(max_length=256)
-    desc = models.CharField(max_length=512)
+    desc = models.CharField(max_length=512, name ="description")
     start_date = models.DateTimeField()
     created = models.DateTimeField(auto_now_add=True)
     duration = models.DurationField()
 
+    class Meta:
+        unique_together = ('teacher', 'title')
+
 class Topic(models.Model):
     course = models.ForeignKey(to=Course, on_delete=models.CASCADE, related_name="topics")
     title = models.CharField(max_length=256)
-    desc = models.CharField(max_length=512)
-    n_hours = models.DurationField()
+    desc = models.CharField(max_length=512, name ="description")
+    n_hours = models.DurationField(validators=[validate_topic_duration])
+
+    class Meta:
+        unique_together = ('course', 'title')
 
 
 class StudyItem(models.Model):
@@ -43,6 +51,9 @@ class StudyItem(models.Model):
     deadline = models.DateTimeField(null=True)
     order = models.IntegerField()
 
+    class Meta:
+        unique_together = ('topic', 'title')
+
 
 def course_topic_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT / user_<id>/<filename>
@@ -53,7 +64,7 @@ class ItemContent(models.Model):
         ('text', 'Text'),
         ('image', 'image'),
         ('file', 'File'),
-        ('Video', 'Video'),
+        ('video', 'Video'),
     )
     item = models.ForeignKey(to=StudyItem, on_delete=models.CASCADE, related_name="content")
     kind = models.CharField(max_length=24, choices=TYPE_CHOICES)
@@ -70,6 +81,9 @@ class Feedback(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField()
 
+    class Meta:
+        unique_together = ('user', 'course')
+
 class CourseEnrollment(models.Model):
     STATUS_CHOICES = (
         ('started', 'In Progress'),
@@ -80,17 +94,13 @@ class CourseEnrollment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=25, choices=STATUS_CHOICES)
 
-    def validate_unique(self, *args, **kwargs):
-        super().validate_unique(*args, **kwargs)
-        if self.__class__.objects. \
-                filter(user=self.user, course=self.course). \
-                exists():
-            raise ValidationError(
-                message='CourseEnrollment with this (user, course) already exists.',
-                code='unique_together',
-            )
+    class Meta:
+        unique_together = ('user', 'course')
+
 
 class CourseProgress(models.Model):
     enrolled_student = models.ForeignKey(to=CourseEnrollment, on_delete=models.CASCADE, related_name="progress")
     item = models.ForeignKey(to=StudyItem, on_delete=models.CASCADE, related_name="item_done_status")
 
+    class Meta:
+        unique_together = ('enrolled_student', 'item')

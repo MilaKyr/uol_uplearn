@@ -5,6 +5,8 @@ from allauth.account.adapter import get_adapter
 from dj_rest_auth.registration.serializers import RegisterSerializer
 
 from elearning.models import Course, User, Feedback, StudyItem, Topic, ItemContent, CourseProgress, CourseEnrollment
+from elearning.validators import validate_course_duration, not_negative, feedback_between_1_5, validate_start_date, \
+    validate_topic_duration
 
 
 class StudentSerializer(serializers.ModelSerializer):
@@ -26,7 +28,7 @@ class RegisteredStudentShortSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
-    photo_url = serializers.SerializerMethodField()
+    photo_url = serializers.SerializerMethodField(required=False)
 
 
     def get_id(self, instance):
@@ -63,22 +65,10 @@ class CourseCreateFeedback(serializers.Serializer):
     course_id = serializers.IntegerField()
     text = serializers.CharField()
     created = serializers.ReadOnlyField()
-    rating = serializers.IntegerField()
+    rating = serializers.IntegerField(validators=[feedback_between_1_5])
 
     class Meta:
         model = Feedback
-
-    def validate(self, data):
-        """
-        Check that student didn't write the feedback for given course
-        """
-        student_id = self.context["student_id"]
-        course_id = data["course_id"]
-        query = Feedback.objects.filter(user__id=student_id, course__id=course_id)
-        if query.exists():
-            raise serializers.ValidationError("User already created a feedback")
-        return data
-
 
     def create(self, validated_data):
         course_id = validated_data.pop('course_id')
@@ -133,7 +123,6 @@ class CourseOwnerShortSerializer(serializers.ModelSerializer):
     def get_average_rating(self, instance):
         return instance.average_rating
 
-
     class Meta:
         model = Course
         fields = ['id', 'title', 'start_date', 'photo', 'is_active',
@@ -141,10 +130,10 @@ class CourseOwnerShortSerializer(serializers.ModelSerializer):
 
 class TeacherSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField()
-    photo = serializers.SerializerMethodField()
+    photo = serializers.SerializerMethodField(required=False, allow_null=True)
 
     def get_photo(self, instance):
-        return instance.photo.url
+        return instance.photo.url if instance.photo else ""
 
     class Meta:
         model = User
@@ -156,6 +145,8 @@ class CourseSerializer(serializers.ModelSerializer):
     feedback = FeedbackSerializer(many=True, read_only=True)
     average_rating = serializers.SerializerMethodField()
     photo = serializers.SerializerMethodField()
+    start_date = serializers.DateTimeField(validators=[validate_start_date])
+    duration = serializers.DurationField(validators=[validate_course_duration])
 
     def get_average_rating(self, instance):
         return instance.average_rating
@@ -165,7 +156,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id','title', 'is_active', 'desc', 'start_date', 'duration', 'photo', 'teacher', 'topics',
+        fields = ['id','title', 'is_active', 'description', 'start_date', 'duration', 'photo', 'teacher', 'topics',
                   'feedback', 'average_rating', 'created']
         ordering = ['-created']
 
@@ -173,23 +164,6 @@ class CourseSerializer(serializers.ModelSerializer):
         teacher = self.context.pop("teacher")
         course = Course.objects.create(teacher=teacher, **validated_data)
         return course
-
-
-class CourseCreateSerializer(serializers.ModelSerializer):
-    teacher_id = serializers.IntegerField()
-
-    class Meta:
-        model = Course
-        fields = ["teacher_id", "is_active", "photo", "title", "desc",
-                  "start_date", "duration"]
-
-    def create(self, validated_data):
-        teacher_id = validated_data.pop("teacher_id")
-        teacher = User.objects.get(id=teacher_id)
-        course = Course.objects.create(teacher=teacher, **validated_data)
-        return course
-
-
 
 
 class LessonContentSerializer(serializers.ModelSerializer):
@@ -228,8 +202,8 @@ class TopicSerializer(serializers.ModelSerializer):
 class TopicCreateSerializer(serializers.Serializer):
     course_id = serializers.IntegerField()
     title = serializers.CharField()
-    desc = serializers.CharField()
-    n_hours = serializers.DurationField()
+    description = serializers.CharField()
+    n_hours = serializers.DurationField(validators=[validate_topic_duration])
 
     def create(self, validated_data):
         course_id = validated_data.pop('course_id')
@@ -253,10 +227,46 @@ class LessonSerializer(serializers.ModelSerializer):
 
 class LessonContentCreateSerializer(serializers.ModelSerializer):
     lesson_id = serializers.IntegerField()
+    order = serializers.IntegerField(validators=[not_negative])
+    img = serializers.ImageField(required=False)
+    video = serializers.FileField(required=False)
+    text = serializers.CharField(required=False)
+    file = serializers.FileField(required=False)
 
     class Meta:
         model = ItemContent
         fields = ["lesson_id", "kind", "img", "text", "file", "video", "order"]
+
+    def validate(self, data):
+        """
+        Validation of start and end date.
+        """
+        has_image = "img" in data
+        has_text = "text" in data
+        has_file = "file" in data
+        has_video = "video" in data
+        image_exists = has_image and data["img"] != ""
+        if data["kind"] == "image" and not image_exists and (has_text or has_file or has_video):
+            raise serializers.ValidationError("Image not found and cannot be empty")
+        text_exists = has_text and data["text"] != ""
+        if data["kind"] == "text" and not text_exists and (has_image or has_file or has_video):
+            raise serializers.ValidationError("Text not found and cannot be empty")
+        video_exists = has_video and data["video"] != ""
+        if data["kind"] == "video" and not video_exists and (has_image or has_file or has_text):
+            raise serializers.ValidationError("Video not found and cannot be empty")
+        file_exists = has_file and data["file"] != ""
+        if data["kind"] == "file" and not file_exists and (has_image or has_video or has_text):
+            raise serializers.ValidationError("File not found and cannot be empty")
+
+        # check if item already exists with this order
+        lesson_id = data.get('lesson_id')
+        order = data.get('order')
+        lesson = StudyItem.objects.get(id=lesson_id)
+        content = ItemContent.objects.filter(item=lesson, order=order)
+        if content.exists():
+            raise serializers.ValidationError("Item with this order already exists")
+
+        return data
 
     def create(self, validated_data):
         lesson_id = validated_data.pop('lesson_id')
@@ -267,10 +277,11 @@ class LessonContentCreateSerializer(serializers.ModelSerializer):
 
 class LessonCreateSerializer(serializers.Serializer):
     topic_id = serializers.IntegerField()
+    course_id = serializers.IntegerField()
     title = serializers.CharField()
     created = serializers.ReadOnlyField()
     modified = serializers.ReadOnlyField()
-    order = serializers.IntegerField()
+    order = serializers.IntegerField(validators=[not_negative])
 
     class Meta:
         model = StudyItem
@@ -278,7 +289,9 @@ class LessonCreateSerializer(serializers.Serializer):
     def create(self, validated_data):
         topic_id = validated_data.pop('topic_id')
         topic = Topic.objects.get(id=topic_id)
-        lesson = StudyItem.objects.create(topic=topic, **validated_data)
+        course_id = validated_data.pop('course_id')
+        course = Course.objects.get(id=course_id)
+        lesson = StudyItem.objects.create(topic=topic, course=course, **validated_data)
         return lesson
 
 class LessonContentOrderSerializer(serializers.Serializer):
@@ -357,7 +370,7 @@ class CustomRegisterSerializer(RegisterSerializer):
     )
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
-    photo = serializers.ImageField(required=True)
+    photo = serializers.ImageField(required=False)
     role = serializers.ChoiceField(ROLE_CHOICES)
 
 
@@ -405,7 +418,7 @@ class CourseWithProgressShortSerializer(serializers.ModelSerializer):
         done = self.context.get("done")
         enrolled = [enrolled for (course_id, enrolled, _) in done
                           if course_id == instance.id]
-        return enrolled.pop()
+        return enrolled.pop() if len(enrolled) > 0 else ""
 
     def get_progress(self, instance):
         if instance.overall == 0:
@@ -414,21 +427,12 @@ class CourseWithProgressShortSerializer(serializers.ModelSerializer):
         done = self.context.get("done")
         done_in_course = [done for (course_id, _, done) in done
                           if course_id == instance.id]
-        return done_in_course[0] / instance.overall if len(done_in_course) == 1 else 0
+        return done_in_course[0] / instance.overall if len(done_in_course) == 1 else 0.0
 
 
     class Meta(CourseShortSerializer.Meta):
-        fields = ['id', 'title', 'photo', 'enrolled', 'progress',]
-
-class TodoSerializer(serializers.ModelSerializer):
-    topic_title = serializers.SerializerMethodField()
-
-    def get_topic_name(self, instance):
-        return instance.topic.title
-
-    class Meta:
-        model = StudyItem
-        fields = ["topic_title", "title", "deadline", "order"]
+        model = Course
+        fields = ['id',  'title', 'photo', 'enrolled', 'progress',]
 
 class TodoListSerializer(serializers.Serializer):
     course_id = serializers.SerializerMethodField()

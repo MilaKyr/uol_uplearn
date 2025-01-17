@@ -170,8 +170,3 @@ REST_AUTH = {
 
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
-else:
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:8000/",
-        "http://127.0.0.1:8000/",
-    ]

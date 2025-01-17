@@ -11,7 +11,7 @@ from django.utils import timezone
 
 
 from elearning.permissions import UserCoursePermission, UserPermission, TopicPermission, \
-    LessonPermission
+    LessonPermission, FeedbackPermission
 from elearning.models import Course, User, Topic, StudyItem, Feedback, CourseProgress, CourseEnrollment, ItemContent
 from elearning.serializers import CourseSerializer, TopicSerializer, CourseShortSerializer, \
     LessonSerializer, StudentSerializer, TeacherSerializer, FeedbackSerializer, StudentFeedbackSerializer, \
@@ -139,19 +139,7 @@ class StudentView(viewsets.ModelViewSet):
                        .prefetch_related("registered_students")
                        .prefetch_related("topics")
                        .prefetch_related("topics__study_lessons")
-                       .prefetch_related("feedback")
                        .filter(registered_students__user=student, is_active=True)
-                       .annotate(
-                average_rating=Avg('feedback__rating',
-                                   default=0,
-                                   output_field=FloatField(),
-                                   )
-            )
-                       .annotate(
-                n_students=Count('registered_students__id',
-                                 output_field=IntegerField(),
-                                 )
-            )
                        .annotate(
                 overall=Count(
                     'topics__study_lessons',
@@ -380,7 +368,7 @@ class LessonView(viewsets.ModelViewSet):
 class FeedbackView(viewsets.ModelViewSet):
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
-    permission_classes = [Fee]
+    permission_classes = [FeedbackPermission]
 
     @action(detail=False, methods=["get"], serializer_class=FeedbackSerializer)
     def by_course(self, request, *args, **kwargs):
