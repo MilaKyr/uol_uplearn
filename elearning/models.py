@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -17,7 +18,7 @@ class User(AbstractUser):
 
 
 class Course(models.Model):
-    teacher = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="courses")
     is_active = models.BooleanField(default=False)
     photo = models.ImageField()
     title = models.CharField(max_length=256)
@@ -35,9 +36,11 @@ class Topic(models.Model):
 
 class StudyItem(models.Model):
     topic = models.ForeignKey(to=Topic, on_delete=models.CASCADE, related_name="study_lessons")
+    course = models.ForeignKey(to=Course, on_delete=models.CASCADE, related_name="lessons")
     title = models.CharField(max_length=256)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+    deadline = models.DateTimeField(null=True)
     order = models.IntegerField()
 
 
@@ -67,13 +70,27 @@ class Feedback(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField()
 
-class CourseProgress(models.Model):
+class CourseEnrollment(models.Model):
     STATUS_CHOICES = (
-        ('progress', 'In Progress'),
-        ('done', 'Done'),
+        ('started', 'In Progress'),
+        ('finished', 'Done'),
     )
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="progress")
-    course = models.ForeignKey(to=Course, on_delete=models.CASCADE)
-    item = models.ForeignKey(to=StudyItem, on_delete=models.CASCADE)
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="enrollment")
+    course = models.ForeignKey(to=Course, on_delete=models.CASCADE, related_name="registered_students")
+    created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=25, choices=STATUS_CHOICES)
+
+    def validate_unique(self, *args, **kwargs):
+        super().validate_unique(*args, **kwargs)
+        if self.__class__.objects. \
+                filter(user=self.user, course=self.course). \
+                exists():
+            raise ValidationError(
+                message='CourseEnrollment with this (user, course) already exists.',
+                code='unique_together',
+            )
+
+class CourseProgress(models.Model):
+    enrolled_student = models.ForeignKey(to=CourseEnrollment, on_delete=models.CASCADE, related_name="progress")
+    item = models.ForeignKey(to=StudyItem, on_delete=models.CASCADE, related_name="item_done_status")
 

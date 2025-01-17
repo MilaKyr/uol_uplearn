@@ -4,27 +4,16 @@ from rest_framework import serializers, fields
 from allauth.account.adapter import get_adapter
 from dj_rest_auth.registration.serializers import RegisterSerializer
 
-from elearning.models import Course, User, Feedback, StudyItem, Topic, ItemContent
+from elearning.models import Course, User, Feedback, StudyItem, Topic, ItemContent, CourseProgress, CourseEnrollment
 
-
-
-class TeacherSerializer(serializers.ModelSerializer):
-    username = serializers.ReadOnlyField()
-    role = serializers.ReadOnlyField()
-    photo = serializers.ImageField()
-
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'role', 'photo']
 
 class StudentSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField()
-    role = serializers.ReadOnlyField()
     photo = serializers.ImageField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'role', 'photo', 'status']
+        fields = ['id', 'username', 'first_name', 'last_name', 'photo', 'status']
 
 class StudentShortSerializer(serializers.ModelSerializer):
     photo = serializers.ImageField()
@@ -32,6 +21,30 @@ class StudentShortSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'first_name', 'last_name', 'photo']
+
+class RegisteredStudentShortSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+    first_name = serializers.SerializerMethodField()
+    last_name = serializers.SerializerMethodField()
+    photo_url = serializers.SerializerMethodField()
+
+
+    def get_id(self, instance):
+        return instance.user.id
+
+    def get_first_name(self, instance):
+        return instance.user.first_name
+
+    def get_last_name(self, instance):
+        return instance.user.last_name
+
+    def get_photo_url(self, instance):
+        return instance.user.photo.url
+
+
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'photo_url']
 
 class FeedbackSerializer(serializers.ModelSerializer):
     user = StudentShortSerializer(read_only=True)
@@ -98,21 +111,66 @@ class CourseTopicSerializer(serializers.ModelSerializer):
         fields = ['title', 'n_hours', 'study_lessons']
 
 
+class CourseShortSerializer(serializers.ModelSerializer):
+    average_rating = serializers.SerializerMethodField()
+    n_students = serializers.SerializerMethodField()
+
+    def get_average_rating(self, instance):
+        return instance.average_rating
+
+    def get_n_students(self, instance):
+        return instance.n_students
+
+    class Meta:
+        model = Course
+        fields = ['id', 'title', 'start_date', 'photo',
+                  'average_rating', 'n_students', 'created']
+
+class CourseOwnerShortSerializer(serializers.ModelSerializer):
+    average_rating = serializers.SerializerMethodField()
+    registered_students = RegisteredStudentShortSerializer(many=True, read_only=True)
+
+    def get_average_rating(self, instance):
+        return instance.average_rating
+
+
+    class Meta:
+        model = Course
+        fields = ['id', 'title', 'start_date', 'photo', 'is_active',
+                  'average_rating', 'registered_students', 'created']
+
+class TeacherSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField()
+    photo = serializers.SerializerMethodField()
+
+    def get_photo(self, instance):
+        return instance.photo.url
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'first_name', 'last_name', 'photo']
+
 class CourseSerializer(serializers.ModelSerializer):
     teacher = TeacherSerializer(read_only=True)
     topics = CourseTopicSerializer(many=True, read_only=True)
     feedback = FeedbackSerializer(many=True, read_only=True)
-    photo = serializers.ImageField()
+    average_rating = serializers.SerializerMethodField()
+    photo = serializers.SerializerMethodField()
+
+    def get_average_rating(self, instance):
+        return instance.average_rating
+
+    def get_photo(self, instance):
+        return instance.photo.url
 
     class Meta:
         model = Course
         fields = ['id','title', 'is_active', 'desc', 'start_date', 'duration', 'photo', 'teacher', 'topics',
-                  'feedback', 'created']
+                  'feedback', 'average_rating', 'created']
         ordering = ['-created']
 
     def create(self, validated_data):
-        teacher_id = self.context.pop("teacher_id")
-        teacher = User.objects.get(id=teacher_id)
+        teacher = self.context.pop("teacher")
         course = Course.objects.create(teacher=teacher, **validated_data)
         return course
 
@@ -132,16 +190,6 @@ class CourseCreateSerializer(serializers.ModelSerializer):
         return course
 
 
-class CourseShortSerializer(serializers.ModelSerializer):
-    average_rating = serializers.SerializerMethodField()
-
-    def get_average_rating(self, instance):
-        return instance.average_rating
-
-    class Meta:
-        model = Course
-        fields = ['id', 'title', 'start_date', 'photo',
-                  'average_rating', 'created']
 
 
 class LessonContentSerializer(serializers.ModelSerializer):
@@ -199,7 +247,7 @@ class LessonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StudyItem
-        fields = ['topic', 'id', 'title', 'content',
+        fields = ['topic', 'id', 'title', 'content', 'deadline',
                   'created', 'modified', 'order']
         ordering = ["order"]
 
@@ -346,3 +394,94 @@ class CustomRegisterSerializer(RegisterSerializer):
         user_group = Group.objects.get(name=role_name)
         user_group.user_set.add(user)
         return user
+
+
+
+class CourseWithProgressShortSerializer(serializers.ModelSerializer):
+    progress = serializers.SerializerMethodField()
+    enrolled = serializers.SerializerMethodField()
+
+    def get_enrolled(self, instance):
+        done = self.context.get("done")
+        enrolled = [enrolled for (course_id, enrolled, _) in done
+                          if course_id == instance.id]
+        return enrolled.pop()
+
+    def get_progress(self, instance):
+        if instance.overall == 0:
+            return 0.0
+
+        done = self.context.get("done")
+        done_in_course = [done for (course_id, _, done) in done
+                          if course_id == instance.id]
+        return done_in_course[0] / instance.overall if len(done_in_course) == 1 else 0
+
+
+    class Meta(CourseShortSerializer.Meta):
+        fields = ['id', 'title', 'photo', 'enrolled', 'progress',]
+
+class TodoSerializer(serializers.ModelSerializer):
+    topic_title = serializers.SerializerMethodField()
+
+    def get_topic_name(self, instance):
+        return instance.topic.title
+
+    class Meta:
+        model = StudyItem
+        fields = ["topic_title", "title", "deadline", "order"]
+
+class TodoListSerializer(serializers.Serializer):
+    course_id = serializers.SerializerMethodField()
+    course_title = serializers.SerializerMethodField()
+    topic_title = serializers.SerializerMethodField()
+    topic_id = serializers.SerializerMethodField()
+    id = serializers.SerializerMethodField()
+    title = serializers.SerializerMethodField()
+    deadline = serializers.SerializerMethodField()
+    order = serializers.SerializerMethodField()
+
+    def get_course_id(self, instance):
+        return instance["course_id"]
+
+    def get_topic_id(self, instance):
+        return instance["topic__id"]
+
+    def get_id(self, instance):
+        return instance["id"]
+
+    def get_course_title(self, instance):
+        return instance["topic__course__title"]
+
+    def get_topic_title(self, instance):
+        return instance["topic__title"]
+
+    def get_title(self, instance):
+        return instance["title"]
+
+    def get_deadline(self, instance):
+        return instance["deadline"]
+
+    def get_order(self, instance):
+        return instance["order"]
+
+    class Meta:
+        fields = ["course_id", "course_title",
+                  "topic_id", "topic_title",
+                  "id", "title",
+                  "deadline", "order"]
+
+
+class CreateProgressSerializer(serializers.ModelSerializer):
+    course_id = serializers.IntegerField()
+
+    class Meta:
+        model = CourseProgress
+        fields = ["course_id"]
+
+    def update(self, instance, validated_data):
+        student_id = self.context.get("student_id")
+        course_id = validated_data.pop('course_id')
+        course = Course.objects.get(id=course_id)
+        enrollment = CourseEnrollment.objects.get(user__id=student_id, course=course)
+        course_progress = CourseProgress.objects.create(enrolled_student=enrollment, item=instance)
+        return course_progress
