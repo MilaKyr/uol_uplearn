@@ -5,21 +5,23 @@ import datetime
 from django.contrib.auth.models import Group
 from elearning.models import *
 
-@pytest.fixture
-def student_group(teacher):
-    return Group.objects.create(name='Student')
-    teacher, created = Group.objects.get_or_create(name='Teacher')
-    return student, teacher
-
-@pytest.fixture
-def teacher_group(teacher):
-    return Group.objects.create(name='Teacher')
 
 @pytest.fixture
 def teacher():
-    return User.objects.create(first_name="John", last_name="Smith",
+    return User.objects.create(username="test_teacher",
+                               first_name="John", last_name="Smith",
                                email="abc@abc.com", password="Abc12345!",
                                role="teacher")
+
+@pytest.fixture
+def student_group():
+    return Group.objects.create(name='Student')
+
+
+@pytest.fixture
+def teacher_group():
+    return Group.objects.create(name='Teacher')
+
 
 @pytest.fixture
 def student():
@@ -31,6 +33,14 @@ def student():
 def course(teacher):
     now = timezone.now()
     return Course.objects.create(teacher=teacher, photo="image.jpg", title="Title",
+                                 description="Description", start_date=datetime.datetime.now(tz=now.tzinfo),
+                                 duration=datetime.timedelta(hours=20))
+
+@pytest.fixture
+def active_course(teacher):
+    now = timezone.now()
+    return Course.objects.create(teacher=teacher, photo="image.jpg", title="Title",
+                                 is_active=True,
                                  description="Description", start_date=datetime.datetime.now(tz=now.tzinfo),
                                  duration=datetime.timedelta(hours=20))
 
@@ -76,92 +86,3 @@ def feedback(student, course):
 def enrolled_student(student, course):
     return CourseEnrollment.objects.create(user=student, course=course, status="started")
 
-
-@pytest.fixture
-def course_progress(enrolled_student, lesson):
-    return CourseProgress.objects.create(enrolled_student=enrolled_student, item=lesson)
-
-#
-# @pytest.fixture
-# def census():
-#     return CensusTract.objects.create(data=12345678)
-#
-#
-# @pytest.fixture
-# def state():
-#     return State.objects.create(name="WA")
-#
-#
-
-#
-#
-# @pytest.fixture
-# def city():
-#     return City.objects.create(name="New city")
-#
-#
-# @pytest.fixture
-# def postal_code():
-#     return PostalCodes.objects.create(code=17658)
-#
-#
-# @pytest.fixture
-# def provider():
-#     return ElectricEnergyProvider.objects.create(provider="New provider")
-#
-#
-# @pytest.fixture
-# def vehicle_model(model_maker, model_year):
-#     payload = {
-#         "name": "Test model name",
-#         "maker": model_maker,
-#         "year": model_year,
-#     }
-#     return VehicleModels.objects.create(**payload)
-#
-#
-# @pytest.fixture
-# def vehicle_instance(vehicle_type, eligibility, vehicle_model):
-#     payload = {
-#         "model": vehicle_model,
-#         "vehicle_type": vehicle_type,
-#         "cafv_eligibility": eligibility,
-#         "mrsp_price": 100_000,
-#         "electric_rage": 350,
-#     }
-#     return Vehicle.objects.create(**payload)
-#
-#
-# @pytest.fixture
-# def address_instance(
-#     postal_code,
-#     city,
-#     county,
-#     state,
-# ):
-#     payload = {
-#         "state": state,
-#         "county": county,
-#         "city": city,
-#         "postal_code": postal_code,
-#     }
-#     return Address.objects.create(**payload)
-#
-#
-# @pytest.fixture
-# def registration_instance(
-#     census,
-#     address_instance,
-#     vehicle_instance,
-#     provider,
-# ):
-#     payload = {
-#         "dol_vid": "12345",
-#         "vehicles": vehicle_instance,
-#         "legislative_district": 18,
-#         "census": census,
-#         "address": address_instance,
-#     }
-#     record = Registration.objects.create(**payload)
-#     record.providers.add(provider)
-#     return record

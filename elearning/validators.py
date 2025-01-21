@@ -10,16 +10,12 @@ def validate_course_duration(value):
 
 def validate_start_date(value):
     now = timezone.now()
-    if value > datetime.datetime.now(tz=now.tzinfo):
+    if value < datetime.datetime.now(tz=now.tzinfo):
         raise ValidationError(f"Should start after today")
 
 def validate_topic_duration(value):
     if value < datetime.timedelta(minutes=5):
         raise ValidationError(f"Should be greater than 5 minutes")
-
-def not_negative(value):
-    if value < 0:
-        raise ValidationError(f"{value} cannot be negative")
 
 def feedback_between_1_5(value):
     if value > 5 or value < 1:

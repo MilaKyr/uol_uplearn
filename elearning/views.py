@@ -67,7 +67,6 @@ class CourseView(viewsets.ModelViewSet):
         serializer = CourseShortSerializer(courses, many=True)
         return Response(serializer.data)
 
-    @csrf_exempt
     def create(self, request):
         try:
             serializer = CourseSerializer(data=request.data,
@@ -75,16 +74,16 @@ class CourseView(viewsets.ModelViewSet):
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(status=status.HTTP_200_OK)
-        except (ValidationError, InstanceNotFoundError) as e:
+        except ValidationError as e:
             return Response(data=f"{e}", status=status.HTTP_400_BAD_REQUEST)
 
-    @csrf_exempt
     def update(self, request, pk=None):
         try:
             course = self.get_object()
             serializer = self.serializer_class(instance=course,
                                                data=request.data,
-                                               context={"teacher": request.user}, partial=True)
+                                               context={"teacher": request.user},
+                                               partial=True)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(status=status.HTTP_200_OK)
@@ -93,13 +92,9 @@ class CourseView(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def enroll(self, request, pk, format=None):
-        try:
-            course = self.get_object()
-            CourseEnrollment.objects.create(user=request.user, course=course, status="started")
-            return Response(status=status.HTTP_200_OK)
-        except (ValidationError, InstanceNotFoundError) as e:
-            return Response(data=f"{e}", status=status.HTTP_400_BAD_REQUEST)
-
+        course = self.get_object()
+        CourseEnrollment.objects.create(user=request.user, course=course, status="started")
+        return Response(status=status.HTTP_200_OK)
 
 
 class StudentView(viewsets.ModelViewSet):
@@ -184,10 +179,11 @@ class StudentView(viewsets.ModelViewSet):
         courses_serializer = CourseShortSerializer(courses, many=True)
         return courses_serializer.data
 
-    @action(detail=False, methods=["get"])
-    def todo_for(self, request, format=True):
-        month = request.GET.get("month")
-        year = request.GET.get("year")
+    @action(detail=True, methods=["get"])
+    def todo_for(self, request, pk,  format=True):
+        _ = self.get_object()
+        month = int(request.GET.get("month"))
+        year = int(request.GET.get("year"))
         now = timezone.now()
         todo = self._get_todo_for(request.user, month, year, now.tzinfo)
         return Response(todo, status=status.HTTP_200_OK)
@@ -282,7 +278,7 @@ class TopicView(viewsets.ModelViewSet):
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(status=status.HTTP_200_OK)
-        except (ValidationError, InstanceNotFoundError) as e:
+        except ValidationError as e:
             return Response(data=f"{e}", status=status.HTTP_400_BAD_REQUEST)
 
     @csrf_exempt
@@ -298,6 +294,7 @@ class TopicView(viewsets.ModelViewSet):
                 return Response(status=status.HTTP_200_OK)
         except (ValidationError, InstanceNotFoundError) as e:
             return Response(data=f"{e}", status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class LessonView(viewsets.ModelViewSet):
@@ -316,15 +313,13 @@ class LessonView(viewsets.ModelViewSet):
             return Response(serializer.data)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @csrf_exempt
     def create(self, request, format=None):
         try:
             serializer = LessonCreateSerializer(data=request.data)
-
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(status=status.HTTP_200_OK)
-        except (ValidationError, InstanceNotFoundError) as e:
+        except ValidationError as e:
             return Response(data=f"{e}", status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=["post"])
@@ -334,10 +329,9 @@ class LessonView(viewsets.ModelViewSet):
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(status=status.HTTP_200_OK)
-        except (ValidationError, InstanceNotFoundError) as e:
+        except ValidationError as e:
             return Response(data=f"{e}", status=status.HTTP_400_BAD_REQUEST)
 
-    @csrf_exempt
     @action(detail=True, methods=["put"])
     def change_content_order(self, request, pk, format=None):
         try:
@@ -364,6 +358,17 @@ class LessonView(viewsets.ModelViewSet):
         except (ValidationError, InstanceNotFoundError) as e:
             return Response(data=f"{e}", status=status.HTTP_400_BAD_REQUEST)
 
+    def retrieve(self, request, *args, **kwargs):
+        lesson = self.get_object()
+        # only enrolled students or teacher, that created a course, can get a lesson
+        user = request.user
+        is_owner = lesson.course.teacher == user
+        is_enrolled = CourseEnrollment.objects.filter(user=user, course=lesson.course).exists()
+        if is_owner or is_enrolled:
+            serialzier = self.serializer_class(lesson)
+            return Response(data=serialzier.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
 
 class FeedbackView(viewsets.ModelViewSet):
     queryset = Feedback.objects.all()
@@ -386,27 +391,23 @@ class FeedbackView(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"], serializer_class=StudentFeedbackSerializer)
     def by_student(self, request, *args, **kwargs):
         student_id = request.GET.get('student_id')
-        if student_id is not None:
-            feedbacks = (self.queryset
-                         .select_related('user')
-                         .select_related('course')
-                         .filter(user__id=student_id, user__role="student")
-                         .order_by('-created'))
-            serializer = StudentFeedbackSerializer(feedbacks, many=True)
-            return Response(serializer.data)
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
+        feedbacks = (self.queryset
+                     .select_related('user')
+                     .select_related('course')
+                     .filter(user__id=student_id, user__role="student")
+                     .order_by('-created'))
+        serializer = StudentFeedbackSerializer(feedbacks, many=True)
+        return Response(serializer.data)
 
     def create(self, request, format=None):
         try:
-            student_id = 4 #request.session.get('_auth_user_id')
             serializer = CourseCreateFeedback(data=request.data,
-                                               context={"student_id": student_id})
+                                               context={"student_id": request.user.id})
 
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(status=status.HTTP_200_OK)
-        except (ValidationError, InstanceNotFoundError) as e:
+        except ValidationError as e:
             return Response(data=f"{e}", status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk, format=None):
@@ -415,7 +416,6 @@ class FeedbackView(viewsets.ModelViewSet):
             serializer = self.serializer_class(instance=feedback,
                                                data=request.data,
                                                partial=True)
-
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(status=status.HTTP_200_OK)

@@ -1,11 +1,13 @@
 from django.contrib.auth.models import Group
+from django.db import transaction
 from django.db.models import Avg
 from rest_framework import serializers, fields
 from allauth.account.adapter import get_adapter
 from dj_rest_auth.registration.serializers import RegisterSerializer
+from rest_framework.exceptions import ValidationError
 
 from elearning.models import Course, User, Feedback, StudyItem, Topic, ItemContent, CourseProgress, CourseEnrollment
-from elearning.validators import validate_course_duration, not_negative, feedback_between_1_5, validate_start_date, \
+from elearning.validators import validate_course_duration, feedback_between_1_5, validate_start_date, \
     validate_topic_duration
 
 
@@ -51,6 +53,7 @@ class RegisteredStudentShortSerializer(serializers.ModelSerializer):
 class FeedbackSerializer(serializers.ModelSerializer):
     user = StudentShortSerializer(read_only=True)
     created = serializers.ReadOnlyField()
+    rating = serializers.IntegerField(validators=[feedback_between_1_5])
 
     class Meta:
         model = Feedback
@@ -75,8 +78,10 @@ class CourseCreateFeedback(serializers.Serializer):
         student_id = self.context.pop('student_id')
         student = User.objects.get(id=student_id)
         course = Course.objects.get(id=course_id)
-        feedback = Feedback.objects.create(user=student, course=course, **validated_data)
-        return feedback
+        if CourseEnrollment.objects.filter(user=student, course=course).exists():
+            feedback = Feedback.objects.create(user=student, course=course, **validated_data)
+            return feedback
+        raise ValidationError("Cannot leave a feedback if not enrolled")
 
 
 
@@ -195,7 +200,7 @@ class TopicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Topic
-        fields = ['id', 'title', 'desc', 'n_hours',
+        fields = ['id', 'title', 'description', 'n_hours',
                   'study_lessons']
 
 
@@ -227,7 +232,6 @@ class LessonSerializer(serializers.ModelSerializer):
 
 class LessonContentCreateSerializer(serializers.ModelSerializer):
     lesson_id = serializers.IntegerField()
-    order = serializers.IntegerField(validators=[not_negative])
     img = serializers.ImageField(required=False)
     video = serializers.FileField(required=False)
     text = serializers.CharField(required=False)
@@ -235,7 +239,7 @@ class LessonContentCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ItemContent
-        fields = ["lesson_id", "kind", "img", "text", "file", "video", "order"]
+        fields = ["lesson_id", "kind", "img", "text", "file", "video"]
 
     def validate(self, data):
         """
@@ -258,20 +262,14 @@ class LessonContentCreateSerializer(serializers.ModelSerializer):
         if data["kind"] == "file" and not file_exists and (has_image or has_video or has_text):
             raise serializers.ValidationError("File not found and cannot be empty")
 
-        # check if item already exists with this order
-        lesson_id = data.get('lesson_id')
-        order = data.get('order')
-        lesson = StudyItem.objects.get(id=lesson_id)
-        content = ItemContent.objects.filter(item=lesson, order=order)
-        if content.exists():
-            raise serializers.ValidationError("Item with this order already exists")
-
         return data
 
     def create(self, validated_data):
         lesson_id = validated_data.pop('lesson_id')
         lesson = StudyItem.objects.get(id=lesson_id)
-        content = ItemContent.objects.create(item=lesson, **validated_data)
+        latest = ItemContent.get_next_order_number(lesson_id)
+        content = ItemContent.objects.create(item=lesson,
+                                             order=latest+1, **validated_data)
         return content
 
 
@@ -281,7 +279,6 @@ class LessonCreateSerializer(serializers.Serializer):
     title = serializers.CharField()
     created = serializers.ReadOnlyField()
     modified = serializers.ReadOnlyField()
-    order = serializers.IntegerField(validators=[not_negative])
 
     class Meta:
         model = StudyItem
@@ -291,7 +288,10 @@ class LessonCreateSerializer(serializers.Serializer):
         topic = Topic.objects.get(id=topic_id)
         course_id = validated_data.pop('course_id')
         course = Course.objects.get(id=course_id)
-        lesson = StudyItem.objects.create(topic=topic, course=course, **validated_data)
+        latest = StudyItem.get_next_order_number(course.id)
+        print("latest", latest)
+        lesson = StudyItem.objects.create(topic=topic, course=course,
+                                          order=latest+1,**validated_data)
         return lesson
 
 class LessonContentOrderSerializer(serializers.Serializer):
@@ -322,10 +322,11 @@ class LessonContentOrderSerializer(serializers.Serializer):
         lesson_id = self.context["lesson_id"]
         lesson = (StudyItem.objects
                     .get(id=lesson_id))
-        for (content_id, order_n) in changes.items():
-            content = ItemContent.objects.get(id=int(content_id))
-            content.order = order_n + 1
-            content.save()
+        with transaction.atomic():
+            for (content_id, order_n) in changes.items():
+                content = ItemContent.objects.get(id=int(content_id))
+                content.order = order_n + 1
+                content.save()
         return lesson
 
 class LessonOrderSerializer(serializers.Serializer):
@@ -354,12 +355,15 @@ class LessonOrderSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         changes = validated_data.pop("order_changes")
         topic_id = self.context["topic_id"]
-        for (content_id, order_n) in changes.items():
-            lesson = (StudyItem.objects
-                       .select_related("topic")
-                       .get(id=int(content_id), topic__id=topic_id))
-            lesson.order = order_n + 1
-            lesson.save()
+        with transaction.atomic():
+            for (content_id, order_n) in changes.items():
+                print(content_id, order_n)
+                lesson = (StudyItem.objects
+                           .select_related("topic")
+                           .get(id=int(content_id), topic__id=topic_id))
+                print(lesson)
+                lesson.order = order_n + 1
+                lesson.save()
         return instance
 
 
@@ -483,9 +487,13 @@ class CreateProgressSerializer(serializers.ModelSerializer):
         fields = ["course_id"]
 
     def update(self, instance, validated_data):
-        student_id = self.context.get("student_id")
-        course_id = validated_data.pop('course_id')
-        course = Course.objects.get(id=course_id)
-        enrollment = CourseEnrollment.objects.get(user__id=student_id, course=course)
-        course_progress = CourseProgress.objects.create(enrolled_student=enrollment, item=instance)
-        return course_progress
+        try:
+            student_id = self.context.get("student_id")
+            course_id = validated_data.pop('course_id')
+            course = Course.objects.get(id=course_id)
+            enrollment = CourseEnrollment.objects.get(user__id=student_id, course=course)
+            course_progress = CourseProgress.objects.create(enrolled_student=enrollment, item=instance)
+            return course_progress
+        except (Course.DoesNotExist, CourseEnrollment.DoesNotExist,
+                CourseProgress.DoesNotExist) as e:
+            raise ValidationError("instance doesn't exist")

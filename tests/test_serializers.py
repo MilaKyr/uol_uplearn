@@ -25,19 +25,27 @@ def test_reistered_student_serializer(registered_student):
 
 
 @pytest.mark.django_db
-def test_create_feedback(student, course):
+def test_create_feedback(student, course, enrolled_student):
     assert len(Feedback.objects.all()) == 0
     assert (CourseCreateFeedback(context={"student_id": student.id}).create({"course_id": course.id, "rating": 3})
             is not None )
 
 @pytest.mark.django_db
-def test_create_feedback_negative_rating(student, course):
+def test_create_feedback_fails(student, course):
     with pytest.raises(serializers.ValidationError):
-        serializer = CourseCreateFeedback(context={"student_id": student.id}, data={"course_id": course.id, "rating": -1})
-        serializer.is_valid(raise_exception=True)
+        CourseCreateFeedback(context={"student_id": student.id}
+                             ).create({"course_id": course.id, "rating": 3})
+
 
 @pytest.mark.django_db
 def test_create_feedback_negative_rating(student, course):
+    with pytest.raises(serializers.ValidationError):
+        serializer = CourseCreateFeedback(context={"student_id": student.id},
+                                          data={"course_id": course.id, "rating": -1})
+        serializer.is_valid(raise_exception=True)
+
+@pytest.mark.django_db
+def test_create_feedback_too_big_rating(student, course):
     with pytest.raises(serializers.ValidationError):
         serializer = CourseCreateFeedback(context={"student_id": student.id}, data={"course_id": course.id, "rating": 10})
         serializer.is_valid(raise_exception=True)
@@ -54,8 +62,8 @@ def test_course_short_serializer(course):
     expected = {
         "id": course.id,
         "title": course.title,
-        "created": course.created.strftime("%Y-%m-%dT%H:%M:%-S.%fZ"),
-        "start_date": course.start_date.strftime("%Y-%m-%dT%H:%M:%-S.%fZ"),
+        "created": course.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+        "start_date": course.start_date.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         "photo": course.photo.url,
         "average_rating": 4.75,
         "n_students": 10
@@ -73,8 +81,8 @@ def test_course_owner_short_serializer(registered_student, course):
         "id": course.id,
         "title": course.title,
         "is_active": False,
-        "created": course.created.strftime("%Y-%m-%dT%H:%M:%-S.%fZ"),
-        "start_date": course.start_date.strftime("%Y-%m-%dT%H:%M:%-S.%fZ"),
+        "created": course.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+        "start_date": course.start_date.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         "photo": course.photo.url,
         "average_rating": 4.75,
         "registered_students": [
@@ -116,8 +124,8 @@ def test_course_serializer(course):
         "title": course.title,
         "is_active": course.is_active,
         "description": course.description,
-        "created": course.created.strftime("%Y-%m-%dT%H:%M:%-S.%fZ"),
-        "start_date": course.start_date.strftime("%Y-%m-%dT%H:%M:%-S.%fZ"),
+        "created": course.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+        "start_date": course.start_date.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         "photo": course.photo.url,
         "average_rating": 4.75,
         "duration": str(course.duration),
@@ -197,31 +205,10 @@ def test_create_lesson_content(lesson):
     assert len(ItemContent.objects.all()) == 0
     serializer = LessonContentCreateSerializer(data={"lesson_id": lesson.id,
                                             "kind": "text",
-                                            "text": "test",
-                                            "order": 1})
+                                            "text": "test"})
     serializer.is_valid(raise_exception=True)
     serializer.save()
     assert len(ItemContent.objects.all()) ==  1
-
-
-@pytest.mark.django_db
-def test_lesson_content_negative_order(lesson):
-    with pytest.raises(serializers.ValidationError):
-        serializer = LessonContentCreateSerializer(data={"lesson_id": lesson.id,
-                                                         "kind": "text",
-                                                         "text": "test",
-                                                         "order": -1})
-        serializer.is_valid(raise_exception=True)
-
-
-@pytest.mark.django_db
-def test_lesson_content_exists(lesson_content):
-    with pytest.raises(serializers.ValidationError):
-        serializer = LessonContentCreateSerializer(data={"lesson_id": lesson_content.item.id,
-                                                         "kind": lesson_content.kind,
-                                                         "text": lesson_content.text,
-                                                         "order": lesson_content.order})
-        serializer.is_valid(raise_exception=True)
 
 def temporary_image():
     bts = BytesIO()
@@ -239,8 +226,7 @@ def test_lesson_content_no_text(lesson, tmp_path):
         serializer = LessonContentCreateSerializer(data={"lesson_id": lesson.id,
                                                          "kind": "text",
                                                          "img": temporary_image(),
-                                                         "file": temporary_file(),
-                                                         "order": 1})
+                                                         "file": temporary_file()})
         serializer.is_valid(raise_exception=True)
 
 
@@ -250,8 +236,7 @@ def test_lesson_content_no_image(lesson):
         serializer = LessonContentCreateSerializer(data={"lesson_id": lesson.id,
                                                          "kind": "image",
                                                          "text": "test",
-                                                         "file": temporary_file(),
-                                                         "order": 1})
+                                                         "file": temporary_file()})
         serializer.is_valid(raise_exception=True)
 
 @pytest.mark.django_db
@@ -260,8 +245,7 @@ def test_lesson_content_no_file(lesson, tmp_path):
         serializer = LessonContentCreateSerializer(data={"lesson_id": lesson.id,
                                                          "kind": "file",
                                                          "text": "test",
-                                                         "img": temporary_image(),
-                                                         "order": 1})
+                                                         "img": temporary_image()})
         serializer.is_valid(raise_exception=True)
 
 
@@ -271,19 +255,9 @@ def test_create_lesson(topic, course):
     assert len(ItemContent.objects.all()) == 0
     assert (LessonCreateSerializer().create({"topic_id": topic.id,
                                              "course_id": course.id,
-                                            "title": "Test",
-                                            "order": 1})
+                                            "title": "Test"})
             is not None )
 
-
-@pytest.mark.django_db
-def test_lesson_negative_order(topic, course):
-    with pytest.raises(serializers.ValidationError):
-        serializer = LessonCreateSerializer(data={"topic_id": topic.id,
-                                                  "course_id": course.id,
-                                                  "title": "Test",
-                                                  "order": -1})
-        serializer.is_valid(raise_exception=True)
 
 
 @pytest.mark.django_db
@@ -388,10 +362,10 @@ def test_course_w_progress_short_serializer(course, student, enrolled_student):
         "id": enrolled_student.course.id,
         "title": enrolled_student.course.title,
         'photo': enrolled_student.course.photo.url,
-        'enrolled': enrolled_student.created.strftime("%Y-%m-%dT%H:%M:%-S.%fZ"),
+        'enrolled': enrolled_student.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         'progress': 0.0,
     }
-    done = [(enrolled_student.course.id, enrolled_student.created.strftime("%Y-%m-%dT%H:%M:%-S.%fZ"), 0)]
+    done = [(enrolled_student.course.id, enrolled_student.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 0)]
     serialized = CourseWithProgressShortSerializer(course_instances, many=True, context={"done": done})
     assert json.dumps(serialized.data, sort_keys=True) == json.dumps([expected], sort_keys=True)
 
@@ -410,10 +384,10 @@ def test_course_w_progress_short_serializer_no_tasks(course, student, enrolled_s
         "id": enrolled_student.course.id,
         "title": enrolled_student.course.title,
         'photo': enrolled_student.course.photo.url,
-        'enrolled': enrolled_student.created.strftime("%Y-%m-%dT%H:%M:%-S.%fZ"),
+        'enrolled': enrolled_student.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         'progress': 0.0,
     }
-    done = [(enrolled_student.course.id, enrolled_student.created.strftime("%Y-%m-%dT%H:%M:%-S.%fZ"), 0)]
+    done = [(enrolled_student.course.id, enrolled_student.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 0)]
     serialized = CourseWithProgressShortSerializer(course_instances, many=True, context={"done": done})
     assert json.dumps(serialized.data, sort_keys=True) == json.dumps([expected], sort_keys=True)
 
@@ -440,12 +414,12 @@ def test_todo_list_serializer(student, lesson):
         "topic_title": lesson.topic.title,
         "id": lesson.id,
         "title": lesson.title,
-        "deadline": lesson.deadline.strftime("%Y-%m-%dT%H:%M:%-S.%fZ"),
+        "deadline": lesson.deadline.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         "order": lesson.order
     }
     serialized = TodoListSerializer(todo_list, many=True)
     result = serialized.data.pop()
-    result["deadline"] = result["deadline"].strftime("%Y-%m-%dT%H:%M:%-S.%fZ")
+    result["deadline"] = result["deadline"].strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     assert json.dumps(result, sort_keys=True) == json.dumps(expected, sort_keys=True)
 
 

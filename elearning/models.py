@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 from elearning.validators import validate_course_duration, \
     validate_topic_duration
@@ -49,10 +49,16 @@ class StudyItem(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     deadline = models.DateTimeField(null=True)
-    order = models.IntegerField()
+    order = models.PositiveIntegerField(default=1)
 
     class Meta:
         unique_together = ('topic', 'title')
+
+    @classmethod
+    def get_next_order_number(cls, course_id):
+        latest = (cls.objects.filter(course__id=course_id)
+                .order_by('order').last())
+        return latest.order if latest is not None else 0
 
 
 def course_topic_directory_path(instance, filename):
@@ -72,7 +78,13 @@ class ItemContent(models.Model):
     text = models.TextField(null=True, blank=True)
     file = models.FileField(upload_to=course_topic_directory_path, null=True, blank=True)
     video = models.FilePathField(path="media/video", null=True, blank=True)
-    order = models.IntegerField()
+    order = models.PositiveIntegerField(default=1)
+
+    @classmethod
+    def get_next_order_number(cls, item_id):
+        latest =  (cls.objects.filter(item__id=item_id)
+                .order_by('order').last())
+        return latest.order if latest is not None else 0
 
 class Feedback(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.DO_NOTHING)
