@@ -1,9 +1,7 @@
 import pytest
-from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 import datetime
 from django.contrib.auth.models import Group
-from elearning.models import *
 
 
 @pytest.fixture

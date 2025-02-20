@@ -17,14 +17,14 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.settings')  # pragma: no
 django_asgi_app = get_asgi_application()  # pragma: no cover
 
 import backend.chat.routing
-import notifications.routing
+import backend.notifications.routing
 from backend.chat.token_auth import TokenAuthMiddleware
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
     'websocket': TokenAuthMiddleware(
         URLRouter([
-            *notifications.routing.websocket_urlpatterns,
+            *backend.notifications.routing.websocket_urlpatterns,
             *backend.chat.routing.websocket_urlpatterns,
 
         ])

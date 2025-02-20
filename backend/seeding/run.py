@@ -12,7 +12,7 @@ def prepare_env():
 
 prepare_env()
 
-from seeding.fill_db import fill_database
+from backend.seeding.fill_db import fill_database
 
 if __name__ == "__main__":
     try:

@@ -18,11 +18,11 @@ import tempfile, zipfile
 from wsgiref.util import FileWrapper
 
 from backend.chat.models import Message
-from elearning.permissions import UserCoursePermission, UserPermission, TopicPermission, \
+from backend.elearning import UserCoursePermission, UserPermission, TopicPermission, \
     LessonPermission, FeedbackPermission
-from elearning.models import Course, User, Topic, Lesson, Feedback, CourseProgress, CourseEnrollment, \
+from backend.elearning import Course, User, Topic, Lesson, Feedback, CourseProgress, CourseEnrollment, \
     Tag, Notification
-from elearning.serializers import CourseSerializer, TopicSerializer, CourseShortSerializer, \
+from backend.elearning import CourseSerializer, TopicSerializer, CourseShortSerializer, \
     LessonSerializer, StudentSerializer, TeacherSerializer, FeedbackSerializer, StudentFeedbackSerializer, \
     CourseCreateFeedback, LessonCreateSerializer, TopicCreateSerializer, LessonContentCreateSerializer, \
     CustomRegisterSerializer, CourseOwnerShortSerializer, \

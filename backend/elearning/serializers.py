@@ -9,9 +9,9 @@ from rest_framework.exceptions import ValidationError
 from rest_framework import exceptions, serializers
 from django.conf import settings
 
-from elearning.models import Course, User, Feedback, Lesson, Topic, CourseProgress, CourseEnrollment, \
+from backend.elearning import Course, User, Feedback, Lesson, Topic, CourseProgress, CourseEnrollment, \
     Tag, Files, Notification
-from elearning.validators import validate_course_duration, feedback_between_1_5, validate_start_date, \
+from backend.elearning import validate_course_duration, feedback_between_1_5, validate_start_date, \
     validate_topic_duration
 
 

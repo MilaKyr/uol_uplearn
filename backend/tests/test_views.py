@@ -4,8 +4,8 @@ import json
 import pytest
 from rest_framework.test import APIClient
 from rest_framework import status
-from elearning.models import *
-from elearning.serializers import *
+from backend.elearning import *
+from backend.elearning import *
 
 client = APIClient()
 

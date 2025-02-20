@@ -2,7 +2,7 @@ import datetime
 from django.utils import timezone
 from django.db import utils
 import pytest
-from elearning.models import course_topic_directory_path, Course, StudyItem, ItemContent
+from backend.elearning import course_topic_directory_path, Course, StudyItem, ItemContent
 
 
 @pytest.mark.django_db

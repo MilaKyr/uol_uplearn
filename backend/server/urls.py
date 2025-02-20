@@ -23,7 +23,7 @@ from rest_framework_simplejwt.views import TokenVerifyView
 
 from rest_framework import routers
 
-from elearning import views
+from backend.elearning import views
 
 router = routers.DefaultRouter()
 router.register(r'courses', views.CourseView, basename="course")

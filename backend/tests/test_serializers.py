@@ -8,8 +8,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import Value
 from django.utils import timezone
 
-from elearning.models import *
-from elearning.serializers import *
+from backend.elearning import *
+from backend.elearning import *
 
 
 @pytest.mark.django_db

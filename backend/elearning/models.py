@@ -1,11 +1,8 @@
 import os
 import random
 
-from django.core.exceptions import ValidationError
-from django.db import models, transaction
+from django.db import models
 from django.contrib.auth.models import AbstractUser
-from elearning.validators import validate_course_duration, \
-    validate_topic_duration
 
 
 class User(AbstractUser):

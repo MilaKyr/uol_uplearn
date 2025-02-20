@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - '1337:80'
+    depends_on:
+      - web
+  web:
+    build: ./backend
+    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./backend/ :/user/src/backend/
+    expose:
+      - 8000
+    depends_on:
+      - daphne
+  daphne:
+    build: ./backend
+    command: daphne --bind 0.0.0.0 -p 8005 server.asgi:application
+    volumes:
+      - ./backend/ :/user/src/backend/
+    ports:
+      - '8005:8005'
+    depends_on:
+      - redis
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes:
+      - cache:/data
+
+
+
+

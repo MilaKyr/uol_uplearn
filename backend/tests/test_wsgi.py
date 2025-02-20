@@ -2,7 +2,7 @@ import pytest
 from django.test import RequestFactory
 from django.urls import Resolver404
 
-from server.wsgi import application
+from backend.server.wsgi import application
 
 
 """Test code was inspired from: https://stackoverflow.com/questions/60505112/django-unittest-wsgi-py"""

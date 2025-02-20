@@ -1,7 +1,7 @@
 import rest_framework.permissions
 from rest_framework import permissions
 
-from elearning.models import CourseEnrollment, Feedback
+from backend.elearning import CourseEnrollment, Feedback
 
 
 class UserCoursePermission(permissions.BasePermission):
