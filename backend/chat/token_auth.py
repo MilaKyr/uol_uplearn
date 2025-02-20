@@ -4,7 +4,7 @@ from channels.middleware import BaseMiddleware
 from django.db import close_old_connections
 
 from rest_framework_simplejwt.tokens import AccessToken
-from backend.elearning import User
+from elearning.models import User
 
 @database_sync_to_async
 def get_user(token_key):

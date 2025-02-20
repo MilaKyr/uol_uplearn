@@ -1,5 +1,5 @@
 """
-URL configuration for server project.
+URL configuration for backend project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
@@ -23,7 +23,7 @@ from rest_framework_simplejwt.views import TokenVerifyView
 
 from rest_framework import routers
 
-from backend.elearning import views
+from elearning import views
 
 router = routers.DefaultRouter()
 router.register(r'courses', views.CourseView, basename="course")

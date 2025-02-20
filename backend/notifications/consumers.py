@@ -2,8 +2,8 @@ import json
 
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
-from backend.chat.models import Message
-from backend.elearning import Notification
+from chat.models import Message
+from elearning.models import Notification
 
 
 

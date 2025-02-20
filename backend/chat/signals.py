@@ -3,7 +3,7 @@ from django.dispatch import receiver
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from backend.chat.models import Message
-from backend.elearning import BasicUserSerializer
+from backend.elearning.serializers import BasicUserSerializer
 
 @receiver(post_save, sender=Message)
 def notification_created(sender, instance, created, **kwargs):

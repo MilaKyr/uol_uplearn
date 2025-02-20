@@ -1,6 +1,6 @@
 from django.db import models
 
-from backend.elearning import User
+from elearning.models import User
 
 class Conversation(models.Model):
     users = models.ManyToManyField(User, related_name="conversations")

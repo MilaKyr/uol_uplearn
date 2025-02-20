@@ -1,9 +1,9 @@
 from django.db import transaction
 from rest_framework import serializers
-from backend.elearning import User
+from elearning.models import User
 from .models import Conversation, Message
 
-from backend.elearning import BasicUserSerializer
+from elearning.serializers import BasicUserSerializer
 
 
 

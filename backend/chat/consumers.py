@@ -3,9 +3,9 @@ import json
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from backend.elearning import BasicUserSerializer
+from elearning.serializers import BasicUserSerializer
 from .models import Message, Conversation
-from backend.elearning import User
+from elearning.models import (User)
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
