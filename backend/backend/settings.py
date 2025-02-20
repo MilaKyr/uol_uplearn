@@ -30,7 +30,10 @@ SECRET_KEY = 'django-insecure-y(=bp-m=w&r3&28w$&(g#_fg34++i14c!%49tu4e@pz&r(dbo4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1:8000', '127.0.0.1']
+if DEBUG:
+    ALLOWED_HOSTS = ['127.0.0.1:8000', '127.0.0.1']
+else:
+    ALLOWED_HOSTS = ['35.230.156.144', '35.230.156.144:1337']
 
 
 AUTH_USER_MODEL = "elearning.User"
@@ -181,10 +184,10 @@ SIMPLE_JWT = {
 
 SITE_ID = 1
 
-# if DEBUG:
-WEBSITE_URL = "http://127.0.0.1:8000"
-# else:
-#     WEBSITE_URL = 'http://34.89.46.119:1337'
+if DEBUG:
+    WEBSITE_URL = "http://127.0.0.1:8000"
+else:
+    WEBSITE_URL = 'http://35.230.156.144:1337'
 
 REST_AUTH = {
     "USE_JWT": True,
@@ -198,20 +201,20 @@ if DEBUG:
 
 CORS_ALLOW_ORIGINS = [
     "http://127.0.0.1:8000",
-    'http://34.89.46.119',
-    'http://34.89.46.119:1337'
+    'http://35.230.156.144',
+    'http://35.230.156.144:1337'
 ]
 
 CORS_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
-    'http://34.89.46.119',
-    'http://34.89.46.119:1337'
+    'http://35.230.156.144',
+    'http://35.230.156.144:1337'
 ]
 
 CORS_ORIGINS_WHITELIST = [
     "http://127.0.0.1:8000",
-    'http://34.89.46.119',
-    'http://34.89.46.119:1337'
+    'http://35.230.156.144',
+    'http://35.230.156.144:1337'
 ]
 
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
@@ -224,7 +227,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [("172.28.0.6", 6379)],
         },
     },
 }
