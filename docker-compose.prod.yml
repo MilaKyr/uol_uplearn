@@ -19,7 +19,7 @@ services:
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     env_file:
-      - .env
+      - ./backend/.env
 
   web:
     build: ./backend
@@ -45,7 +45,7 @@ services:
       DATABASE_PORT: ${DATABASE_PORT}
       DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
     env_file:
-        - .env
+        - ./backend/.env
 
   daphne:
     build: ./backend
