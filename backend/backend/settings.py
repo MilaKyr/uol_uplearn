@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'chat',
     'notifications',
     "elearning.apps.ElearningConfig",
+    "corsheaders",
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -73,12 +74,13 @@ INSTALLED_APPS = [
 
     "dj_rest_auth",
     "dj_rest_auth.registration",
-    "corsheaders",
+
 
 
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -88,7 +90,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "allauth.account.middleware.AccountMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
+
 
 ]
 
@@ -199,23 +201,18 @@ REST_AUTH = {
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOW_ORIGINS = [
+CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     'http://35.230.156.144',
     'http://35.230.156.144:1337'
 ]
 
-CORS_TRUSTED_ORIGINS = [
+CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     'http://35.230.156.144',
     'http://35.230.156.144:1337'
 ]
 
-CORS_ORIGINS_WHITELIST = [
-    "http://127.0.0.1:8000",
-    'http://35.230.156.144',
-    'http://35.230.156.144:1337'
-]
 
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
