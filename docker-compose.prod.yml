@@ -31,16 +31,6 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
     volumes:
       - redis_cache:/data
-    networks:
-      uol_awd:
-        ipv4_address: 172.28.0.6
-
-networks:
-  uol_awd:
-    external: true
-    ipam:
-      config:
-        - subnet: 172.28.0.0/16
 
 volumes:
   redis_cache:
