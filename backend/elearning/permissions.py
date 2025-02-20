@@ -1,6 +1,8 @@
 import rest_framework.permissions
 from rest_framework import permissions
 
+from elearning.models import CourseEnrollment, Feedback
+
 
 class UserCoursePermission(permissions.BasePermission):
 
@@ -70,7 +72,7 @@ class LessonPermission(permissions.BasePermission):
             return is_owner
 
         if view.action == "done":
-            return request.user.role == "student"
+            return request.user.role == "student" and CourseEnrollment.objects.filter(course=obj.course, user=request.user).exists()
 
         return True
 
@@ -81,22 +83,14 @@ class FeedbackPermission(permissions.BasePermission):
         if not request.user.is_authenticated:
             return False
 
-        if view.action == "by_student":
-            if 'student_id' not in request.GET:
-                return False
-            return request.user.id == int(request.GET.get('student_id'))
-
-        if view.action == "create":
-            return request.user.role == "student"
-
         if view.action in ["create", "update", "partial_update"]:
             return request.user.role == "student"
 
         return True
 
     def has_object_permission(self, request, view, obj):
-        is_owner = obj.user == request.user
-        if view.action in ["create", "update", "partial_update"]:
+        if view.action in ["update", "partial_update"]:
+            is_owner = Feedback.objects.select_related("user").filter(id=obj.id, user__user=request.user).exists()
             return is_owner
 
         return False

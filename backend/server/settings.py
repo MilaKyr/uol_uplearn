@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 
+import environ
+import os
+
+env = environ.Env()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,13 +30,28 @@ SECRET_KEY = 'django-insecure-y(=bp-m=w&r3&28w$&(g#_fg34++i14c!%49tu4e@pz&r(dbo4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['34.89.46.119']
+
 
 AUTH_USER_MODEL = "elearning.User"
 
 # Application definition
 
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of allauth
+    'django.contrib.auth.backends.ModelBackend',
+
+    # allauth specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+
 INSTALLED_APPS = [
+    "daphne",
+    'chat',
+    'notifications',
+    "elearning.apps.ElearningConfig",
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -52,12 +72,10 @@ INSTALLED_APPS = [
     "dj_rest_auth.registration",
     "corsheaders",
 
-    "elearning"
+
 ]
 
 MIDDLEWARE = [
-    "allauth.account.middleware.AccountMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -66,6 +84,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 
 ]
 
@@ -88,7 +108,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'server.wsgi.application'
-
+ASGI_APPLICATION = 'server.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -161,13 +181,47 @@ SIMPLE_JWT = {
 
 SITE_ID = 1
 
-ACCOUNT_EMAIL_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = "none"
+if DEBUG:
+    WEBSITE_URL = "http://127.0.0.1:8000"
+else:
+    WEBSITE_URL = 'http://34.89.46.119:1337'
 
 REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_HTTPONLY": False,
+    'LOGIN_SERIALIZER': 'elearning.serializers.CustomLoginSerializer',
+    'USER_DETAILS_SERIALIZER': 'elearning.serializers.AuthUserSerializer',
 }
 
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_ORIGINS = [
+    'http://34.89.46.119',
+    'http://34.89.46.119:1337'
+]
+
+CORS_TRUSTED_ORIGINS = [
+    'http://34.89.46.119',
+    'http://34.89.46.119:1337'
+]
+
+CORS_ORIGINS_WHITELIST = [
+    'http://34.89.46.119',
+    'http://34.89.46.119:1337'
+]
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
