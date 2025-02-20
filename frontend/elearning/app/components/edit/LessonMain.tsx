@@ -79,7 +79,7 @@ export default function LessonMain(props: { lesson: LessonEditData, editor: TipT
       }
       let parsedToken = JSON.parse(token);
       try {
-        let res = await fetch(`http://127.0.0.1:8000/api/lessons/${props.lesson?.id}/files`, {
+        let res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${props.lesson?.id}/files`, {
           headers: {
             Authorization: `Bearer ${parsedToken.access}`,
           },
@@ -124,7 +124,7 @@ export default function LessonMain(props: { lesson: LessonEditData, editor: TipT
         files.forEach(async (file) => {
           const formData = new FormData();
           formData.append('file', file);
-          let res = await fetch(`http://127.0.0.1:8000/api/lessons/${props.lesson?.id}/file`, {
+          let res = await fetch(`${process.env.HTTP_ADDRESS}/api/lessons/${props.lesson?.id}/file`, {
             headers: {
               Authorization: `Bearer ${parsedToken.access}`,
             },
@@ -151,7 +151,7 @@ export default function LessonMain(props: { lesson: LessonEditData, editor: TipT
     let parsedToken = JSON.parse(token);
     // Validate the token by making an API call
     try {
-      let res = await fetch(`http://127.0.0.1:8000/api/lessons/${props.lesson?.id}/content`, {
+      let res = await fetch(`${process.env.HTTP_ADDRESS}/api/lessons/${props.lesson?.id}/content`, {
         headers: {
           Authorization: `Bearer ${parsedToken.access}`,
           "Content-Type": "application/json",

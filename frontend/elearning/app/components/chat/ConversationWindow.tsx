@@ -19,7 +19,7 @@ export default function ConversationWindow(props: ConversationWindowProps) {
     const [messageToSend, setMessageToSend] = React.useState<string>('');
 
 
-    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(`${process.env.WS_ADDRESS}/ws/${props.conversation.id}?token=${props.token}`,
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(`${process.env.NEXT_PUBLIC_WS_ADDRESS}/ws/${props.conversation.id}?token=${props.token}`,
         {
             share: false,
             shouldReconnect: () => true,
@@ -39,7 +39,7 @@ export default function ConversationWindow(props: ConversationWindowProps) {
                       let parsedToken = JSON.parse(token);
                       // Validate the token by making an API call
                         try {
-                          const res = await fetch(`http://127.0.0.1:8000/api/chat/${props.conversation.id}`, {
+                          const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/chat/${props.conversation.id}`, {
                             headers: {
                               Authorization: `Bearer ${parsedToken.access}`,
                               "Content-Type": "application/json"

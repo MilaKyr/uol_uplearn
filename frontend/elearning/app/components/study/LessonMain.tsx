@@ -29,7 +29,7 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
       }
       let parsedToken = JSON.parse(token);
       try {
-        let res = await fetch(`http://127.0.0.1:8000/api/lessons/${id}/files`, {
+        let res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${id}/files`, {
           headers: {
             Authorization: `Bearer ${parsedToken.access}`,
           },
@@ -65,7 +65,7 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
       }
       let parsedToken = JSON.parse(token);
       try {
-        let res = await fetch(`http://127.0.0.1:8000/api/lessons/${props.id}/`, {
+        let res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${props.id}/`, {
           headers: {
             Authorization: `Bearer ${parsedToken.access}`,
             "Content-Type": "application/json"
@@ -137,7 +137,7 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
     }
     let parsedToken = JSON.parse(token);
     try {
-      let res = await fetch(`http://127.0.0.1:8000/api/lessons/${props.id}/done`, {
+      let res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${props.id}/done`, {
         headers: {
           Authorization: `Bearer ${parsedToken.access}`,
           "Content-Type": "application/json"

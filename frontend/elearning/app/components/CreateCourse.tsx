@@ -54,7 +54,7 @@ export default function CreateCourse() {
         let parsedToken = JSON.parse(token);
         // Validate the token by making an API call
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/courses/new', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/new`, {
               headers: {
                 Authorization: `Bearer ${parsedToken.access}`,
               },
@@ -120,7 +120,7 @@ export default function CreateCourse() {
 
             form.setFieldValue('pk', newCourseId)
             let toSend = form.values;
-            const res = await fetch('http://127.0.0.1:8000/api/courses/', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/`, {
               headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${parsedToken.access}`,
@@ -135,7 +135,7 @@ export default function CreateCourse() {
                 // send image
                 const formData = new FormData();
                 formData.append('photo', courseImg);
-                const res_photo = await fetch(`http://127.0.0.1:8000/api/courses/${newCourseId}/photo`, {
+                const res_photo = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${newCourseId}/photo`, {
                   headers: {
                     Authorization: `Bearer ${parsedToken.access}`,
                   },
@@ -162,7 +162,7 @@ export default function CreateCourse() {
         // Validate the token by making an API call
         const getTags = async () => {
           try {
-            const res = await fetch('http://127.0.0.1:8000/api/tags', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/tags`, {
               headers: {
                 Authorization: `Bearer ${parsedToken.access}`,
               },

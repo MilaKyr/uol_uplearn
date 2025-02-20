@@ -27,7 +27,7 @@ export default function Courses() {
     let parsedToken = JSON.parse(token);
     // Validate the token by making an API call
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/courses/', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/`, {
         headers: {
           Authorization: `Bearer ${parsedToken.access}`,
         },
@@ -84,7 +84,7 @@ export default function Courses() {
     let parsedToken = JSON.parse(token);
     // Validate the token by making an API call
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/courses/${id}/enroll`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${id}/enroll`, {
         headers: {
           Authorization: `Bearer ${parsedToken.access}`,
         },

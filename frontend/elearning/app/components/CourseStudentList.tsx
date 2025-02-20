@@ -24,7 +24,7 @@ export default function CourseStudentList(props: { courseId: number }) {
             let parsedToken = JSON.parse(token);
             // Validate the token by making an API call
             try {
-                const res = await fetch(`http://127.0.0.1:8000/api/courses/${props.courseId}/students`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${props.courseId}/students`, {
                     headers: {
                         Authorization: `Bearer ${parsedToken.access}`,
                     },
@@ -53,7 +53,7 @@ export default function CourseStudentList(props: { courseId: number }) {
             let parsedToken = JSON.parse(token);
             // Validate the token by making an API call
             try {
-                const res = await fetch(`http://127.0.0.1:8000/api/enrollments/${enrollmentId}/block`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/enrollments/${enrollmentId}/block`, {
                     headers: {
                         Authorization: `Bearer ${parsedToken.access}`,
                         "Content-Type": "application/json"
@@ -104,7 +104,7 @@ export default function CourseStudentList(props: { courseId: number }) {
         let parsedToken = JSON.parse(token);
         // Validate the token by making an API call
         try {
-            const res = await fetch(`http://127.0.0.1:8000/api/enrollments/${enrollmentId}/remove`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/enrollments/${enrollmentId}/remove`, {
                 headers: {
                     Authorization: `Bearer ${parsedToken.access}`,
                     "Content-Type": "application/json"

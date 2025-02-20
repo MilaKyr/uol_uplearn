@@ -30,7 +30,7 @@ export default function UsersTable () {
         
           // Validate the token by making an API call
           try {
-              const res = await fetch('http://127.0.0.1:8000/api/users/', {
+              const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/users/`, {
                 headers: {
                   Authorization: `Bearer ${parsedToken.access}`,
                 },
@@ -74,7 +74,7 @@ export default function UsersTable () {
       
         // Validate the token by making an API call
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/chat/', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/chat/`, {
               headers: {
                 Authorization: `Bearer ${parsedToken.access}`,
                 "Content-Type": "application/json"

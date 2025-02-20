@@ -28,7 +28,7 @@ export default function CourseSearch(props: { onClick: (newCourses: CourseListDa
       let parsedToken = JSON.parse(token);
       // Validate the token by making an API call
       try {
-        const res = await fetch('http://127.0.0.1:8000/api/tags', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/tags`, {
           headers: {
             Authorization: `Bearer ${parsedToken.access}`,
           },
@@ -70,7 +70,7 @@ export default function CourseSearch(props: { onClick: (newCourses: CourseListDa
     let parsedToken = JSON.parse(token);
     // Validate the token by making an API call
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/courses/search?' + new URLSearchParams(searchForm.values).toString(), {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/search?` + new URLSearchParams(searchForm.values).toString(), {
         headers: {
           Authorization: `Bearer ${parsedToken.access}`,
           "Content-Type": "application/json"

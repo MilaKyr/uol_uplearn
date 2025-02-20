@@ -33,7 +33,7 @@ export default function Feedbacks() {
         let parsedToken = JSON.parse(token);
         try {
             console.log("in try")
-            const res = await fetch('http://127.0.0.1:8000/api/feedbacks/', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/feedbacks/`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${parsedToken.access}`,
@@ -76,7 +76,7 @@ export default function Feedbacks() {
         let parsedToken = JSON.parse(token);
         console.log({ course_id: courseId, text: currComment, rating: currRating })
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/feedbacks/', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/feedbacks/`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${parsedToken.access}`,
@@ -116,7 +116,7 @@ export default function Feedbacks() {
 
         let parsedToken = JSON.parse(token);
         try {
-            const res = await fetch(`http://127.0.0.1:8000/api/feedbacks/${feedbackId}/`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/feedbacks/${feedbackId}/`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${parsedToken.access}`,

@@ -39,7 +39,7 @@ export default function UserSearch(props: SetResults) {
               let parsedToken = JSON.parse(token);
               // Validate the token by making an API call
               try {
-                  const res = await fetch('http://127.0.0.1:8000/api/home/course_titles', {
+                  const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/home/course_titles`, {
                     headers: {
                       Authorization: `Bearer ${parsedToken.access}`,
                     },
@@ -75,7 +75,7 @@ export default function UserSearch(props: SetResults) {
               let values = searchForm.getTransformedValues();
               // Validate the token by making an API call
               try {
-                  const res = await fetch('http://127.0.0.1:8000/api/users/search?' + new URLSearchParams(values).toString(), {
+                  const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/users/search?` + new URLSearchParams(values).toString(), {
                     headers: {
                       Authorization: `Bearer ${parsedToken.access}`,
                       "Content-Type": "application/json"

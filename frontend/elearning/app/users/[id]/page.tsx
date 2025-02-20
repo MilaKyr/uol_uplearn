@@ -30,7 +30,7 @@ export default function UserPage({ params }: { params: Usable<{ id: string }> })
 
         try {
 
-        const res = await fetch(`http://127.0.0.1:8000/api/users/${userId}/`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/users/${userId}/`, {
             headers: {
               Authorization: `Bearer ${parsedToken.access}`,
               "Content-Type": "application/json"

@@ -70,7 +70,7 @@ export default function StudyDetail({ params }: { params: Usable<{ id: string }>
             // Validate the token by making an API call
             const getTags = async () => {
               try {
-                const res = await fetch(`http://127.0.0.1:8000/api/courses/${courseId}/`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${courseId}/`, {
                   headers: {
                     Authorization: `Bearer ${parsedToken.access}`,
                   },

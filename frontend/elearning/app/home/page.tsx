@@ -28,7 +28,7 @@ export default function UserDashboard() {
   const [isLoading, setLoading] = React.useState<boolean>(true);
   const [componentName, setComponentName] = React.useState(searchParams.get("selected") || "dashboard");
   
-  const [socketUrl, setSocketUrl] = React.useState('`ws://127.0.0.1:8000/ws');
+  const [socketUrl, setSocketUrl] = React.useState(`${process.env.NEXT_PUBLIC_WS_ADDRESS}/ws`);
 
   const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(socketUrl,
     {
@@ -46,13 +46,13 @@ export default function UserDashboard() {
     }
 
     let parsedToken = JSON.parse(token);
-    setSocketUrl(`ws://127.0.0.1:8000/ws/notify/${parsedToken.user.id}/?token=${parsedToken.access}`);
+    setSocketUrl(`${process.env.NEXT_PUBLIC_WS_ADDRESS}/ws/notify/${parsedToken.user.id}/?token=${parsedToken.access}`);
 
 
     // Validate the token by making an API call
     const validateToken = async () => {
       try {
-        const res = await fetch('http://127.0.0.1:8000/api/home/', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/home/`, {
           headers: {
             Authorization: `Bearer ${parsedToken.access}`,
           },
@@ -74,7 +74,7 @@ export default function UserDashboard() {
           }
         };
         let data: HomeData = await res.json();
-        const res2 = await fetch('http://127.0.0.1:8000/api/user/photo', {
+        const res2 = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/photo`, {
           headers: {
             Authorization: `Bearer ${parsedToken.access}`,
           },
@@ -123,7 +123,7 @@ export default function UserDashboard() {
 
       if (message.recipient_id === parsedToken.user.id) {
         try {
-          const res = await fetch(`http://127.0.0.1:8000/api/users/${message.sender_id}/avatar`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/users/${message.sender_id}/avatar`, {
             headers: {
               Authorization: `Bearer ${parsedToken.access}`,
               "Content-Type": "application/json"
@@ -194,7 +194,7 @@ export default function UserDashboard() {
 
       if (notification.recipient_id === parsedToken.user.id) {
         try {
-          const res = await fetch(`http://127.0.0.1:8000/api/courses/${notification.course_id}/photo`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${notification.course_id}/photo`, {
             headers: {
               Authorization: `Bearer ${parsedToken.access}`,
               "Content-Type": "application/json"

@@ -33,7 +33,7 @@ export default function TeacherOwner() {
             let parsedToken = JSON.parse(token);
             // Validate the token by making an API call
             try {
-                const res = await fetch('http://127.0.0.1:8000/api/home/', {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/home/`, {
                     headers: {
                         Authorization: `Bearer ${parsedToken.access}`,
                     },
@@ -43,7 +43,7 @@ export default function TeacherOwner() {
                 let data = await res.json();
 
 
-                const res2 = await fetch('http://127.0.0.1:8000/api/user/photo', {
+                const res2 = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/photo`, {
                     headers: {
                         Authorization: `Bearer ${parsedToken.access}`,
                     },

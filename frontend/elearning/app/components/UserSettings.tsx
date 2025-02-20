@@ -43,7 +43,7 @@ export default function UserSettings(props: UserSettingsData) {
                 const formData = new FormData();
                 formData.append('photo', file);
 
-                const res = await fetch('http://127.0.0.1:8000/api/user/photo', {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/photo`, {
                     headers: {
                         Authorization: `Bearer ${parsedToken.access}`,
                     },
@@ -68,7 +68,7 @@ export default function UserSettings(props: UserSettingsData) {
 
         let parsedToken = JSON.parse(token);
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/user/update/status', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/update/status`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${parsedToken.access}`,
@@ -93,7 +93,7 @@ export default function UserSettings(props: UserSettingsData) {
 
         let parsedToken = JSON.parse(token);
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/user/update/name', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/update/name`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${parsedToken.access}`,
@@ -120,7 +120,7 @@ export default function UserSettings(props: UserSettingsData) {
 
         let parsedToken = JSON.parse(token);
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/user/update/email', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/update/email`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${parsedToken.access}`,
@@ -146,7 +146,7 @@ export default function UserSettings(props: UserSettingsData) {
 
         let parsedToken = JSON.parse(token);
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/user/update/bio', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/update/bio`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${parsedToken.access}`,

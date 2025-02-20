@@ -39,7 +39,7 @@ export default function Course({ params }: { params: Usable<{ id: string }> }) {
         
                 try {
         
-                const res = await fetch(`http://127.0.0.1:8000/api/courses/${courseId}/`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${courseId}/`, {
                     headers: {
                       Authorization: `Bearer ${parsedToken.access}`,
                       "Content-Type": "application/json"
@@ -88,7 +88,7 @@ export default function Course({ params }: { params: Usable<{ id: string }> }) {
           let parsedToken = JSON.parse(token);
               // Validate the token by making an API call
            try {
-               const res = await fetch(`http://127.0.0.1:8000/api/courses/${course?.id}/enroll`, {
+               const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${course?.id}/enroll`, {
                  headers: {
                   Authorization: `Bearer ${parsedToken.access}`,
               },

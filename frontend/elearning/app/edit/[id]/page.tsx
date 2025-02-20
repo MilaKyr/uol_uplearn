@@ -135,7 +135,7 @@ export default function CourseEdit({ params }: { params: Usable<{ id: string }> 
             // Validate the token by making an API call
             const getCourse = async () => {
               try {
-                const res = await fetch(`http://127.0.0.1:8000/api/courses/${newCourseId}/edit`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${newCourseId}/edit`, {
                   headers: {
                     Authorization: `Bearer ${parsedToken.access}`,
                   },

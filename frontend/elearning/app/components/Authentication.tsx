@@ -55,8 +55,9 @@ export function Authentication() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     
+    console.log(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}`)
 
-    const url = type === "register" ? 'http://127.0.0.1:8000/api/register/' : 'http://127.0.0.1:8000/api/login/';
+    const url = type === "register" ? `${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/register/` : `${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/login/`;
     const tosend = type === "register" ? form.values : { email: form.values.email, password: form.values.password1 };
     try {
       const response = await fetch(url, {

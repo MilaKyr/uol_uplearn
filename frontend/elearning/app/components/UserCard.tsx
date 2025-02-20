@@ -26,7 +26,7 @@ export default function UserCard(props: {id: number}) {
 
         try {
 
-        const res = await fetch(`http://127.0.0.1:8000/api/users/${props.id}/`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/users/${props.id}/`, {
             headers: {
               Authorization: `Bearer ${parsedToken.access}`,
               "Content-Type": "application/json"

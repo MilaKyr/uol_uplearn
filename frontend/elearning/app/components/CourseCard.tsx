@@ -35,10 +35,10 @@ export default function CourseCard(props: {course: CourseListData, showUser: (id
               <UnstyledButton py={12} onClick={() => props.showUser(props.course.teacher.id)}>
                 <Group gap={7}>
                   <Avatar src={`data:image/jpeg;base64,${props.course.teacher.photo}`}
-                    alt={props.course.teacher.name}
+                    alt={`${props.course.teacher.first_name} ${props.course.teacher.last_name}`}
                     radius="xl" size={42} />
                   <Text size="sm">Created by <Text component={'span'} fw={700}>
-                    {props.course.teacher.name}</Text>
+                    {props.course.teacher.first_name} props.course.teacher.last_name</Text>
                   </Text>
                 </Group>
               </UnstyledButton>

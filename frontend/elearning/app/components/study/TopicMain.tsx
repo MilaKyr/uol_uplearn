@@ -38,7 +38,7 @@ export default function TopicMain(props: { id: number }) {
         // Validate the token by making an API call
         const getTopic = async () => {
             try {
-                const res = await fetch(`http://127.0.0.1:8000/api/topics/${props.id}/`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/topics/${props.id}/`, {
                     headers: {
                         Authorization: `Bearer ${parsedToken.access}`,
                     },

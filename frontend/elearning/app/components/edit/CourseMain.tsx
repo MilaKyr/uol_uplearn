@@ -30,7 +30,7 @@ export default function CourseMain(props: {course: CourseEditData} ) {
     let parsedToken = JSON.parse(token);
     // Validate the token by making an API call
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/courses/${props.course?.id}/active`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${props.course?.id}/active`, {
         headers: {
           Authorization: `Bearer ${parsedToken.access}`,
         },
@@ -54,7 +54,7 @@ export default function CourseMain(props: {course: CourseEditData} ) {
     let parsedToken = JSON.parse(token);
     // Validate the token by making an API call
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/courses/${props.course?.id}/`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${props.course?.id}/`, {
         headers: {
           Authorization: `Bearer ${parsedToken.access}`,
         },
