@@ -5,12 +5,20 @@ WORKDIR /usr/src/backend
 ENV PYTHONDONTWRITEBYTECODE 1 .pyc
 ENV PYTHONUNBUFFERED 1
 
+RUN apk update && apk add netcat-openbsd
+
 RUN pip install --upgrade pip
-COPY ../backend_old/requirements.txt .
+COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY ../backend_old .
+COPY entrypoint.sh .
+RUN sed -i 's/\r$//g' /usr/src/backend/entrypoint.sh
+RUN chmod +x /usr/src/backend/entrypoint.sh
+
+COPY . .
+
+ENTRYPOINT ["sh", "/usr/src/backend/entrypoint.sh"]
 
 
 

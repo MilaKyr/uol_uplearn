@@ -6,13 +6,13 @@ import os
 logging.basicConfig(level=logging.INFO)
 
 def prepare_env():
-    sys.path.append("../uol_awd_final")
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
+    sys.path.append('../backend')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
     django.setup()
 
 prepare_env()
 
-from backend.seeding.fill_db import fill_database
+from seeding.fill_db import fill_database
 
 if __name__ == "__main__":
     try:

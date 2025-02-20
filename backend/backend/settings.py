@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-y(=bp-m=w&r3&28w$&(g#_fg34++i14c!%49tu4e@pz&r(dbo4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['34.89.46.119']
+ALLOWED_HOSTS = ['127.0.0.1:8000', '127.0.0.1']
 
 
 AUTH_USER_MODEL = "elearning.User"
@@ -181,10 +181,10 @@ SIMPLE_JWT = {
 
 SITE_ID = 1
 
-if DEBUG:
-    WEBSITE_URL = "http://127.0.0.1:8000"
-else:
-    WEBSITE_URL = 'http://34.89.46.119:1337'
+# if DEBUG:
+WEBSITE_URL = "http://127.0.0.1:8000"
+# else:
+#     WEBSITE_URL = 'http://34.89.46.119:1337'
 
 REST_AUTH = {
     "USE_JWT": True,
@@ -197,16 +197,19 @@ if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_ORIGINS = [
+    "http://127.0.0.1:8000",
     'http://34.89.46.119',
     'http://34.89.46.119:1337'
 ]
 
 CORS_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",
     'http://34.89.46.119',
     'http://34.89.46.119:1337'
 ]
 
 CORS_ORIGINS_WHITELIST = [
+    "http://127.0.0.1:8000",
     'http://34.89.46.119',
     'http://34.89.46.119:1337'
 ]

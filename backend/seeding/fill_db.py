@@ -5,7 +5,7 @@ import json
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 
-from backend.elearning import *
+from elearning.models import *
 
 from django.contrib.auth import get_user_model
 from django.core.files.images import ImageFile
@@ -126,7 +126,6 @@ def fill_database() -> None:
         status=enrollment["status"]
     ) for enrollment in data["enrollments"])
     CourseEnrollment.objects.bulk_create(objs, BATCH_SIZE)
-    print(list(CourseEnrollment.objects.filter(user__email="roland@watkins.com").values('course__title', 'status')))
 
     logging.info("saving Course Progress...")
     objs = (CourseProgress(
