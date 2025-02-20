@@ -5,7 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 from elearning.serializers import BasicUserSerializer
 from .models import Message, Conversation
-from elearning.models import (User)
+from elearning.models import User
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -52,7 +52,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def chat_message(self, event):
-        print("chat_message")
         body = event["body"]
         recipient_id = event["recipient_id"]
         sender_id = event["sender_id"]

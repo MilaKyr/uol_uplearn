@@ -12,9 +12,13 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from datetime import timedelta
 from pathlib import Path
+from corsheaders.defaults import default_headers
 
 import environ
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 env = environ.Env()
 
@@ -25,16 +29,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-y(=bp-m=w&r3&28w$&(g#_fg34++i14c!%49tu4e@pz&r(dbo4'
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get("DEBUG", default=0))
 
-if DEBUG:
-    ALLOWED_HOSTS = ['127.0.0.1:8000', '127.0.0.1']
-else:
-    ALLOWED_HOSTS = ['35.230.156.144', '35.230.156.144:1337']
-
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1").split(",")
 
 AUTH_USER_MODEL = "elearning.User"
 
@@ -48,23 +48,31 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+CORS_ALLOW_HEADERS = (
+    *default_headers,
+    "access-control-allow-origin",
+)
+
 
 CORS_ALLOWED_ORIGINS = [
     'http://35.230.156.144',
-    'http://35.230.156.144:1337'
+    'http://35.230.156.144:1337',
     "http://127.0.0.1:8000",
+    "http://127.0.0.1:3000",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://35.230.156.144',
-    'http://35.230.156.144:1337'
+    'http://35.230.156.144:1337',
     "http://127.0.0.1:8000",
+    "http://127.0.0.1:3000",
 ]
 
 CORS_ORIGIN_WHITELIST = [
     'http://35.230.156.144',
-    'http://35.230.156.144:1337'
+    'http://35.230.156.144:1337',
     "http://127.0.0.1:8000",
+    "http://127.0.0.1:3000",
 ]
 
 
@@ -135,12 +143,26 @@ ASGI_APPLICATION = 'backend.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+             'ENGINE': 'django.db.backends.{}'.format(
+                 os.getenv('DATABASE_ENGINE', 'sqlite3')
+             ),
+             'NAME': os.getenv('DATABASE_NAME', 'uplearn'),
+             'USER': os.getenv('DATABASE_USERNAME', 'adminuser'),
+             'PASSWORD': os.getenv('DATABASE_PASSWORD', 'password'),
+             'HOST': os.getenv('DATABASE_HOST', '127.0.0.1'),
+             'PORT': os.getenv('DATABASE_PORT', 5432),
+         }
+    }
 
 
 # Password validation
@@ -178,6 +200,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+if DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+else:
+    STATIC_ROOT = "/var/www/uplearn/static"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -223,12 +249,21 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("redis", 6379)],
+if DEBUG:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [("127.0.0.1", 6379)],
+            },
         },
-    },
-}
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [("redis", 6379)],
+            },
+        },
+    }
