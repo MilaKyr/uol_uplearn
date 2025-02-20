@@ -24,7 +24,7 @@ services:
     depends_on:
       - redis
   redis:
-    image: redis:7.4.2-alpine3.21
+    image: "redis:alpine"
     restart: always
     ports:
       - '6379:6379'
