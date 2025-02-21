@@ -156,7 +156,7 @@ const UserNavbarSearch = (props: UserNavbarProps) => {
     );
 
     const logOut = async () => {
-      props.setLoading(true);
+
       const token = window.sessionStorage.getItem("jwt");
     
         if (!token) {

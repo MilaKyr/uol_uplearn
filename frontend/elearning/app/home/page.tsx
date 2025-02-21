@@ -19,7 +19,15 @@ import { notifications } from '@mantine/notifications';
 import { HomeData } from "../types";
 import useWebSocket from "react-use-websocket";
 
-export default function UserDashboard() {
+export default function UserDashboardSuspensed () {
+  return (
+    <Suspense>
+      <UserDashboard />
+    </Suspense>
+  )
+}
+
+function UserDashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [opened, { toggle }] = useDisclosure();
@@ -38,6 +46,7 @@ export default function UserDashboard() {
   );
 
   React.useEffect(() => {
+    console.log("Reloading on search params change")
     const token = window.sessionStorage.getItem("jwt");
 
     if (!token) {
@@ -96,13 +105,12 @@ export default function UserDashboard() {
 
     validateToken();
     setComponentName(searchParams.get("selected") || "dashboard");
-  }, [router, searchParams])
+  }, [searchParams])
 
 
 
 
   React.useEffect(() => {
-    console.log("In use Effect", lastJsonMessage)
 
     const getMessage = async (message: {
       id: number, 
@@ -282,7 +290,7 @@ export default function UserDashboard() {
           
       }, [lastJsonMessage])
 
-    
+  
   React.useEffect(() => {
     console.log("readyState", readyState);
   }, [readyState])
@@ -293,7 +301,6 @@ export default function UserDashboard() {
   if (isLoading) return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
 
   return (
-<Suspense>
     <AppShell
       header={{ height: 70 }}
       navbar={{
@@ -341,6 +348,5 @@ export default function UserDashboard() {
 
       </AppShell.Main>
     </AppShell>
-    </Suspense>
   );
 }

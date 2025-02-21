@@ -38,7 +38,7 @@ export default function WeeklyCalendar(props: { userId: number | undefined, onCl
     const getUrl = (date: Date | null) => {
         const onejan = new Date(date!.getFullYear(), 0, 1);
         const week = Math.ceil((((date!.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
-        return `${process.env.HTTP_ADDRESS}/api/students/${props.userId}/todo_for` + '?' + createQueryString(
+        return `${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/students/${props.userId}/todo_for` + '?' + createQueryString(
             'month', `${date?.getMonth()}`,) + '&' + createQueryString(
                 'week', `${week}`) + '&' + createQueryString(
                     'year', `${date?.getFullYear()}`)

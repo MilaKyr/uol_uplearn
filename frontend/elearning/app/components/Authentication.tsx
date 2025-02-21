@@ -72,6 +72,7 @@ export function Authentication(props: {setAuth: (auth: Auth) => void}) {
         });
 
         props.setAuth(token);
+        console.log("set auth")
         router.push('/home')
       } else {
         const msg = await response.json()

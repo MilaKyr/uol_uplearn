@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { CloseButton, Divider, Spoiler, LoadingOverlay } from '@mantine/core';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useDisclosure } from '@mantine/hooks';
 import Link from 'next/link';
 import { Flex, Paper, Text, Grid, Stack, UnstyledButton, Title, Rating, Image,
@@ -15,10 +15,10 @@ import { HeaderTabs } from '@/app/components/header/Header2';
 import { CourseDetail } from '@/app/types';
 
 
-export default async function Course({ params }: { params: Promise<{ id: string }> }) {
+export default function Course() {
         const router = useRouter();
-        const usedparams: { id: string } = await params;
-        const courseId = usedparams.id;
+        const params = useParams<{ id: string }>();
+        const courseId = params.id;
         const [opened, {toggle}] = useDisclosure(false);
         const [expanded, setExpanded] = React.useState(false);
         const [course, setCourse] = React.useState<CourseDetail>();

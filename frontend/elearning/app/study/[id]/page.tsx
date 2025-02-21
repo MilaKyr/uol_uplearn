@@ -5,7 +5,7 @@ import { AppShell,  LoadingOverlay,Center
  } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import { HeaderTabs } from "@/app/components/header/Header2";
-import {  IconExclamationCircle } from '@tabler/icons-react';
+import { IconExclamationCircle } from '@tabler/icons-react';
 import {Link } from '@mantine/tiptap';
 import { useEditor } from '@tiptap/react';
 import Highlight from '@tiptap/extension-highlight';
@@ -19,7 +19,7 @@ import TextStyle from "@tiptap/extension-text-style";
 import Image from '@tiptap/extension-image';
 import FileHandler from '@tiptap-pro/extension-file-handler'
 import Youtube from '@tiptap/extension-youtube';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { CourseNavBar } from "@/app/components/navbars/CourseNavbar";
 import TopicMain from "@/app/components/study/TopicMain";
 import LessonMain from "@/app/components/study/LessonMain";
@@ -27,10 +27,10 @@ import { notifications } from "@mantine/notifications";
 import { CourseEditData } from "@/app/types";
 
 
-export default async function StudyDetail({ params }: { params: Promise<{ id: string }> }) {
+export default function StudyDetail() {
     const [opened, { toggle }] = useDisclosure();
-    const usedparams: { id: string } = await params;
-    const courseId = usedparams.id;
+    const params = useParams<{ id: string }>();
+    const courseId = params.id;
     const router = useRouter()
     const searchParams = useSearchParams();
     const [course, setCourse] = React.useState<CourseEditData>();

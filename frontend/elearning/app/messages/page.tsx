@@ -11,7 +11,15 @@ import { MessagesNavBar } from "@/app/components/navbars/MessagesNavbar";
 import { ConversationData } from "@/app/types";
 import ConversationWindow from "../components/chat/ConversationWindow";
 
-export default function Messages() {
+export default function MessagesSuspensed() {
+  return (
+    <Suspense>
+      <Messages />
+    </Suspense>
+  )
+}
+
+function Messages() {
     const [opened, { toggle }] = useDisclosure();
     const router = useRouter()
     const searchParams = useSearchParams();

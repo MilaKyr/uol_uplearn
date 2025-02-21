@@ -18,7 +18,7 @@ import TextStyle from "@tiptap/extension-text-style";
 import Image from '@tiptap/extension-image';
 import FileHandler from '@tiptap-pro/extension-file-handler'
 import Youtube from '@tiptap/extension-youtube';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import CourseMain from "@/app/components/edit/CourseMain";
 import TopicMain from "@/app/components/edit/TopicMain";
 import LessonMain from "@/app/components/edit/LessonMain";
@@ -29,10 +29,10 @@ import { CourseEditData, TopicProps, LessonEditData } from "@/app/types";
 
 const contentPlaceholder: string = '<em>Just start adding your content here. To add an image drag and drop it where you want it to be... That`s all, now you can delete this text and start creating.</em>';
 
-export default async function CourseEdit({ params }: { params: Promise<{ id: string }> }) {
+export default function CourseEdit() {
   const router = useRouter();
-    const usedparams: { id: string } = await params;
-    const newCourseId = usedparams.id;
+    const params = useParams<{ id: string }>();
+    const newCourseId = params.id;
     const [course, setCourse] = React.useState<CourseEditData>();
     const [topic, setTopic] = React.useState<TopicProps>();
     const [lesson, setLesson] = React.useState<LessonEditData>();
