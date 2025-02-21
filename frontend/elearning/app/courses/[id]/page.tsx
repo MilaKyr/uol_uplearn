@@ -1,6 +1,6 @@
 'use client';
 
-import React, {use, Usable} from 'react';
+import React from 'react';
 import { CloseButton, Divider, Spoiler, LoadingOverlay } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import { useDisclosure } from '@mantine/hooks';
@@ -15,9 +15,9 @@ import { HeaderTabs } from '@/app/components/header/Header2';
 import { CourseDetail } from '@/app/types';
 
 
-export default function Course({ params }: { params: Usable<{ id: string }> }) {
+export default async function Course({ params }: { params: Promise<{ id: string }> }) {
         const router = useRouter();
-        const usedparams: { id: string } = use(params);
+        const usedparams: { id: string } = await params;
         const courseId = usedparams.id;
         const [opened, {toggle}] = useDisclosure(false);
         const [expanded, setExpanded] = React.useState(false);

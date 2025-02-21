@@ -1,6 +1,6 @@
 'use client';
 
-import React, {Usable, use } from "react";
+import React from "react";
 import { AppShell, Stack, Center, LoadingOverlay,
  } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
@@ -29,9 +29,9 @@ import { CourseEditData, TopicProps, LessonEditData } from "@/app/types";
 
 const contentPlaceholder: string = '<em>Just start adding your content here. To add an image drag and drop it where you want it to be... That`s all, now you can delete this text and start creating.</em>';
 
-export default function CourseEdit({ params }: { params: Usable<{ id: string }> }) {
+export default async function CourseEdit({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-    const usedparams: { id: string } = use(params);
+    const usedparams: { id: string } = await params;
     const newCourseId = usedparams.id;
     const [course, setCourse] = React.useState<CourseEditData>();
     const [topic, setTopic] = React.useState<TopicProps>();
@@ -78,7 +78,7 @@ export default function CourseEdit({ params }: { params: Usable<{ id: string }> 
                   if (htmlContent) {
                     // if there is htmlContent, stop manual insertion & let other extensions handle insertion via inputRule
                     // you could extract the pasted file from this url string and upload it to a server for example
-                    console.log(htmlContent) // eslint-disable-line no-console
+                    console.log(htmlContent)
                     return false
                   }
       

@@ -1,6 +1,6 @@
 'use client';
 
-import React, {Usable, use} from "react";
+import React from "react";
 import { AppShell,  LoadingOverlay,Center
  } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
@@ -27,9 +27,9 @@ import { notifications } from "@mantine/notifications";
 import { CourseEditData } from "@/app/types";
 
 
-export default function StudyDetail({ params }: { params: Usable<{ id: string }> }) {
+export default async function StudyDetail({ params }: { params: Promise<{ id: string }> }) {
     const [opened, { toggle }] = useDisclosure();
-    const usedparams: { id: string } = use(params);
+    const usedparams: { id: string } = await params;
     const courseId = usedparams.id;
     const router = useRouter()
     const searchParams = useSearchParams();
@@ -149,7 +149,7 @@ export default function StudyDetail({ params }: { params: Usable<{ id: string }>
                   if (htmlContent) {
                     // if there is htmlContent, stop manual insertion & let other extensions handle insertion via inputRule
                     // you could extract the pasted file from this url string and upload it to a server for example
-                    console.log(htmlContent) // eslint-disable-line no-console
+                    console.log(htmlContent)
                     return false
                   }
       
