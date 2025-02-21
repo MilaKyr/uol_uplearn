@@ -38,7 +38,7 @@ services:
     expose:
       - 8000
     depends_on:
-      - daphne
+      - backend-asgi
       - redis
       - postgres
     environment:
