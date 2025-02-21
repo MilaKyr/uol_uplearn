@@ -23,7 +23,7 @@ services:
   www-frontend:
     build:
       context: ./frontend
-      dockerfile: ../Dockerfile
+      dockerfile: Dockerfile
     volumes:
       - ./frontend/ :/user/src/frontend/
     depends_on:
@@ -58,7 +58,7 @@ services:
   backend-asgi:
     build:
       context: ./backend
-      dockerfile: ../daphne.Dockerfile
+      dockerfile: daphne.Dockerfile
     command: daphne --bind 0.0.0.0 -p 8005 backend.asgi:application
     volumes:
       - ./backend/ :/user/src/backend/
