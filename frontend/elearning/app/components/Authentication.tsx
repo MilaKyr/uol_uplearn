@@ -19,9 +19,9 @@ import {
 import { upperFirst, useToggle } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
+import { Auth } from '../types';
 
-
-export function Authentication() {
+export function Authentication(props: {setAuth: (auth: Auth) => void}) {
   
   const router = useRouter()
   const [type, toggle] = useToggle(['login', 'register']);
@@ -48,7 +48,6 @@ export function Authentication() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     
-    console.log(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}`)
 
     const url = type === "register" ? `${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/register/` : `${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/login/`;
     const tosend = type === "register" ? form.values : { email: form.values.email, password: form.values.password1 };
@@ -72,7 +71,7 @@ export function Authentication() {
           loading: true,
         });
 
-
+        props.setAuth(token);
         router.push('/home')
       } else {
         const msg = await response.json()

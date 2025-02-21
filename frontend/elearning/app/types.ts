@@ -17,6 +17,19 @@ export interface SearchedUserData extends BasicUserData {
   role: string;
 }
 
+export interface Auth {
+  token: {
+    access: string;
+  },
+  user: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    role: string;
+    is_online: boolean;
+  }
+}
+
 export interface CourseDetail extends CourseListData {
   is_owner: boolean;
   enrolled?: boolean;
