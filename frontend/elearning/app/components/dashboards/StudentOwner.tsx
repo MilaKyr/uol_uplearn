@@ -25,7 +25,7 @@ export default function StudentOwner() {
                 return
             }
 
-            let parsedToken = JSON.parse(token);
+            const parsedToken = JSON.parse(token);
             // Validate the token by making an API call
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/home/`, {
@@ -36,8 +36,7 @@ export default function StudentOwner() {
                 })
 
                 if (!res.ok) throw new Error('Token validation failed');
-                let data: StudentHomeData = await res.json();
-                console.log(data)
+                const data: StudentHomeData = await res.json();
 
                 const res2 = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/photo`, {
                     headers: {
@@ -46,7 +45,7 @@ export default function StudentOwner() {
                     },
                 })
                 if (res2.status === 200) {
-                    let photo = await res2.blob();
+                    const photo = await res2.blob();
                     data.photo = URL.createObjectURL(photo);
                 }
 
@@ -75,12 +74,12 @@ export default function StudentOwner() {
         <SimpleGrid cols={{ base: 1, sm: 1, md: 2, lg: 2 }} spacing="md">
 
             <Stack>
-                <StudentProfile
+                {data && <StudentProfile
                     id={data?.id}
                     photo={data?.photo}
                     first_name={data?.first_name}
                     last_name={data?.last_name}
-                    status={data?.status!} />
+                    status={data?.status} />}
 
                 <Divider />
 

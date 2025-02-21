@@ -1,3 +1,4 @@
+import React from "react";
 import { Group, Rating as MantineRating, Text } from "@mantine/core";
 import { CourseListData } from "@/app/types";
 

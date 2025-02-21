@@ -1,32 +1,23 @@
 'use client';
 
 import React, {Usable, use} from "react";
-import { useParams } from "react-router";
-import NextImage from "next/image";
-import styles from "./page.module.css";
-import { AppShell, Burger, Flex, Group, Container, Title, UnstyledButton,
-  useMantineTheme, Paper, Stack, Text, AspectRatio, LoadingOverlay,
-  Button, Divider, SimpleGrid, Center
+import { AppShell,  LoadingOverlay,Center
  } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import { HeaderTabs } from "@/app/components/header/Header2";
-import { IconFileFilled, IconDownload, IconPhoto, IconFile, IconUpload, IconX, IconBrandYoutube, IconDrone, IconCircleCheckFilled, IconCircle, IconExclamationCircle } from '@tabler/icons-react';
-import { RichTextEditor, Link, useRichTextEditorContext } from '@mantine/tiptap';
-import { CommandManager, useEditor, Editor } from '@tiptap/react';
+import {  IconExclamationCircle } from '@tabler/icons-react';
+import {Link } from '@mantine/tiptap';
+import { useEditor, Editor } from '@tiptap/react';
 import Highlight from '@tiptap/extension-highlight';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
-import { IconColorPicker } from '@tabler/icons-react';
 import { Color } from '@tiptap/extension-color';
 import TextStyle from "@tiptap/extension-text-style";
 import Image from '@tiptap/extension-image';
-import Dropcursor from '@tiptap/extension-dropcursor';
-import Document from '@tiptap/extension-document';
 import FileHandler from '@tiptap-pro/extension-file-handler'
-import { Dropzone, PDF_MIME_TYPE, FileWithPath } from '@mantine/dropzone';
 import Youtube from '@tiptap/extension-youtube';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CourseNavBar } from "@/app/components/navbars/CourseNavbar";
@@ -42,7 +33,6 @@ interface EditorData {
 
 
 export default function StudyDetail({ params }: { params: Usable<{ id: string }> }) {
-    const theme = useMantineTheme();
     const [opened, { toggle }] = useDisclosure();
     const usedparams: { id: string } = use(params);
     const courseId = usedparams.id;
@@ -66,7 +56,7 @@ export default function StudyDetail({ params }: { params: Usable<{ id: string }>
               return
             }
         
-            let parsedToken = JSON.parse(token);
+            const parsedToken = JSON.parse(token);
             // Validate the token by making an API call
             const getTags = async () => {
               try {
@@ -91,13 +81,13 @@ export default function StudyDetail({ params }: { params: Usable<{ id: string }>
                     throw new Error('')};
                   }
                   
-                let data = await res.json();
+                const data = await res.json();
                 setCourse(data);
                 setLoading(false);
                 if (searchParams.size > 0) {
-                  let params = searchParams.get("selected")
+                  const params = searchParams.get("selected")
                   if (params) {
-                    let [component, id] = params?.split("_")
+                    const [component, id] = params?.split("_")
                     if (component === "topic") {
                       setCurrent("topic");
                       setTopic(parseInt(id));
@@ -110,9 +100,11 @@ export default function StudyDetail({ params }: { params: Usable<{ id: string }>
                   }
                 } else {
                   setCurrent("topic")
-                  let topic = data.topics[0];
-                  setTopic(topic.id);
-                  setSelected('topic_'+topic.id)
+                  const topic = data.topics[0];
+                  if (topic){
+                    setTopic(topic.id);
+                    setSelected('topic_'+topic.id)
+                  }
                 }
                 
               } catch (error) {
@@ -170,7 +162,7 @@ export default function StudyDetail({ params }: { params: Usable<{ id: string }>
       
                   fileReader.readAsDataURL(file)
                   fileReader.onload = () => {
-                    currentEditor.chain().insertContentAt(currentEditor.state.selection.anchor, {
+                    currentEditor?.chain().insertContentAt(currentEditor.state.selection.anchor, {
                       type: 'image',
                       attrs: {
                         src: fileReader.result,

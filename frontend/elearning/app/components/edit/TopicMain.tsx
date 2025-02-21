@@ -13,7 +13,7 @@ export default function TopicMain(props: { topic: TopicProps }) {
             <Title order={4}>Lessons:</Title>
             <Timeline bulletSize={24} my={24}>
                 {props.topic?.lessons.map((lesson) => {
-                    let deadline = new Date(lesson.deadline).toLocaleString();
+                    const deadline = new Date(lesson.deadline).toLocaleString();
                     return (
                         <Timeline.Item
                             key={lesson.id}

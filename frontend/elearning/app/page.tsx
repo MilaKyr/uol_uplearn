@@ -1,5 +1,6 @@
 'use client';
 
+import React from "react";
 import { useDisclosure } from "@mantine/hooks";
 import styles from "./page.module.css";
 import { Authentication } from "./components/Authentication";

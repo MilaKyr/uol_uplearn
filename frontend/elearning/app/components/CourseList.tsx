@@ -24,7 +24,7 @@ export default function Courses() {
       return
     }
 
-    let parsedToken = JSON.parse(token);
+    const parsedToken = JSON.parse(token);
     // Validate the token by making an API call
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/`, {
@@ -48,7 +48,7 @@ export default function Courses() {
           throw new Error('Something went wrong')
         }
       };
-      let courses: CourseListData[] = await res.json();
+      const courses: CourseListData[] = await res.json();
       setCourses(courses);
       setLoading(false);
     } catch (error) {
@@ -81,7 +81,7 @@ export default function Courses() {
       return
     }
 
-    let parsedToken = JSON.parse(token);
+    const parsedToken = JSON.parse(token);
     // Validate the token by making an API call
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${id}/enroll`, {
@@ -119,7 +119,7 @@ export default function Courses() {
     } catch (error) {
       console.error(error)
     }
-
+    // @ts-ignore:prefer-const
     let newCourses = [...courses];
     newCourses.splice(index, 1);
     setCourses(newCourses)

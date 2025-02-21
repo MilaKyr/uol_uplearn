@@ -1,18 +1,10 @@
 'use client';
 
-import React, { useImperativeHandle, useCallback} from 'react';
+import React, { useCallback} from 'react';
 import { ReadonlyURLSearchParams } from 'next/navigation';
-import { IconSettings, IconPencilStar, IconSchool, IconSearch, IconMessage, IconBell, IconUsersGroup, IconExclamationCircle, IconBuildingBank, IconBriefcase, IconPlugX, IconPlus, IconLogout, IconPhoto } from '@tabler/icons-react';
+import { IconSettings, IconPencilStar, IconSchool, IconMessage, IconBell, IconUsersGroup, IconExclamationCircle, IconPlus, IconLogout } from '@tabler/icons-react';
 import {
-  ActionIcon,
   Badge,
-  Box,
-  Button,
-  Code,
-  Group,
-  Text,
-  TextInput,
-  Tooltip,
   UnstyledButton,
 } from '@mantine/core';
 import { UserButton } from '../buttons/UserButton';
@@ -57,17 +49,17 @@ const selectBtn = (searchParams: ReadonlyURLSearchParams, props: UserNavbarProps
   if (searchParams.size === 0) {
     return 0
   }
-  let selected = searchParams.get("selected");
+  const selected = searchParams.get("selected");
   if (props.role === "student"){
-    for (var i=0; i<studentlinks.length; i++) {
-      let link = studentlinks[i];
+    for (let i=0; i<studentlinks.length; i++) {
+      const link = studentlinks[i];
       if (link.value === selected) {
         return link.id
       }
     }
   }
-  for (var i=0; i<teacherlinks.length; i++) {
-    let link = teacherlinks[i];
+  for (let i=0; i<teacherlinks.length; i++) {
+    const link = teacherlinks[i];
     if (link.value === selected) {
       return link.id
     }
@@ -91,10 +83,10 @@ const UserNavbarSearch = (props: UserNavbarProps) => {
                    return
                  }
              
-                 let parsedToken = JSON.parse(token);
+                 const parsedToken = JSON.parse(token);
     
                  setUser(parsedToken.user);
-                 let apprLinks: Link[] = parsedToken.user.role === "student" ? studentlinks : teacherlinks;
+                 const apprLinks: Link[] = parsedToken.user.role === "student" ? studentlinks : teacherlinks;
 
                  const getInboxInfo = async (apprLinks: Link[]) => {
                   try {
@@ -120,7 +112,7 @@ const UserNavbarSearch = (props: UserNavbarProps) => {
                         throw new Error('Something went wrong')
                       }
                     };
-                    let data = await res.json();
+                    const data = await res.json();
                     console.log("data", data)
                     apprLinks[0]["unseen"] = data["new_notifications"]
                     apprLinks[1]["unseen"] = data["new_messages"]
@@ -137,7 +129,7 @@ const UserNavbarSearch = (props: UserNavbarProps) => {
                 
                  setSelected(selectBtn(searchParams, props))                
                  getInboxInfo(apprLinks)
-         }, [router, searchParams])
+         }, [router, searchParams, selected])
 
 
 
@@ -171,7 +163,7 @@ const UserNavbarSearch = (props: UserNavbarProps) => {
           return
         }
     
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         // Validate the token by making an API call
           try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/logout/`, {

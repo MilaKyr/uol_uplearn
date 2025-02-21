@@ -1,12 +1,11 @@
 'use client';
 
 import React from "react";
-import { ScrollArea, TextInput, Tabs, Table, Group, 
-  Avatar, Text, Accordion, Button, Stack, Center,
-  UnstyledButton,
+import { ScrollArea, Table, Group, 
+  Avatar, Text,  Stack, Center,
   Pill,
   ActionIcon} from "@mantine/core";
-import { IconExclamationCircle, IconUser, IconSearch, IconTrash, IconBarrierBlock, IconBarrierBlockOff, IconDeviceMobileMessage, IconMessageCircle } from "@tabler/icons-react";
+import { IconExclamationCircle, IconMessageCircle } from "@tabler/icons-react";
 import { useRouter } from 'next/navigation'
 import UserSearch from "./UserSearch";
 import { notifications } from '@mantine/notifications';
@@ -26,7 +25,7 @@ export default function UsersTable () {
             return
           }
       
-          let parsedToken = JSON.parse(token);
+          const parsedToken = JSON.parse(token);
         
           // Validate the token by making an API call
           try {
@@ -51,7 +50,7 @@ export default function UsersTable () {
                   throw new Error('Something went wrong')
                 }
               };
-              let users = await res.json();
+              const users = await res.json();
               setUsers(users);
             } catch (error) {
               console.error(error)
@@ -70,7 +69,7 @@ export default function UsersTable () {
           return
         }
     
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
       
         // Validate the token by making an API call
         try {
@@ -98,7 +97,7 @@ export default function UsersTable () {
                 throw new Error('Something went wrong')
               }
             };
-            let result = await res.json();
+            const result = await res.json();
             return result;
           } catch (error) {
             console.error(error)
@@ -107,7 +106,7 @@ export default function UsersTable () {
 
     const startConversation = async (recipientId: number | undefined) => {
       if (recipientId) {
-        let conversationId = await createConversation(recipientId);
+        const conversationId = await createConversation(recipientId);
         router.push(`/messages?selected=${conversationId.id}`)
       }
     

@@ -10,7 +10,7 @@ import {
   IconPhoto, IconFile, IconUpload, IconX,
   IconBrandYoutube, IconTrashX,
 } from '@tabler/icons-react';
-import { RichTextEditor, Link, useRichTextEditorContext } from '@mantine/tiptap';
+import { RichTextEditor, useRichTextEditorContext } from '@mantine/tiptap';
 import { IconColorPicker } from '@tabler/icons-react';
 import { Dropzone, PDF_MIME_TYPE, FileWithPath } from '@mantine/dropzone';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
@@ -57,7 +57,7 @@ export default function LessonMain(props: { lesson: LessonEditData, editor: TipT
   const router = useRouter();
   const [files, setFiles] = React.useState<FileWithPath[]>([]);
 
-  const onDownload = (file: any) => {
+  const onDownload = (file: File) => {
     const link = document.createElement("a");
     const fileUrl = URL.createObjectURL(file);
     link.download = file.name;
@@ -68,7 +68,6 @@ export default function LessonMain(props: { lesson: LessonEditData, editor: TipT
 
 
   React.useEffect(() => {
-    console.log("in lesson use effect")
 
     const getFiles = async () => {
       const token = window.sessionStorage.getItem("jwt");
@@ -77,7 +76,7 @@ export default function LessonMain(props: { lesson: LessonEditData, editor: TipT
         router.replace('/') // If no token is found, redirect to login page
         return
       }
-      let parsedToken = JSON.parse(token);
+      const parsedToken = JSON.parse(token);
       try {
         let res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${props.lesson?.id}/files`, {
           headers: {
@@ -88,8 +87,8 @@ export default function LessonMain(props: { lesson: LessonEditData, editor: TipT
         const unzip = async () => {
           const zip = new JSZip();
           const zipContent = await zip.loadAsync(await res.blob());
-          let toSave = [];
-          for (let zobj of Object.values(zipContent.files)) {
+          const toSave = [];
+          for (const zobj of Object.values(zipContent.files)) {
             if (zobj.dir) continue;
             const zblob = await zobj.async("blob");
             const zfile = new File([zblob], zobj.name, {
@@ -118,13 +117,13 @@ export default function LessonMain(props: { lesson: LessonEditData, editor: TipT
         return
       }
 
-      let parsedToken = JSON.parse(token);
+      const parsedToken = JSON.parse(token);
       // Validate the token by making an API call
       try {
         files.forEach(async (file) => {
           const formData = new FormData();
           formData.append('file', file);
-          let res = await fetch(`${process.env.HTTP_ADDRESS}/api/lessons/${props.lesson?.id}/file`, {
+          const res = await fetch(`${process.env.HTTP_ADDRESS}/api/lessons/${props.lesson?.id}/file`, {
             headers: {
               Authorization: `Bearer ${parsedToken.access}`,
             },
@@ -148,10 +147,10 @@ export default function LessonMain(props: { lesson: LessonEditData, editor: TipT
       return
     }
 
-    let parsedToken = JSON.parse(token);
+    const parsedToken = JSON.parse(token);
     // Validate the token by making an API call
     try {
-      let res = await fetch(`${process.env.HTTP_ADDRESS}/api/lessons/${props.lesson?.id}/content`, {
+      const res = await fetch(`${process.env.HTTP_ADDRESS}/api/lessons/${props.lesson?.id}/content`, {
         headers: {
           Authorization: `Bearer ${parsedToken.access}`,
           "Content-Type": "application/json",
@@ -169,7 +168,7 @@ export default function LessonMain(props: { lesson: LessonEditData, editor: TipT
 
 
   const removeFile = (index: number) => {
-    let updatedFiles = [...files];
+    const updatedFiles = [...files];
     updatedFiles.splice(index, 1);
     setFiles(updatedFiles);
   }

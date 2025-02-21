@@ -1,21 +1,21 @@
 import React from "react";
 import Link from "next/link";
-import { Table, UnstyledButton, Group, Avatar, Text, Flex, Progress, Button, Loader } from "@mantine/core";
+import { Table, UnstyledButton, Group, Avatar, Text, Flex, Progress, Button } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { CourseStudentHomeData } from "@/app/types";
 
 export default function CourseStudentTableRow(props: {course: CourseStudentHomeData, setLoading: (value: boolean) => void} ) {
 
-    let statusColor = props.course.status === "started" ? 'blue.2' :
+    const statusColor = props.course.status === "started" ? 'blue.2' :
         props.course.status === "blocked" ? 'orange.2' :
             props.course.status === "removed" ? 'gray.2' : 'green.2';
 
-    let statusTextColor = props.course.status === "started" ? 'blue.9' :
+    const statusTextColor = props.course.status === "started" ? 'blue.9' :
         props.course.status === "blocked" ? 'orange.9' :
             props.course.status === "removed" ? 'gray.9' : 'green.9';
 
-    let courseLink = props.course.status !== "started" ? `courses/${props.course.id}` : `study/${props.course.id}`;
+    const courseLink = props.course.status !== "started" ? `courses/${props.course.id}` : `study/${props.course.id}`;
 
     return (
         <>

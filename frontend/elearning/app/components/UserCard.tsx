@@ -9,7 +9,6 @@ import { UserProfile } from "../types";
 
 export default function UserCard(props: {id: number}) {
     const router = useRouter();
-    const theme = useMantineTheme();
 
     const [user, setUser] = React.useState<UserProfile>();
 
@@ -22,7 +21,7 @@ export default function UserCard(props: {id: number}) {
           return
         }
     
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
 
         try {
 
@@ -33,7 +32,7 @@ export default function UserCard(props: {id: number}) {
             },
           });
           if (!res.ok) throw new Error('Spmething went wrong');
-          let user: UserProfile = await res.json();
+          const user: UserProfile = await res.json();
           setUser(user);
         } catch (error) {
           console.error(error)

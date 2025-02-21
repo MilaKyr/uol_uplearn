@@ -1,5 +1,5 @@
+import React from "react";
 import { Button } from "@mantine/core";
-import { MouseEventHandler } from "react";
 import classes from './StudyLesson.module.css';
 import { selectIcon } from "../utils";
 
@@ -15,7 +15,7 @@ interface Lesson {
 
 
 export default function StudyLessonButton(props: Lesson) {
-    let icon = selectIcon(props.done, props.deadline, classes.mainLinkIcon)
+    const icon = selectIcon(props.done, props.deadline, classes.mainLinkIcon)
 
     return (
 

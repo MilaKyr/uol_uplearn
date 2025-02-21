@@ -1,24 +1,19 @@
 'use client';
 
 import React from "react";
-import NextImage from "next/image";
-import styles from "./page.module.css";
-import { AppShell, Burger, Image, Flex, Group, Container, Title, UnstyledButton,
-  useMantineTheme, Paper, Stack, Text, AspectRatio,
-  Button, Divider, TextInput, Stepper, PasswordInput,  Code, Textarea,
-  FileButton, ActionIcon, NativeSelect,
-  Center, NumberInput, TagsInput, Grid,  LoadingOverlay,
-  SimpleGrid,
- } from "@mantine/core";
-import { IconFileFilled, IconDownload, IconGripVertical, IconTrash, IconPhoto, IconCheck } from '@tabler/icons-react';
+import { Image, Group, Title, 
+  useMantineTheme, Stack, Text,
+  Button, Divider, TextInput, Stepper,  Code, Textarea, ActionIcon,
+  Center, NumberInput, TagsInput, Grid,  LoadingOverlay } from "@mantine/core";
+import { IconGripVertical, IconTrash, IconPhoto, IconCheck } from '@tabler/icons-react';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { DateInput, DateTimePicker } from '@mantine/dates';
+import { DateTimePicker } from '@mantine/dates';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { randomId } from '@mantine/hooks';
-import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { IconUpload, IconX } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
-import { notifications, showNotification } from '@mantine/notifications';
+import { notifications } from '@mantine/notifications';
 import { delay } from "./utils";
 
 interface Tag {
@@ -51,7 +46,7 @@ export default function CreateCourse() {
           return
         }
     
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         // Validate the token by making an API call
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/new`, {
@@ -61,9 +56,7 @@ export default function CreateCourse() {
             })
     
             if (!res.ok) throw new Error('');
-            let id: number = await res.json();
-            console.log(id);
-            
+            const id: number = await res.json();           
             setNewCourseId(id);
           } catch (error) {
             console.error(error)
@@ -91,6 +84,7 @@ export default function CreateCourse() {
         await delay(2000);
         router.push(`/edit/${newCourseId}`);
       } catch(err) {
+        console.log(err);
         notifications.show({
           title: 'Failed to create new course',
           message: 'Try again',
@@ -115,11 +109,11 @@ export default function CreateCourse() {
         }
     
 
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         // Validate the token by making an API call
 
             form.setFieldValue('pk', newCourseId)
-            let toSend = form.values;
+            const toSend = form.values;
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/`, {
               headers: {
                 "Content-Type": "application/json",
@@ -158,7 +152,7 @@ export default function CreateCourse() {
           return
         }
     
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         // Validate the token by making an API call
         const getTags = async () => {
           try {
@@ -169,8 +163,8 @@ export default function CreateCourse() {
             })
     
             if (!res.ok) throw new Error('');
-            let data: Tag[] = await res.json();
-            var toSave: string[] = [];
+            const data: Tag[] = await res.json();
+            let toSave: string[] = [];
             data.map((tag: Tag) => {
               toSave.push(tag.name);
             })
@@ -262,7 +256,9 @@ export default function CreateCourse() {
     
     const nextStep = async () =>
         setActive((current) => {
-          active === 0 ? setCourseId() : null; 
+          if (active === 0) {
+            setCourseId();
+          } 
           if ((active === 0) && (courseImg === undefined)) {
             setImgBackground('#ffa8a8');
             console.log("im here")
@@ -430,7 +426,7 @@ export default function CreateCourse() {
             return (
 
             <Droppable key={topic.key} droppableId={`dnd-${topic.key}`}>
-            {(provided, snapshot) => (
+            {(provided) => (
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
@@ -444,7 +440,7 @@ export default function CreateCourse() {
                     draggableId={item.key}
                     index={index}
                   >
-                    {(provided, snapshot) => (
+                    {(provided) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}

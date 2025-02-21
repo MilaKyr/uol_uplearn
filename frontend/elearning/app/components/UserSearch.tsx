@@ -1,7 +1,7 @@
 import React from "react";
 import { Group, TextInput, ActionIcon, Select, MultiSelect } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
-import { useForm, hasLength, isEmail, matchesField, isNotEmpty } from '@mantine/form';
+import { useForm  } from '@mantine/form';
 import { useRouter } from 'next/navigation';
 import { CourseTitle, SearchedUserData } from "../types";
 
@@ -36,7 +36,7 @@ export default function UserSearch(props: SetResults) {
                 return
               }
           
-              let parsedToken = JSON.parse(token);
+              const parsedToken = JSON.parse(token);
               // Validate the token by making an API call
               try {
                   const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/home/course_titles`, {
@@ -46,7 +46,7 @@ export default function UserSearch(props: SetResults) {
                   })
           
                   if (!res.ok) throw new Error('');
-                  let titles = await res.json();
+                  const titles = await res.json();
                   setCourseTitles(titles);
                 } catch (error) {
                   console.error(error)
@@ -65,14 +65,14 @@ export default function UserSearch(props: SetResults) {
                 return
               }
           
-              let parsedToken = JSON.parse(token);
+              const parsedToken = JSON.parse(token);
               courseTitles.map((title) => {
                 if (title.title === searchForm.values.course_id) {
                   searchForm.setValues({course_id: `${title.id}`})
                 }
               })
 
-              let values = searchForm.getTransformedValues();
+              const values = searchForm.getTransformedValues();
               // Validate the token by making an API call
               try {
                   const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/users/search?` + new URLSearchParams(values).toString(), {
@@ -84,7 +84,7 @@ export default function UserSearch(props: SetResults) {
                   })
           
                   if (!res.ok) throw new Error('');
-                  let newUsers = await res.json();
+                  const newUsers = await res.json();
                   props.onClick(newUsers);
                 } catch (error) {
                   console.error(error)

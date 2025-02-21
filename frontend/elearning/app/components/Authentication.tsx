@@ -5,22 +5,15 @@ import React from 'react';
 import {
   Anchor,
   Button,
-  Checkbox,
   Paper,
   PasswordInput,
-  Text,
   TextInput,
   Title,
   SimpleGrid,
   Image,
   Group,
   Stack,
-  BackgroundImage,
-  Container,
-  Box,
-  Overlay,
   AspectRatio,
-  Center,
   Select,
 } from '@mantine/core';
 import { upperFirst, useToggle } from '@mantine/hooks';
@@ -82,10 +75,11 @@ export function Authentication() {
 
         router.push('/home')
       } else {
-        let msg = await response.json()
+        const msg = await response.json()
         throw new Error(JSON.stringify({ code: response.status, message: msg }))
       }
     } catch (error) {
+      console.log(error);
       notifications.show({
         autoClose: false,
         color: 'red',

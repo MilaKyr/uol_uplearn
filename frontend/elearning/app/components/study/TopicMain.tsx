@@ -34,7 +34,7 @@ export default function TopicMain(props: { id: number }) {
             return
         }
 
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         // Validate the token by making an API call
         const getTopic = async () => {
             try {
@@ -59,7 +59,7 @@ export default function TopicMain(props: { id: number }) {
                           throw new Error('Something went wrong')
                         }
                       };
-                let data = await res.json();
+                      const data = await res.json();
                 setTopic(data);
                 setLoading(false);
             } catch (error) {
@@ -80,8 +80,8 @@ export default function TopicMain(props: { id: number }) {
             <Title order={4}>Lessons:</Title>
             <Timeline bulletSize={24} my={24}>
                 {topic?.lessons.map((lesson) => {
-                    let icon = selectIcon(lesson.done, new Date(lesson.deadline), undefined )
-                    let deadline = new Date(lesson.deadline).toLocaleString();
+                    const icon = selectIcon(lesson.done, new Date(lesson.deadline), undefined )
+                    const deadline = new Date(lesson.deadline).toLocaleString();
                     return (
                         <Timeline.Item
                             key={lesson.id}

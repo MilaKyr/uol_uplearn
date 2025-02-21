@@ -1,3 +1,4 @@
+import React from "react";
 import { Table } from "@mantine/core";
 import { CourseStudentHomeData } from "@/app/types";
 import CourseStudentTableRow from "./StudentCourseTableRow";

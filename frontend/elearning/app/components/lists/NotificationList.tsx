@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 import { List, Group, Avatar, Text } from "@mantine/core";
 import { ThemeIcon } from "@mantine/core";
@@ -6,8 +7,8 @@ import { NotificationData } from "@/app/types";
 
 
 const NotificationListItem = (props: {notification: NotificationData }) => {
-    let themeIconColor = props.notification.seen ? "gray" : "violet";
-    let name = props.notification.person.first_name + " " + props.notification.person.last_name
+    const themeIconColor = props.notification.seen ? "gray" : "violet";
+    const name = props.notification.person.first_name + " " + props.notification.person.last_name
     return (
         <List.Item
             key={props.notification.id}
@@ -50,7 +51,7 @@ const NotificationListItem = (props: {notification: NotificationData }) => {
 
 export default function NotificationList(props: { notifications: NotificationData[] }) {
 
-    let notificationComponents = props.notifications.map((notification: NotificationData) =>
+    const notificationComponents = props.notifications.map((notification: NotificationData) =>
         <NotificationListItem key={notification.id} notification={notification}/>
     )
 

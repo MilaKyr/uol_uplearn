@@ -27,7 +27,7 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
                 return
             }
 
-            let parsedToken = JSON.parse(token);
+            const parsedToken = JSON.parse(token);
             // Validate the token by making an API call
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/chat/`, {
@@ -52,7 +52,7 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
                         throw new Error('Something went wrong')
                     }
                 };
-                let convs: ConversationData[] = await res.json();
+                const convs: ConversationData[] = await res.json();
                 setConversations(convs)
             } catch (error) {
                 console.log(error)
@@ -62,13 +62,13 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
         getConversations();
 
         if (searchParams.size > 0) {
-            let params = searchParams.get("selected");
+            const params = searchParams.get("selected");
             if (params) {
                 setSelected(params);
             }
         }
 
-    }, [searchParams, pathname])
+    }, [searchParams, pathname, selected])
 
     const createQueryString = useCallback(
         (name: string, value: string) => {
@@ -88,8 +88,8 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
             return
         }
 
-        let parsedToken = JSON.parse(token);
-        let conv: ConversationData | undefined = conversations?.find((conv) => conv.id === id)
+        const parsedToken = JSON.parse(token);
+        const conv: ConversationData | undefined = conversations?.find((conv) => conv.id === id)
         if (conv) {
             // Validate the token by making an API call
             try {
@@ -131,14 +131,13 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
     const handleClick = async (conversationId: number) => {
         router.push('/messages' + '?' + createQueryString('selected', `${conversationId}`));
         await setSeen(conversationId);
-        let newConversations = conversations?.map((conv) => {
+        const newConversations = conversations?.map((conv) => {
             if (conv.id === conversationId) {
                 conv.unread_messages = 0;
                 conv.unread_messages_ids = [];
             }
             return conv
         });
-        console.log("newConversations", newConversations)
         setConversations(newConversations);
         props.onClick(conversationId);
     }

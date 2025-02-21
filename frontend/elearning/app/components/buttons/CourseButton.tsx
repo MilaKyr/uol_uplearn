@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import { IconChevronRight } from '@tabler/icons-react';
+import React from 'react';
 import { Avatar, Group, Text, UnstyledButton } from '@mantine/core';
 import classes from './CourseButton.module.css';
 

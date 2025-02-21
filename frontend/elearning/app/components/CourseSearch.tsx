@@ -25,7 +25,7 @@ export default function CourseSearch(props: { onClick: (newCourses: CourseListDa
         return
       }
 
-      let parsedToken = JSON.parse(token);
+      const parsedToken = JSON.parse(token);
       // Validate the token by making an API call
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/tags`, {
@@ -49,7 +49,7 @@ export default function CourseSearch(props: { onClick: (newCourses: CourseListDa
             throw new Error('Something went wrong')
           }
         };
-        let tags: TagData[] = await res.json();
+        const tags: TagData[] = await res.json();
         setTags(tags);
       } catch (error) {
         console.error(error)
@@ -67,7 +67,7 @@ export default function CourseSearch(props: { onClick: (newCourses: CourseListDa
       return
     }
 
-    let parsedToken = JSON.parse(token);
+    const parsedToken = JSON.parse(token);
     // Validate the token by making an API call
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/search?` + new URLSearchParams(searchForm.values).toString(), {
@@ -93,7 +93,7 @@ export default function CourseSearch(props: { onClick: (newCourses: CourseListDa
           throw new Error('Something went wrong')
         }
       };
-      let newCourses = await res.json();
+      const newCourses = await res.json();
       props.onClick(newCourses);
     } catch (error) {
       console.error(error)

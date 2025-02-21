@@ -30,7 +30,7 @@ export default function TeacherOwner() {
                 return
             }
 
-            let parsedToken = JSON.parse(token);
+            const parsedToken = JSON.parse(token);
             // Validate the token by making an API call
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/home/`, {
@@ -40,7 +40,7 @@ export default function TeacherOwner() {
                 })
 
                 if (!res.ok) throw new Error('Token validation failed');
-                let data = await res.json();
+                const data = await res.json();
 
 
                 const res2 = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/photo`, {
@@ -49,7 +49,7 @@ export default function TeacherOwner() {
                     },
                 })
                 if (res2.status === 200) {
-                    let photo = await res2.blob();
+                    const photo = await res2.blob();
                     data.photo = URL.createObjectURL(photo);
                 }
 
@@ -114,9 +114,9 @@ export default function TeacherOwner() {
                             </Table.Thead>
                             <Table.Tbody>
                                 {data?.courses.map((course) => {
-                                    let max_students = Math.min(4, course.registered_students?.length);
-                                    let first4Students = course.registered_students.slice(0, max_students);
-                                    let studentComp = first4Students.map((std) => (
+                                    const max_students = Math.min(4, course.registered_students?.length);
+                                    const first4Students = course.registered_students.slice(0, max_students);
+                                    const studentComp = first4Students.map((std) => (
                                         <Avatar key={std.id} name={`${std.first_name} ${std.last_name}`} src={`data:image/jpeg;base64,${std.photo}`} />
                                     ));
                                     return (

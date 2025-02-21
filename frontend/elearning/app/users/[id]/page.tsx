@@ -1,7 +1,7 @@
 'use client';
 
 import React, { use, Usable } from "react";
-import { useMantineTheme, LoadingOverlay } from "@mantine/core";
+import { LoadingOverlay } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 import UserGuest from "@/app/components/dashboards/UserGuest";
@@ -10,7 +10,6 @@ import { UserGuestData } from "@/app/types";
 
 export default function UserPage({ params }: { params: Usable<{ id: string }> }) {
     const router = useRouter();
-    const theme = useMantineTheme();
     const usedparams: { id: string } = use(params);
     const userId = parseInt(usedparams.id);
     const [opened, { toggle }] = useDisclosure();
@@ -26,7 +25,7 @@ export default function UserPage({ params }: { params: Usable<{ id: string }> })
           return
         }
     
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
 
         try {
 
@@ -37,7 +36,7 @@ export default function UserPage({ params }: { params: Usable<{ id: string }> })
             },
           });
           if (!res.ok) throw new Error('Spmething went wrong');
-          let user = await res.json();
+          const user = await res.json();
           setUser(user);
           setLoading(false);
         } catch (error) {

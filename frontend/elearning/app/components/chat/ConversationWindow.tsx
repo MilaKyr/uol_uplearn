@@ -1,14 +1,13 @@
 import React from "react";
-import { Card, Group, Stack, Center, Textarea, ActionIcon, Avatar, Text, LoadingOverlay, ScrollArea } from "@mantine/core";
+import { Card, Group, Stack, Center, Textarea, ActionIcon, Avatar, Text, ScrollArea } from "@mantine/core";
 import { IconSend, IconExclamationCircle } from "@tabler/icons-react";
 import { ConversationWindowProps, Message, ConversationData, ConversationUserData } from "@/app/types";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { notifications } from "@mantine/notifications";
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 import { getHotkeyHandler } from '@mantine/hooks';
 
 export default function ConversationWindow(props: ConversationWindowProps) {
-    console.log(props)
     const router = useRouter()
     let lastDate = React.useRef<Date>(new Date())
     const searchParams = useSearchParams();
@@ -120,7 +119,6 @@ export default function ConversationWindow(props: ConversationWindowProps) {
     }
 
     const sendMessage = async () => {
-        console.log("| props.conversation?.id", props.conversation?.id, "other", other?.id, "me", me?.id)
         sendJsonMessage({
             event: 'chat_message',
             data: {

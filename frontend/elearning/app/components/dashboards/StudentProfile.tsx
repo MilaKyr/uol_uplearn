@@ -1,6 +1,7 @@
+import React from 'react';
 import Link from 'next/link';
-import { Group, Text, BackgroundImage, Avatar, Title, Blockquote, ActionIcon } from '@mantine/core';
-import { IconEdit, IconPacman, IconPencil } from '@tabler/icons-react';
+import { Group, Text, BackgroundImage, Title, Blockquote, ActionIcon } from '@mantine/core';
+import { IconPencil } from '@tabler/icons-react';
 import { StudentProfileData } from '@/app/types';
 
 export const StudentProfile = (props: StudentProfileData) => (

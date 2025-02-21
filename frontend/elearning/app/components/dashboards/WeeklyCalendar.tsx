@@ -36,8 +36,8 @@ export default function WeeklyCalendar(props: { userId: number | undefined, onCl
     const [value, setValue] = React.useState<Date | null>(null);
 
     const getUrl = (date: Date | null) => {
-        let onejan = new Date(date!.getFullYear(), 0, 1);
-        let week = Math.ceil((((date!.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
+        const onejan = new Date(date!.getFullYear(), 0, 1);
+        const week = Math.ceil((((date!.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
         return `${process.env.HTTP_ADDRESS}/api/students/${props.userId}/todo_for` + '?' + createQueryString(
             'month', `${date?.getMonth()}`,) + '&' + createQueryString(
                 'week', `${week}`) + '&' + createQueryString(
@@ -52,7 +52,7 @@ export default function WeeklyCalendar(props: { userId: number | undefined, onCl
             return
         }
 
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         // Validate the token by making an API call
 
 
@@ -80,7 +80,7 @@ export default function WeeklyCalendar(props: { userId: number | undefined, onCl
                     throw new Error('Something went wrong')
                 }
             };
-            let data: TodoData[] = await res.json();
+            const data: TodoData[] = await res.json();
             props.onClick(data)
         } catch (error) {
             console.error(error)

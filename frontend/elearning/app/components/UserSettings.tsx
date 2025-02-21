@@ -20,7 +20,7 @@ export default function UserSettings(props: UserSettingsData) {
 
     const uploadPhoto = (uploaded: File | null) => {
         if (uploaded) {
-            let newPhoto = URL.createObjectURL(uploaded)
+            const newPhoto = URL.createObjectURL(uploaded)
             setShowFile(newPhoto);
             setFile(uploaded);
             props.onClick(newPhoto)
@@ -37,7 +37,7 @@ export default function UserSettings(props: UserSettingsData) {
                 return
             }
 
-            let parsedToken = JSON.parse(token);
+            const parsedToken = JSON.parse(token);
 
             try {
                 const formData = new FormData();
@@ -66,7 +66,7 @@ export default function UserSettings(props: UserSettingsData) {
             return
         }
 
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/update/status`, {
                 headers: {
@@ -91,7 +91,7 @@ export default function UserSettings(props: UserSettingsData) {
             return
         }
 
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/update/name`, {
                 headers: {
@@ -118,7 +118,7 @@ export default function UserSettings(props: UserSettingsData) {
             return
         }
 
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/update/email`, {
                 headers: {
@@ -144,7 +144,7 @@ export default function UserSettings(props: UserSettingsData) {
             return
         }
 
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/update/bio`, {
                 headers: {

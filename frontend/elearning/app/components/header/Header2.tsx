@@ -4,15 +4,11 @@ import React, { useState } from 'react';
 import {
   IconBell,
   IconChevronDown,
-  IconHeart,
   IconHome,
   IconLogout,
-  IconMail,
   IconMessage,
   IconSettings,
   IconStar,
-  IconSwitchHorizontal,
-  IconTrash,
 } from '@tabler/icons-react';
 import cx from 'clsx';
 import {
@@ -21,12 +17,10 @@ import {
   Container,
   Group,
   Menu,
-  Tabs,
   Text,
   UnstyledButton,
   useMantineTheme,
   Image,
-  ActionIcon,
 } from '@mantine/core';
 import classes from './Header.module.css';
 import { useRouter } from 'next/navigation';
@@ -52,7 +46,7 @@ export function HeaderTabs(props: burgerOption) {
                return
              }
          
-             let parsedToken = JSON.parse(token);
+             const parsedToken = JSON.parse(token);
 
              setUser(parsedToken.user)
      }, [router]);
@@ -65,7 +59,7 @@ export function HeaderTabs(props: burgerOption) {
           return
         }
     
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         // Validate the token by making an API call
           try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/logout/`, {

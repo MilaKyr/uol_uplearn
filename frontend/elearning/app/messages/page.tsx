@@ -1,19 +1,17 @@
 'use client';
 
 import React from "react";
-import { AppShell, useMantineTheme,  Text, LoadingOverlay, Center,
+import { AppShell,  Text, LoadingOverlay, Center,
  } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import { HeaderTabs } from "@/app/components/header/Header2";
-import { IconExclamationCircle, IconMessages } from '@tabler/icons-react';
+import { IconMessages } from '@tabler/icons-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MessagesNavBar } from "@/app/components/navbars/MessagesNavbar";
-import { notifications } from "@mantine/notifications";
 import { ConversationData } from "@/app/types";
 import ConversationWindow from "../components/chat/ConversationWindow";
 
 export default function Messages() {
-    const theme = useMantineTheme();
     const [opened, { toggle }] = useDisclosure();
     const router = useRouter()
     const searchParams = useSearchParams();
@@ -35,7 +33,7 @@ export default function Messages() {
                   return
                 }
             
-                let parsedToken = JSON.parse(token);
+                const parsedToken = JSON.parse(token);
                 setUserId(parsedToken.user.id)
                 // Validate the token by making an API call
                   try {
@@ -62,15 +60,15 @@ export default function Messages() {
                     //   }
                     // };
                     setToken(parsedToken.access);
-                    let convs: ConversationData[] = await res.json();
+                    const convs: ConversationData[] = await res.json();
                     setConversations(convs);
                     setLoading(false);
 
                     if (searchParams.size > 0) {
-                      let selectedParam = searchParams.get("selected")
+                      const selectedParam = searchParams.get("selected")
                       if (selectedParam) {
-                        let selectedId = parseInt(selectedParam);
-                        let selectedConv = convs.find((conv) => conv.id === selectedId)
+                        const selectedId = parseInt(selectedParam);
+                        const selectedConv = convs.find((conv) => conv.id === selectedId)
                         setCurrentConversation(selectedConv)
                       }
                       
@@ -84,7 +82,7 @@ export default function Messages() {
     }, [userId])
 
     const selectConversation = async (conversationId: number) => {
-      let selected = conversations?.find((conv) => conv.id === conversationId)
+      const selected = conversations?.find((conv) => conv.id === conversationId)
       setCurrentConversation(selected);
     }
     

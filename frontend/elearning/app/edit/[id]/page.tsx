@@ -1,45 +1,28 @@
 'use client';
 
 import React, {Usable, use } from "react";
-import { useParams } from "react-router"
-import NextImage from "next/image";
-import styles from "./page.module.css";
-import { AppShell, Burger, Flex, Group, Container, Title, UnstyledButton,
-  useMantineTheme, Paper, Stack, Text, AspectRatio, Center,
-  Button, Divider, SimpleGrid, LoadingOverlay, ActionIcon, Image as MantineImage,
+import { AppShell, Stack, Center, LoadingOverlay,
  } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import { HeaderTabs } from "@/app/components/header/Header2";
-import { IconFileFilled, IconDownload, IconPhoto, IconFile, IconUpload, IconX,
-  IconCircleFilled,  IconBrandYoutube, IconDrone, IconCircleCheckFilled, IconCircle, 
-  IconHome, IconMail,
-  IconBookmark, IconArrowBadgeRight, IconArrowBigRight,
-  IconCircleDashedCheck} from '@tabler/icons-react';
-import { RichTextEditor, Link, useRichTextEditorContext } from '@mantine/tiptap';
-import { CommandManager, useEditor, Editor } from '@tiptap/react';
+import { Link } from '@mantine/tiptap';
+import { useEditor } from '@tiptap/react';
 import Highlight from '@tiptap/extension-highlight';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
-import { IconColorPicker } from '@tabler/icons-react';
 import { Color } from '@tiptap/extension-color';
 import TextStyle from "@tiptap/extension-text-style";
 import Image from '@tiptap/extension-image';
-import Dropcursor from '@tiptap/extension-dropcursor';
-import Document from '@tiptap/extension-document';
 import FileHandler from '@tiptap-pro/extension-file-handler'
-import { Dropzone, PDF_MIME_TYPE, FileWithPath } from '@mantine/dropzone';
 import Youtube from '@tiptap/extension-youtube';
 import { useRouter } from 'next/navigation';
 import CourseMain from "@/app/components/edit/CourseMain";
-import { useForm } from '@mantine/form';
-import { randomId } from '@mantine/hooks';
 import TopicMain from "@/app/components/edit/TopicMain";
 import LessonMain from "@/app/components/edit/LessonMain";
 import ImageResize from 'tiptap-extension-resize-image';
-import { Header } from "@/app/components/header/Header";
 import { CourseNavBar } from "@/app/components/navbars/CourseNavbar";
 import { CourseEditData, TopicProps, LessonEditData } from "@/app/types";
 
@@ -53,7 +36,6 @@ const contentPlaceholder: string = '<em>Just start adding your content here. To 
 
 export default function CourseEdit({ params }: { params: Usable<{ id: string }> }, props: UserInfo) {
   const router = useRouter();
-    const theme = useMantineTheme();
     const usedparams: { id: string } = use(params);
     const newCourseId = usedparams.id;
     const [course, setCourse] = React.useState<CourseEditData>();
@@ -131,7 +113,7 @@ export default function CourseEdit({ params }: { params: Usable<{ id: string }> 
               return
             }
         
-            let parsedToken = JSON.parse(token);
+            const parsedToken = JSON.parse(token);
             // Validate the token by making an API call
             const getCourse = async () => {
               try {
@@ -141,7 +123,7 @@ export default function CourseEdit({ params }: { params: Usable<{ id: string }> 
                   },
                 })
                 if (!res.ok) throw new Error('');
-                let data = await res.json();
+                const data = await res.json();
                 // const res2 = await fetch(`http://127.0.0.1:8000/api/courses/${newCourseId}/photo`, {
                 //   headers: {
                 //     Authorization: `Bearer ${parsedToken.access}`,
@@ -221,7 +203,7 @@ export default function CourseEdit({ params }: { params: Usable<{ id: string }> 
         {
           current === "main" ? <CourseMain course={course!} /> : 
           current === "topic" ? <TopicMain topic={topic!}/> : 
-          current === "lesson" && editor ? <LessonMain lesson={lesson!} editor={editor}/> : 
+          (current === "lesson" && editor) ? <LessonMain lesson={lesson!} editor={editor}/> : 
           <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
         }
       </Stack>

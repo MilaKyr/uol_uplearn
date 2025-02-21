@@ -1,3 +1,4 @@
+import React from 'react';
 import Link from 'next/link';
 import { Group, Text, Button } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';

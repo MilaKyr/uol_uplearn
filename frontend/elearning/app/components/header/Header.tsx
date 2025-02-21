@@ -1,8 +1,8 @@
 
+import React from 'react';
 import Link from 'next/link';
-import { ActionIcon, Burger, Container, Group, Image } from '@mantine/core';
+import { Burger, Container, Group, Image } from '@mantine/core';
 import classes from './Header.module.css';
-import { IconBell, IconMessage, IconNotification } from '@tabler/icons-react';
 
 interface burgerOption {
   opened: boolean;

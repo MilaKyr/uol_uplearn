@@ -45,7 +45,7 @@ export default function UserDashboard() {
       return
     }
 
-    let parsedToken = JSON.parse(token);
+    const parsedToken = JSON.parse(token);
     setSocketUrl(`${process.env.NEXT_PUBLIC_WS_ADDRESS}/ws/notify/${parsedToken.user.id}/?token=${parsedToken.access}`);
 
 
@@ -74,14 +74,14 @@ export default function UserDashboard() {
             throw new Error('Something went wrong')
           }
         };
-        let data: HomeData = await res.json();
+        const data: HomeData = await res.json();
         const res2 = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/photo`, {
           headers: {
             Authorization: `Bearer ${parsedToken.access}`,
           },
         })
         if (res2.status === 200) {
-          let photo: Blob = await res2.blob();
+          const photo: Blob = await res2.blob();
           data.photo = URL.createObjectURL(photo);
           setPhoto(data.photo);
         }
@@ -117,7 +117,7 @@ export default function UserDashboard() {
         return
       }
   
-      let parsedToken = JSON.parse(token);
+      const parsedToken = JSON.parse(token);
 
       if (message.recipient_id === parsedToken.user.id) {
         try {
@@ -144,7 +144,7 @@ export default function UserDashboard() {
               throw new Error('Something went wrong')
             }
           };
-          let avatar: string = await res.json();
+          const avatar: string = await res.json();
           notifications.show({
             title: "You have new message!",
             message: message.body as string,
@@ -161,6 +161,7 @@ export default function UserDashboard() {
             },
           });
         } catch (error) {
+          console.log(error);
           notifications.show({
             title: "Session expired",
             message: 'Please login to continue',
@@ -189,7 +190,7 @@ export default function UserDashboard() {
         return
       }
   
-      let parsedToken = JSON.parse(token);
+      const parsedToken = JSON.parse(token);
 
       if (notification.recipient_id === parsedToken.user.id) {
         try {
@@ -215,7 +216,7 @@ export default function UserDashboard() {
               throw new Error('Something went wrong')
             }
           };
-          let photo: Blob = await res.blob();
+          const photo: Blob = await res.blob();
           notifications.show({
             title:  `${notification.sender_first_name} ${notification.sender_last_name} ${notification.body} ${notification.course_title}`,
             message: "",
@@ -232,6 +233,7 @@ export default function UserDashboard() {
             color: 'blue',
           });
         } catch (error) {
+          console.log(error);
           router.replace('/') // Redirect to login if token validation fails
         }
       }
@@ -322,14 +324,14 @@ export default function UserDashboard() {
             <Dashboard role={data?.role} /> :
             componentName === "courses" ? <Courses /> :
               componentName === "feedbacks" ? <Feedbacks /> :
-                componentName === "settings" ? <UserSettings
-                  id={data?.id!}
-                  first_name={data?.first_name!}
-                  last_name={data?.last_name!}
-                  email={data?.email!}
+                componentName === "settings" && data ? <UserSettings
+                  id={data?.id}
+                  first_name={data?.first_name}
+                  last_name={data?.last_name}
+                  email={data?.email}
                   status={data?.status}
                   bio={data?.bio}
-                  role={data?.role!}
+                  role={data?.role}
                   photo={data?.photo}
                   onClick={setPhoto} /> :
                   componentName === "users" ? <UsersTable /> : componentName === "notifications" ?

@@ -1,9 +1,6 @@
 import React from "react";
-import { Group, ScrollArea, Stack, TextInput, Code, ActionIcon, Select, Combobox, useCombobox, Avatar, Text, InputBase} from "@mantine/core";
-import { IconSearch } from "@tabler/icons-react";
-import { useForm, hasLength, isEmail, matchesField, isNotEmpty } from '@mantine/form';
-import { usePathname, useRouter } from 'next/navigation';
-import { propagateServerField } from "next/dist/server/lib/render-server";
+import { Group, ScrollArea, Stack, Combobox, useCombobox, Avatar, Text, InputBase} from "@mantine/core";
+import { useRouter } from 'next/navigation';
 import { getHotkeyHandler } from '@mantine/hooks';
 import { createConversation } from "@/app/actions/CreateConversation";
 import { BasicUserData } from "@/app/types";
@@ -11,7 +8,6 @@ import { BasicUserData } from "@/app/types";
 export default function UserNameSearch() {
     const router = useRouter();
     const [searchValue, setSearchValue] = React.useState('');
-    const [searchedUser, setSearchedUser] = React.useState();
     const [users, setUsers] = React.useState<BasicUserData []>([]);
     
     const combobox = useCombobox({
@@ -28,7 +24,7 @@ export default function UserNameSearch() {
                 return
               }
           
-              let parsedToken = JSON.parse(token);
+              const parsedToken = JSON.parse(token);
               // Validate the token by making an API call
               try {
                   const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/users/search?` + new URLSearchParams(`query=${searchValue}`).toString(), {
@@ -40,7 +36,7 @@ export default function UserNameSearch() {
                   })
           
                   if (!res.ok) throw new Error('');
-                  let newUsers = await res.json();
+                  const newUsers = await res.json();
                   setUsers(newUsers);
                 } catch (error) {
                   console.error(error)
@@ -49,7 +45,7 @@ export default function UserNameSearch() {
     }
 
     const handleCLick = async (optionId: number) => {
-      let selected: BasicUserData = users[optionId]
+      const selected: BasicUserData = users[optionId]
       if (selected && selected.id) {
         await createConversation(router, selected.id);
         window.location.reload();
@@ -77,7 +73,7 @@ export default function UserNameSearch() {
           }}
           onKeyDown={getHotkeyHandler([['Enter', search],
           ])}
-          onClick={(val) => combobox.openDropdown()}
+          onClick={() => combobox.openDropdown()}
           onFocus={() => combobox.openDropdown()}
           onBlur={() => {
             combobox.closeDropdown();

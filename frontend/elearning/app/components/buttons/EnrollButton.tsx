@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@mantine/core";
 
 export const EnrollButton = (props: { onClick: () => void }) => (

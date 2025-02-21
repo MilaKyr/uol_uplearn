@@ -30,9 +30,8 @@ export default function Feedbacks() {
             return
         }
 
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         try {
-            console.log("in try")
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/feedbacks/`, {
                 headers: {
                     "Content-Type": "application/json",
@@ -54,7 +53,7 @@ export default function Feedbacks() {
                     throw new Error('Something went wrong')
                 }
             };
-            let thisfeedbacks = await res.json();
+            const thisfeedbacks = await res.json();
             setFeedbacks(thisfeedbacks);
         } catch (error) {
             console.error(error)
@@ -73,8 +72,7 @@ export default function Feedbacks() {
             return
         }
 
-        let parsedToken = JSON.parse(token);
-        console.log({ course_id: courseId, text: currComment, rating: currRating })
+        const parsedToken = JSON.parse(token);
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/feedbacks/`, {
                 headers: {
@@ -100,7 +98,6 @@ export default function Feedbacks() {
                 }
             };
             close();
-
         } catch (error) {
             console.error(error)
         }
@@ -114,7 +111,7 @@ export default function Feedbacks() {
             return
         }
 
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/feedbacks/${feedbackId}/`, {
                 headers: {
@@ -195,11 +192,10 @@ export default function Feedbacks() {
                 </Table.Thead>
                 <Table.Tbody>
                     {feedbacks.map((feedback, index) => {
-                        console.log("in feedback loop", feedback)
-                        let icon = feedback.rating === 0 ? <IconCirclePlus /> : <IconEdit />;
-                        let btnColor = feedback.rating === 0 ? "green.7" : "gray.7";
-                        let btnType = feedback.rating === 0 ? "filled" : "default";
-                        let method = feedback.rating === 0 ? "POST" : "PUT";
+                        const icon = feedback.rating === 0 ? <IconCirclePlus /> : <IconEdit />;
+                        const btnColor = feedback.rating === 0 ? "green.7" : "gray.7";
+                        const btnType = feedback.rating === 0 ? "filled" : "default";
+                        const method = feedback.rating === 0 ? "POST" : "PUT";
                         return (
                             <Table.Tr key={index}>
                                 <Table.Td>

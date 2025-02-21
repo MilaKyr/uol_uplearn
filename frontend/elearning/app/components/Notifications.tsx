@@ -24,8 +24,8 @@ export default function Notifications() {
                 return
             }
 
-            let parsedToken = JSON.parse(token);
-            let ids = notifications.map((notification) => {
+            const parsedToken = JSON.parse(token);
+            const ids = notifications.map((notification) => {
                 if (!notification.seen) {
                     return notification.id
                 }
@@ -72,7 +72,7 @@ export default function Notifications() {
                 return
             }
 
-            let parsedToken = JSON.parse(token);
+            const parsedToken = JSON.parse(token);
             // Validate the token by making an API call
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/notifications/`, {
@@ -98,7 +98,7 @@ export default function Notifications() {
                         throw new Error('Something went wrong')
                     }
                 };
-                let returnedNotifications: NotificationData[] = await res.json();
+                const returnedNotifications: NotificationData[] = await res.json();
                 setNotifications(returnedNotifications);
             } catch (error) {
                 console.error(error)

@@ -1,6 +1,6 @@
 import React from "react";
-import { ScrollArea, Table, List, Space, Group, ActionIcon, Center, Text, Avatar, UnstyledButton, Modal, Button } from "@mantine/core";
-import { IconBarrierBlockOff, IconBarrierBlock, IconTrash, IconPlus, IconCheck } from '@tabler/icons-react';
+import { ScrollArea, Table, Group, ActionIcon, Center, Text, Avatar, UnstyledButton, Modal, Button } from "@mantine/core";
+import { IconBarrierBlockOff, IconBarrierBlock, IconTrash, IconCheck } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { notifications } from "@mantine/notifications";
 import { useDisclosure } from '@mantine/hooks';
@@ -21,7 +21,7 @@ export default function CourseStudentList(props: { courseId: number }) {
                 return
             }
 
-            let parsedToken = JSON.parse(token);
+            const parsedToken = JSON.parse(token);
             // Validate the token by making an API call
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${props.courseId}/students`, {
@@ -31,7 +31,7 @@ export default function CourseStudentList(props: { courseId: number }) {
                 })
 
                 if (!res.ok) throw new Error('Token validation failed');
-                let data = await res.json();
+                const data = await res.json();
 
                 setStudents(data)
             } catch (error) {
@@ -50,7 +50,7 @@ export default function CourseStudentList(props: { courseId: number }) {
                 return
             }
     
-            let parsedToken = JSON.parse(token);
+            const parsedToken = JSON.parse(token);
             // Validate the token by making an API call
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/enrollments/${enrollmentId}/block`, {
@@ -63,14 +63,15 @@ export default function CourseStudentList(props: { courseId: number }) {
                 })
     
                 if (!res.ok) throw new Error('Token validation failed');
-                block ?
+                if (block) {
                     notifications.show({
                         title: 'Student has been successfully blocked',
                         message: "This student will no longer have access to the course. You can unblock them at any time",
                         withCloseButton: true,
                         color: 'teal',
                         icon: <IconCheck />,
-                    }) :
+                    })
+                } else {
                     notifications.show({
                         title: 'Student has been successfully unblocked',
                         message: "This student can access to the course. You can block them at any time",
@@ -78,11 +79,13 @@ export default function CourseStudentList(props: { courseId: number }) {
                         color: 'teal',
                         icon: <IconCheck />,
                     })
+                }
                 router.refresh()
             } catch (error) {
                 console.error(error)
                 router.replace('/') // Redirect to login if token validation fails
             }
+            // @ts-ignore:prefer-const
             let newStudents = [...students];
             newStudents.map((enrolled_stds) => {
                 if (enrolled_stds.id === enrollmentId) {
@@ -180,8 +183,7 @@ export default function CourseStudentList(props: { courseId: number }) {
                 <Center pb={20}><Text c="red" fw={700}>This cannot be undone!</Text></Center>
                 <Button size="sm"
                     onClick={remove}
-                    color={"red"}
-                >Yes, I'm sure</Button>
+                    color={"red"}>{"Yes, I'm sure"}</Button>
 
             </Modal>
         </>

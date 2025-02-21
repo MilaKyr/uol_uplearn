@@ -31,7 +31,7 @@ export default function UserGuest(props: { id: number }) {
                 return
             }
 
-            let parsedToken = JSON.parse(token);
+            const parsedToken = JSON.parse(token);
 
             try {
 
@@ -42,7 +42,7 @@ export default function UserGuest(props: { id: number }) {
                     },
                 });
                 if (!res.ok) throw new Error('Spmething went wrong');
-                let user = await res.json();
+                const user = await res.json();
                 console.log(user)
                 setUser(user);
             } catch (error) {
@@ -66,7 +66,7 @@ export default function UserGuest(props: { id: number }) {
             return
         }
 
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
 
         // Validate the token by making an API call
         try {
@@ -94,7 +94,7 @@ export default function UserGuest(props: { id: number }) {
                     throw new Error('Something went wrong')
                 }
             };
-            let result = await res.json()
+            const result = await res.json()
             return result
 
         } catch (error) {
@@ -104,8 +104,7 @@ export default function UserGuest(props: { id: number }) {
 
     const startConversation = async (recipientId: number | undefined) => {
         if (recipientId) {
-            let conv = await createConversation(recipientId);
-            console.log(conv.id)
+            const conv = await createConversation(recipientId);
             router.push(`/messages?selected=${conv.id}`)
         }
     }

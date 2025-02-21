@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, MouseEventHandler } from 'react';
+import React, { useCallback } from 'react';
 import {IconArrowBadgeRight } from '@tabler/icons-react';
 import {Button,} from '@mantine/core';
 
@@ -19,7 +19,6 @@ interface CourseNavbarProps {
   onClickLesson: (topicId: number, lessonId: number) => void;
 }
 
-const contentPlaceholder: string = '<em>Just start adding your content here. To add an image drag and drop it where you want it to be... That`s all, now you can delete this text and start creating.</em>';
 
 
 export function CourseNavBar(props: CourseNavbarProps) {
@@ -30,7 +29,7 @@ export function CourseNavBar(props: CourseNavbarProps) {
 
   React.useEffect(() => {
     if (searchParams.size > 0) {
-      let params = searchParams.get("selected");
+      const params = searchParams.get("selected");
       if (params) {
         setSelected(params);
       }

@@ -34,7 +34,7 @@ export interface CourseEditData extends CourseListData {
 
 export interface UserSettingsData {
   id: number;
-  photo: string | undefined;
+  photo: string;
   first_name: string;
   last_name: string;
   role: string;
@@ -102,7 +102,7 @@ export interface UserProfile {
 
 export interface HomeData {
   id: number;
-  photo: string | undefined,
+  photo: string,
   first_name: string;
   last_name: string;
   role: string;
@@ -140,7 +140,7 @@ export interface StudentHomeData {
   last_name: string;
   role: string;
   email: string;
-  status: string | undefined;
+  status: string;
   todo: TodoData[];
   courses: CourseStudentHomeData[];
 }

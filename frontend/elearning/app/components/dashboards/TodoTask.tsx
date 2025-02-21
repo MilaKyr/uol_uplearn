@@ -1,7 +1,8 @@
+import React from "react";
 import { useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { UnstyledButton, Stack, Group, Text } from "@mantine/core";
+import { UnstyledButton, Stack, Text } from "@mantine/core";
 import { TodoData } from "@/app/types";
 
 export default function TodoTask(props: { task: TodoData }) {

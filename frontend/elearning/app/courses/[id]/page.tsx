@@ -1,13 +1,12 @@
 'use client';
 
 import React, {use, Usable} from 'react';
-import { CloseButton, Divider, ScrollArea, Spoiler, useMantineTheme, LoadingOverlay } from '@mantine/core';
+import { CloseButton, Divider, Spoiler, LoadingOverlay } from '@mantine/core';
 import { useRouter } from 'next/navigation';
-import { useParams } from "react-router";
 import { useDisclosure } from '@mantine/hooks';
 import Link from 'next/link';
 import { Flex, Paper, Text, Grid, Stack, UnstyledButton, Title, Rating, Image,
-    Group, Avatar, Timeline, Button, Container, Center, 
+    Group, Avatar, Timeline, Button, Center, 
  } from '@mantine/core';
  import { IconCurrentLocation, IconExclamationCircle } from '@tabler/icons-react';
 import { printDuration } from '@/app/components/utils';
@@ -18,7 +17,6 @@ import { CourseDetail } from '@/app/types';
 
 export default function Course({ params }: { params: Usable<{ id: string }> }) {
         const router = useRouter();
-        const theme = useMantineTheme();
         const usedparams: { id: string } = use(params);
         const courseId = usedparams.id;
         const [opened, {toggle}] = useDisclosure(false);
@@ -35,7 +33,7 @@ export default function Course({ params }: { params: Usable<{ id: string }> }) {
                   return
                 }
             
-                let parsedToken = JSON.parse(token);
+                const parsedToken = JSON.parse(token);
         
                 try {
         
@@ -60,7 +58,7 @@ export default function Course({ params }: { params: Usable<{ id: string }> }) {
                       throw new Error('Something went wrong')
                     }
                   };
-                  let course = await res.json();
+                  const course = await res.json();
                   course["is_owner"] = course.teacher.id === parsedToken.user.id;
                   setLoading(false);
                   setCourse(course);
@@ -85,7 +83,7 @@ export default function Course({ params }: { params: Usable<{ id: string }> }) {
                 return
           }
               
-          let parsedToken = JSON.parse(token);
+          const parsedToken = JSON.parse(token);
               // Validate the token by making an API call
            try {
                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${course?.id}/enroll`, {

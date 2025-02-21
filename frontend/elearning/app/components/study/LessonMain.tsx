@@ -27,7 +27,7 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
         router.replace('/') // If no token is found, redirect to login page
         return
       }
-      let parsedToken = JSON.parse(token);
+      const parsedToken = JSON.parse(token);
       try {
         let res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${id}/files`, {
           headers: {
@@ -38,8 +38,8 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
         const unzip = async () => {
           const zip = new JSZip();
           const zipContent = await zip.loadAsync(await res.blob());
-          let toSave = [];
-          for (let zobj of Object.values(zipContent.files)) {
+          const toSave = [];
+          for (const zobj of Object.values(zipContent.files)) {
             if (zobj.dir) continue;
             const zblob = await zobj.async("blob");
             const zfile = new File([zblob], zobj.name, {
@@ -63,9 +63,9 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
         router.replace('/') // If no token is found, redirect to login page
         return
       }
-      let parsedToken = JSON.parse(token);
+      const parsedToken = JSON.parse(token);
       try {
-        let res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${props.id}/`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${props.id}/`, {
           headers: {
             Authorization: `Bearer ${parsedToken.access}`,
             "Content-Type": "application/json"
@@ -86,7 +86,7 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
             throw new Error('')
           }
         };
-        let lesson = await res.json();
+        const lesson = await res.json();
         props.editor.commands.setContent(lesson.html || "")
         setLesson(lesson);
         if (lesson.has_files) {
@@ -135,9 +135,9 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
       router.replace('/') // If no token is found, redirect to login page
       return
     }
-    let parsedToken = JSON.parse(token);
+    const parsedToken = JSON.parse(token);
     try {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${props.id}/done`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${props.id}/done`, {
         headers: {
           Authorization: `Bearer ${parsedToken.access}`,
           "Content-Type": "application/json"
@@ -159,7 +159,7 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
           throw new Error('Something went wrong')
         }
       };
-      let updatedLesson: LessonStudyData = Object.assign({}, lesson);
+      const updatedLesson: LessonStudyData = Object.assign({}, lesson);
       updatedLesson.done = !lesson?.done;
       
       setLesson(updatedLesson);

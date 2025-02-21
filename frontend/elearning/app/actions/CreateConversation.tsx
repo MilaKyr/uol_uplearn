@@ -1,3 +1,4 @@
+import React from "react";
 import { IconExclamationCircle } from "@tabler/icons-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { notifications } from "@mantine/notifications";
@@ -11,7 +12,7 @@ export const createConversation = async (router: AppRouterInstance, recipientId:
         return
       }
   
-      let parsedToken = JSON.parse(token);
+      const parsedToken = JSON.parse(token);
     
       // Validate the token by making an API call
       try {
@@ -39,7 +40,7 @@ export const createConversation = async (router: AppRouterInstance, recipientId:
               throw new Error('Something went wrong')
             }
           };
-          let result = await res.json();
+          const result = await res.json();
           return result;
         } catch (error) {
           console.error(error)

@@ -15,9 +15,9 @@ export default function CourseMain(props: {course: CourseEditData} ) {
   const [active, setActive] = React.useState(props.course?.is_active);
   const [opened, { open, close }] = useDisclosure(false);
   const router = useRouter();
-  let startDate = new Date(props.course?.start_date);
-  let date = startDate.toLocaleDateString() || "";
-  let time = startDate.toLocaleTimeString() || "";
+  const startDate = new Date(props.course?.start_date);
+  const date = startDate.toLocaleDateString() || "";
+  const time = startDate.toLocaleTimeString() || "";
 
   const toggleActive = async () => {
     const token = window.sessionStorage.getItem("jwt");
@@ -27,7 +27,7 @@ export default function CourseMain(props: {course: CourseEditData} ) {
       return
     }
 
-    let parsedToken = JSON.parse(token);
+    const parsedToken = JSON.parse(token);
     // Validate the token by making an API call
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${props.course?.id}/active`, {
@@ -51,7 +51,7 @@ export default function CourseMain(props: {course: CourseEditData} ) {
       return
     }
 
-    let parsedToken = JSON.parse(token);
+    const parsedToken = JSON.parse(token);
     // Validate the token by making an API call
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${props.course?.id}/`, {

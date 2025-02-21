@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import { IconChevronRight } from '@tabler/icons-react';
+import React from 'react';
 import { Avatar, Group, Text, UnstyledButton } from '@mantine/core';
 import classes from './UserButton.module.css';
 
@@ -13,7 +12,8 @@ interface UserButtonInfo {
 }
 
 export function UserButton(props: UserButtonInfo) {
-  let usersName = props.user.first_name + " " + props.user.last_name;
+  const usersName = props.user.first_name + " " + props.user.last_name;
+  
   return (
     <UnstyledButton className={classes.user} onClick={props.onClick}>
       <Group>

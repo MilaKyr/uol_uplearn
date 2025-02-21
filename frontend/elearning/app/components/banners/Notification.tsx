@@ -1,3 +1,4 @@
+import React from "react";
 import { BackgroundImage, Stack, Title } from "@mantine/core";
 
 export default function NotificationBanner() {
