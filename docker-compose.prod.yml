@@ -46,7 +46,9 @@ services:
       - REDIS_HOST=${REDIS_HOST}
 
   daphne:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: ../daphne.Dockerfile
     command: daphne --bind 0.0.0.0 -p 8005 backend.asgi:application
     volumes:
       - ./backend/ :/user/src/backend/
