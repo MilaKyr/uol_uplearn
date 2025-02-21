@@ -20,7 +20,17 @@ services:
       - POSTGRES_USER=${DATABASE_USERNAME}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
 
-  web:
+  www-frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../Dockerfile
+    volumes:
+      - ./frontend/ :/user/src/frontend/
+    depends_on:
+      - backend
+      - backend-asgi
+
+  backend:
     build: ./backend
     command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
     volumes:
@@ -45,7 +55,7 @@ services:
       - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD}
       - REDIS_HOST=${REDIS_HOST}
 
-  daphne:
+  backend-asgi:
     build:
       context: ./backend
       dockerfile: ../daphne.Dockerfile
