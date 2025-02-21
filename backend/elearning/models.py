@@ -33,7 +33,7 @@ class Course(models.Model):
     is_active = models.BooleanField(default=False)
     photo = models.ImageField(null=True)
     title = models.CharField(max_length=256)
-    desc = models.CharField(max_length=512, name ="description")
+    desc = models.TextField(name ="description")
     start_date = models.DateTimeField()
     created = models.DateTimeField(auto_now_add=True)
     duration = models.DurationField()
@@ -45,7 +45,7 @@ class Course(models.Model):
 class Topic(models.Model):
     course = models.ForeignKey(to=Course, on_delete=models.CASCADE, related_name="topics")
     title = models.CharField(max_length=256)
-    desc = models.CharField(max_length=512, name ="description")
+    desc = models.TextField(name ="description")
     n_hours = models.IntegerField()
 
     class Meta:
