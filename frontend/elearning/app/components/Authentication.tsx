@@ -63,6 +63,7 @@ export function Authentication() {
       const response = await fetch(url, {
         headers: {
           "Content-Type": "application/json",
+          "Access-Control-Allow-Origin":"*"
         },
         method: 'POST',
 

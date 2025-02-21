@@ -55,12 +55,7 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
                 let convs: ConversationData[] = await res.json();
                 setConversations(convs)
             } catch (error) {
-                notifications.show({
-                    title: "Session expired",
-                    message: 'Please login to continue',
-                    color: 'red'
-                })
-                router.replace('/') // Redirect to login if token validation fails
+                console.log(error)
             }
         }
 
@@ -98,7 +93,7 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
         if (conv) {
             // Validate the token by making an API call
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}api/chat/${conv.id}/seen/`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/chat/${conv.id}/seen/`, {
                     headers: {
                         Authorization: `Bearer ${parsedToken.access}`,
                         "Content-Type": "application/json"
@@ -123,12 +118,7 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
                     }
                 };
             } catch (error) {
-                notifications.show({
-                    title: "Session expired",
-                    message: 'Please login to continue',
-                    color: 'red'
-                })
-                router.replace('/') // Redirect to login if token validation fails
+                console.log(error)
             }
         }
         

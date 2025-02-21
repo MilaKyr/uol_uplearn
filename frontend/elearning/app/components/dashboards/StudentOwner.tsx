@@ -31,6 +31,7 @@ export default function StudentOwner() {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/home/`, {
                     headers: {
                         Authorization: `Bearer ${parsedToken.access}`,
+                        "Access-Control-Allow-Origin":"*"
                     },
                 })
 
@@ -41,6 +42,7 @@ export default function StudentOwner() {
                 const res2 = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/photo`, {
                     headers: {
                         Authorization: `Bearer ${parsedToken.access}`,
+                        "Access-Control-Allow-Origin":"*"
                     },
                 })
                 if (res2.status === 200) {

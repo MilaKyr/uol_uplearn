@@ -46,21 +46,21 @@ export default function Messages() {
                       },
                     })
             
-                    if (!res.ok) {
-                      if (res.status === 401) {
-                        notifications.show({
-                          title: "Session expired",
-                          message: "Please log in to continue",
-                          autoClose: false,
-                          icon: <IconExclamationCircle />,
-                          color: 'red',
-                        });
-                        window.sessionStorage.removeItem("jwt");
-                        router.push('/') // Redirect to login if token validation fails
-                      } else {
-                        throw new Error('Something went wrong')
-                      }
-                    };
+                    // if (!res.ok) {
+                    //   if (res.status === 401) {
+                    //     notifications.show({
+                    //       title: "Session expired",
+                    //       message: "Please log in to continue",
+                    //       autoClose: false,
+                    //       icon: <IconExclamationCircle />,
+                    //       color: 'red',
+                    //     });
+                    //     window.sessionStorage.removeItem("jwt");
+                    //     router.push('/') // Redirect to login if token validation fails
+                    //   } else {
+                    //     throw new Error('Something went wrong')
+                    //   }
+                    // };
                     setToken(parsedToken.access);
                     let convs: ConversationData[] = await res.json();
                     setConversations(convs);
@@ -76,12 +76,7 @@ export default function Messages() {
                       
                     }
                   } catch (error) {
-                    notifications.show({
-                      title: "Session expired",
-                      message: 'Please login to continue',
-                      color: 'red'
-                    })
-                    router.replace('/') // Redirect to login if token validation fails
+                    console.log(error)
                 }
         }
 

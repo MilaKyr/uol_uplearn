@@ -101,6 +101,7 @@ const UserNavbarSearch = (props: UserNavbarProps) => {
                     const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/home/inbox`, {
                       headers: {
                         Authorization: `Bearer ${parsedToken.access}`,
+                        "Access-Control-Allow-Origin":"*"
                       },
                     })
             
@@ -177,6 +178,7 @@ const UserNavbarSearch = (props: UserNavbarProps) => {
               headers: {
                 Authorization: `Bearer ${parsedToken.access}`,
                 "Content-Type": "application/json",
+                "Access-Control-Allow-Origin":"*"
               },
               method: 'POST',
             });

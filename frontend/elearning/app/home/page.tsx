@@ -55,6 +55,7 @@ export default function UserDashboard() {
         const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/home/`, {
           headers: {
             Authorization: `Bearer ${parsedToken.access}`,
+            "Access-Control-Allow-Origin":"*"
           },
         })
 
@@ -84,16 +85,12 @@ export default function UserDashboard() {
           data.photo = URL.createObjectURL(photo);
           setPhoto(data.photo);
         }
+        console.log(data)
         setData(data)
         setLoading(false);
 
       } catch (error) {
-        notifications.show({
-          title: "Session expired",
-          message: 'Please login to continue',
-          color: 'red'
-        })
-        router.replace('/') // Redirect to login if token validation fails
+        console.log(error)
       }
     }
 
@@ -105,6 +102,7 @@ export default function UserDashboard() {
 
 
   React.useEffect(() => {
+    console.log("In use Effect", lastJsonMessage)
 
     const getMessage = async (message: {
       id: number, 
@@ -126,7 +124,8 @@ export default function UserDashboard() {
           const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/users/${message.sender_id}/avatar`, {
             headers: {
               Authorization: `Bearer ${parsedToken.access}`,
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin":"*"
             },
           })
     
@@ -197,7 +196,8 @@ export default function UserDashboard() {
           const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${notification.course_id}/photo`, {
             headers: {
               Authorization: `Bearer ${parsedToken.access}`,
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin":"*"
             },
           })
           if (!res.ok) {
@@ -282,6 +282,7 @@ export default function UserDashboard() {
 
     
   React.useEffect(() => {
+    console.log("readyState", readyState);
   }, [readyState])
 
   
