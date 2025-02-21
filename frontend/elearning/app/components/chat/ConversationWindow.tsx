@@ -111,7 +111,7 @@ export default function ConversationWindow(props: ConversationWindowProps) {
             sendJsonMessage({
                 event: 'seen',
                 data: {
-                    message_id: lastJsonMessage.id as number,
+                    message_id: id,
                 }
             });
         }

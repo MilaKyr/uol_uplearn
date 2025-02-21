@@ -118,6 +118,7 @@ const UserNavbarSearch = (props: UserNavbarProps) => {
                     apprLinks[1]["unseen"] = data["new_messages"]
                     setLinks(apprLinks);
                   } catch (error) {
+                    console.log(error);
                     notifications.show({
                       title: "Session expired",
                       message: 'Please login to continue',
@@ -202,7 +203,7 @@ const UserNavbarSearch = (props: UserNavbarProps) => {
             <div className={classes.mainLinks}>
 
               {links.map((link) => {
-                let showUnseen = link.unseen ? link.unseen! !== 0 : false;
+                const showUnseen = link.unseen ? link.unseen! !== 0 : false;
                 return (
                 
                 <UnstyledButton onClick={() => handleClick(link)} key={link.label} className={classes.mainLink}

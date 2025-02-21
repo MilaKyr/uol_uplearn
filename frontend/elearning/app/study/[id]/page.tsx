@@ -7,7 +7,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { HeaderTabs } from "@/app/components/header/Header2";
 import {  IconExclamationCircle } from '@tabler/icons-react';
 import {Link } from '@mantine/tiptap';
-import { useEditor, Editor } from '@tiptap/react';
+import { useEditor } from '@tiptap/react';
 import Highlight from '@tiptap/extension-highlight';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';

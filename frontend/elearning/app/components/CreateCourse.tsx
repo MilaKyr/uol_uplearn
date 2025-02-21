@@ -57,6 +57,7 @@ export default function CreateCourse() {
             const id: number = await res.json();           
             setNewCourseId(id);
           } catch (error) {
+            console.log(error);
             notifications.show({
               title: 'Default notification',
               message: 'Do not forget to star Mantine on GitHub! 🌟',

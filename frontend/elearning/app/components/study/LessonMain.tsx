@@ -29,7 +29,7 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
       }
       const parsedToken = JSON.parse(token);
       try {
-        let res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${id}/files`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${id}/files`, {
           headers: {
             Authorization: `Bearer ${parsedToken.access}`,
           },
@@ -120,7 +120,7 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
   });
 
 
-  const onDownload = (file: any) => {
+  const onDownload = (file: File) => {
     const link = document.createElement("a");
     const fileUrl = URL.createObjectURL(file);
     link.download = file.name;
