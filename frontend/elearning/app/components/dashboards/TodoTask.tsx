@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Suspense} from "react";
 import { useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -20,6 +20,7 @@ export default function TodoTask(props: { task: TodoData }) {
 
 
     return (
+        <Suspense>
         <UnstyledButton w={{ base: '70%', md: '90%', lg: '60%' }} py={6} key={props.task.id} style={{
             backgroundColor: 'var(--mantine-color-blue-light)', zIndex: 100, borderRadius: 10,
             alignItems: 'baseline', justifyContent: 'center'
@@ -36,6 +37,6 @@ export default function TodoTask(props: { task: TodoData }) {
             </Stack>
 
         </UnstyledButton>
-
+        </Suspense>
     )
 }

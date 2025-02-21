@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, Suspense } from 'react';
 import {IconArrowBadgeRight } from '@tabler/icons-react';
 import {Button,} from '@mantine/core';
 
@@ -67,6 +67,7 @@ export function CourseNavBar(props: CourseNavbarProps) {
   }
 
   return (
+    <Suspense>
     <nav className={classes.navbar}>
 
       <div className={classes.section}>
@@ -98,5 +99,6 @@ export function CourseNavBar(props: CourseNavbarProps) {
         </div>
       </div>
     </nav>
+    </Suspense>
   );
 }

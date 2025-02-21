@@ -1,6 +1,6 @@
 'use client';
 
-import React from "react";
+import React, {Suspense} from "react";
 import { AppShell,  LoadingOverlay,Center
  } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
@@ -191,6 +191,7 @@ export default async function StudyDetail({ params }: { params: Promise<{ id: st
 
     if (isLoading) return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
     return (
+      <Suspense>
     <AppShell
     
         header={{ height: 70 }}
@@ -219,5 +220,6 @@ export default async function StudyDetail({ params }: { params: Promise<{ id: st
 
       </AppShell.Main>
     </AppShell>
+    </Suspense>
   );
 }

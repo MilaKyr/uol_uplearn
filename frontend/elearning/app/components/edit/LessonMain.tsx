@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from "react";
+import React, { useCallback, Suspense } from "react";
 import {
   Group, Title, UnstyledButton,
   Stack, Text, Button, Divider, SimpleGrid, ActionIcon
@@ -196,6 +196,7 @@ export default function LessonMain(props: { lesson: LessonEditData, editor: TipT
 
 
   return (
+    <Suspense>
     <Stack maw={900}>
       <Title>{props.lesson?.title}</Title>
       <Divider />
@@ -321,6 +322,6 @@ export default function LessonMain(props: { lesson: LessonEditData, editor: TipT
       </Group>
 
     </Stack>
-
+    </Suspense>
   );
 }

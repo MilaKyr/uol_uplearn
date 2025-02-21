@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback} from 'react';
+import React, { useCallback, Suspense} from 'react';
 import { ReadonlyURLSearchParams } from 'next/navigation';
 import { IconSettings, IconPencilStar, IconSchool, IconMessage, IconBell, IconUsersGroup, IconExclamationCircle, IconPlus, IconLogout } from '@tabler/icons-react';
 import {
@@ -194,6 +194,7 @@ const UserNavbarSearch = (props: UserNavbarProps) => {
 
 
       return (
+        <Suspense>
         <nav className={classes.navbar}>
           <div className={classes.section}>
           {user && <UserButton user={user} onClick={handleUserBtn} photo={props.photo} />}
@@ -235,6 +236,7 @@ const UserNavbarSearch = (props: UserNavbarProps) => {
           </div>
           </div>
         </nav>
+        </Suspense>
       );
     };
 

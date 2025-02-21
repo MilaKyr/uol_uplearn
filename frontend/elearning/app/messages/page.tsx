@@ -1,6 +1,6 @@
 'use client';
 
-import React from "react";
+import React, { Suspense } from "react";
 import { AppShell,  Text, LoadingOverlay, Center,
  } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
@@ -91,6 +91,7 @@ export default function Messages() {
 
     if (isLoading) return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
     return (
+      <Suspense>
     <AppShell
     
         header={{ height: 70 }}
@@ -117,5 +118,6 @@ export default function Messages() {
             
       </AppShell.Main>
     </AppShell>
+    </Suspense>
   );
 }

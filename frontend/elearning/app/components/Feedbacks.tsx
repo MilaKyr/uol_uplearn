@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Suspense} from "react";
 import { useDisclosure } from '@mantine/hooks';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import {
@@ -144,6 +144,7 @@ export default function Feedbacks() {
         await getFeedback();
     }
     return (
+        <Suspense>
         <Container>
 
             <BackgroundImage mb={24}
@@ -235,5 +236,6 @@ export default function Feedbacks() {
                 </Table.Tbody>
             </Table>
         </Container>
+        </Suspense>
     )
 }

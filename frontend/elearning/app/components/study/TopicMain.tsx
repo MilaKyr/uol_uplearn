@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, Suspense } from "react";
 import Link from "next/link";
 import { Text,Divider, Title, Timeline, LoadingOverlay } from '@mantine/core';
 import { IconExclamationCircle, } from '@tabler/icons-react';
@@ -73,6 +73,7 @@ export default function TopicMain(props: { id: number }) {
 
     if (isLoading) return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
     return (
+        <Suspense>
         <div>
             <Title>{topic?.title}</Title>
             <Text pt={6} c="dimmed">Estimated time demand: {topic?.n_hours}h</Text>
@@ -93,5 +94,6 @@ export default function TopicMain(props: { id: number }) {
                 })}
             </Timeline>
         </div>
+        </Suspense>
     )
 }

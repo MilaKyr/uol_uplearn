@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Suspense} from "react";
 import { Card, Group, Stack, Center, Textarea, ActionIcon, Avatar, Text, ScrollArea } from "@mantine/core";
 import { IconSend, IconExclamationCircle } from "@tabler/icons-react";
 import { ConversationWindowProps, Message, ConversationData, ConversationUserData } from "@/app/types";
@@ -154,7 +154,7 @@ export default function ConversationWindow(props: ConversationWindowProps) {
     }
 
     return (
-        <>
+        <Suspense>
             <Card  h={900} shadow="sm" padding="lg" radius="md" withBorder>
             <ScrollArea.Autosize type={'never'} viewportRef={messageDiv} onLoad={scrollToBottom}>
                 {rtMessages && rtMessages.map((message, index) => (
@@ -200,6 +200,6 @@ export default function ConversationWindow(props: ConversationWindowProps) {
                 >
                     <IconSend /></ActionIcon>
             </Group>
-        </>
+        </Suspense>
     )
 }

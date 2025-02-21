@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, Suspense } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
 import { Calendar } from '@mantine/dates';
@@ -103,6 +103,7 @@ export default function WeeklyCalendar(props: { userId: number | undefined, onCl
         getTodo(date);
     }
     return (
+        <Suspense>
         <Calendar
             size="lg"
             withCellSpacing={false}
@@ -121,6 +122,7 @@ export default function WeeklyCalendar(props: { userId: number | undefined, onCl
                 };
             }}
         />
+        </Suspense>
     )
 }
 

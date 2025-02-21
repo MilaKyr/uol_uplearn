@@ -1,6 +1,6 @@
 'use client';
 
-import React from "react";
+import React, { Suspense } from "react";
 import { AppShell, Avatar, LoadingOverlay, } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import { Header } from "@/app/components/header/Header";
@@ -293,7 +293,7 @@ export default function UserDashboard() {
   if (isLoading) return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
 
   return (
-
+<Suspense>
     <AppShell
       header={{ height: 70 }}
       navbar={{
@@ -341,5 +341,6 @@ export default function UserDashboard() {
 
       </AppShell.Main>
     </AppShell>
+    </Suspense>
   );
 }

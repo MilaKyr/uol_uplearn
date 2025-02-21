@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, Suspense } from 'react';
 import { IconExclamationCircle } from '@tabler/icons-react';
 import { Badge, Group, Text, UnstyledButton, Stack, Avatar, Indicator, } from '@mantine/core';
 import classes from './MessagesNavbar.module.css';
@@ -146,6 +146,7 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
 
 
     return (
+        <Suspense>
         <nav className={classes.navbar}>
             <UserNameSearch />
 
@@ -189,5 +190,6 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
                 </div>
             </div>
         </nav>
+        </Suspense>
     );
 }
