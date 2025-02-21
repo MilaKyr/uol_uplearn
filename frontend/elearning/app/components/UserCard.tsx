@@ -1,7 +1,7 @@
 'use client';
 
 import React from "react";
-import { Image, Group, useMantineTheme, Text, Avatar, Divider, Card, 
+import { Image, Group, Text, Avatar, Divider, Card, 
  } from "@mantine/core";
 import 'dayjs/locale/en';
 import { useRouter } from 'next/navigation';

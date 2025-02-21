@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Image, Group, Title, 
-  useMantineTheme, Stack, Text,
+  Stack, Text,
   Button, Divider, TextInput, Stepper,  Code, Textarea, ActionIcon,
   Center, NumberInput, TagsInput, Grid,  LoadingOverlay } from "@mantine/core";
 import { IconGripVertical, IconTrash, IconPhoto, IconCheck } from '@tabler/icons-react';
@@ -24,14 +24,12 @@ interface Tag {
 export default function CreateCourse() {
     const router = useRouter();
     const [isLoading, setLoading] = React.useState(false);
-    const theme = useMantineTheme();
     const [active, setActive] = React.useState(0);
     const [tags, setTags] = React.useState<string[]>();
     const [imgBackground, setImgBackground] = React.useState('#f8f8ff');
     const [newCourseId, setNewCourseId] = React.useState<number|null>(null);
     const [courseImg, setCourseImg] = React.useState<File|null>();
     const [courseImgShow, setCourseImgShow] = React.useState<File|string>("https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg");
-    const [showError, setShowError] = React.useState<boolean>(false);
 
     const acceptFile = (file: File) => {
       setCourseImg(file);
@@ -59,7 +57,6 @@ export default function CreateCourse() {
             const id: number = await res.json();           
             setNewCourseId(id);
           } catch (error) {
-            console.error(error)
             notifications.show({
               title: 'Default notification',
               message: 'Do not forget to star Mantine on GitHub! 🌟',
@@ -164,7 +161,7 @@ export default function CreateCourse() {
     
             if (!res.ok) throw new Error('');
             const data: Tag[] = await res.json();
-            let toSave: string[] = [];
+            const toSave: string[] = [];
             data.map((tag: Tag) => {
               toSave.push(tag.name);
             })

@@ -67,6 +67,7 @@ export default function Messages() {
                     if (searchParams.size > 0) {
                       const selectedParam = searchParams.get("selected")
                       if (selectedParam) {
+                        setSelected(selectedParam)
                         const selectedId = parseInt(selectedParam);
                         const selectedConv = convs.find((conv) => conv.id === selectedId)
                         setCurrentConversation(selectedConv)

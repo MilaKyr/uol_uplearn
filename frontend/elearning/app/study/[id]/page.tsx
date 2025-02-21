@@ -26,11 +26,6 @@ import LessonMain from "@/app/components/study/LessonMain";
 import { notifications } from "@mantine/notifications";
 import { CourseEditData } from "@/app/types";
 
-interface EditorData {
-    editor: Editor;
-}
-
-
 
 export default function StudyDetail({ params }: { params: Usable<{ id: string }> }) {
     const [opened, { toggle }] = useDisclosure();
@@ -86,8 +81,8 @@ export default function StudyDetail({ params }: { params: Usable<{ id: string }>
                 setLoading(false);
                 if (searchParams.size > 0) {
                   const params = searchParams.get("selected")
-                  if (params) {
-                    const [component, id] = params?.split("_")
+                  if (params && params.includes("_")) {
+                    const [component, id] = params.split("_")
                     if (component === "topic") {
                       setCurrent("topic");
                       setTopic(parseInt(id));

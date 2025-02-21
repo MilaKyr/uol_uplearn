@@ -85,8 +85,7 @@ export default function CourseStudentList(props: { courseId: number }) {
                 console.error(error)
                 router.replace('/') // Redirect to login if token validation fails
             }
-            // @ts-ignore:prefer-const
-            let newStudents = [...students];
+            const newStudents = [...students];
             newStudents.map((enrolled_stds) => {
                 if (enrolled_stds.id === enrollmentId) {
                     enrolled_stds.status = block ? "blocked" : "started";
@@ -104,7 +103,7 @@ export default function CourseStudentList(props: { courseId: number }) {
             return
         }
 
-        let parsedToken = JSON.parse(token);
+        const parsedToken = JSON.parse(token);
         // Validate the token by making an API call
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/enrollments/${enrollmentId}/remove`, {
@@ -128,7 +127,7 @@ export default function CourseStudentList(props: { courseId: number }) {
             router.replace('/') // Redirect to login if token validation fails
         }
 
-        let newStudents = [...students];
+        const newStudents = [...students];
         newStudents.map((enrolled_stds) => {
             if (enrolled_stds.id === enrollmentId) {
                 enrolled_stds.status = "removed";

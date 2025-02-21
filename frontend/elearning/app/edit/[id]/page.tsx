@@ -26,15 +26,10 @@ import ImageResize from 'tiptap-extension-resize-image';
 import { CourseNavBar } from "@/app/components/navbars/CourseNavbar";
 import { CourseEditData, TopicProps, LessonEditData } from "@/app/types";
 
-interface UserInfo {
-    student: boolean;
-    owner: boolean;
-}
-
 
 const contentPlaceholder: string = '<em>Just start adding your content here. To add an image drag and drop it where you want it to be... That`s all, now you can delete this text and start creating.</em>';
 
-export default function CourseEdit({ params }: { params: Usable<{ id: string }> }, props: UserInfo) {
+export default function CourseEdit({ params }: { params: Usable<{ id: string }> }) {
   const router = useRouter();
     const usedparams: { id: string } = use(params);
     const newCourseId = usedparams.id;
@@ -88,10 +83,9 @@ export default function CourseEdit({ params }: { params: Usable<{ id: string }> 
                   }
       
                   const fileReader = new FileReader()
-      
                   fileReader.readAsDataURL(file)
                   fileReader.onload = () => {
-                    currentEditor.chain().insertContentAt(currentEditor.state.selection.anchor, {
+                    currentEditor?.chain().insertContentAt(currentEditor.state.selection.anchor, {
                       type: 'image',
                       attrs: {
                         src: fileReader.result,
@@ -170,7 +164,11 @@ export default function CourseEdit({ params }: { params: Usable<{ id: string }> 
           
         }
         setLesson(selected);
-        selected.html === null ? editor?.commands.setContent(contentPlaceholder) : editor?.commands.setContent(selected.html);
+        if (selected.html === null) {
+          editor?.commands.setContent(contentPlaceholder)
+        } else {
+          editor?.commands.setContent(selected.html);
+        }
         setCurrent("lesson");
       })
     }

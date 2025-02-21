@@ -64,10 +64,6 @@ export default function Courses() {
   }, [])
 
 
-  const learnMore = (id: number) => {
-    router.push(`/courses/${id}`)
-  }
-
   const showUser = (id: number) => {
     setUserId(id);
     teacherHandle.open();
@@ -119,8 +115,7 @@ export default function Courses() {
     } catch (error) {
       console.error(error)
     }
-    // @ts-ignore:prefer-const
-    let newCourses = [...courses];
+    const newCourses = [...courses];
     newCourses.splice(index, 1);
     setCourses(newCourses)
   }

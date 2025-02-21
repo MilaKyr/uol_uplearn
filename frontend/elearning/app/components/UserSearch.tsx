@@ -9,12 +9,6 @@ interface SetResults {
     onClick: (users: SearchedUserData[]) => void
 }
 
-interface Tag {
-    id: number;
-    name: string;
-    color: string;
-  }
-
 export default function UserSearch(props: SetResults) {
     const [courseTitles, setCourseTitles] = React.useState<CourseTitle[]>([]);
     const router = useRouter();

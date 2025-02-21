@@ -9,7 +9,7 @@ import { getHotkeyHandler } from '@mantine/hooks';
 
 export default function ConversationWindow(props: ConversationWindowProps) {
     const router = useRouter()
-    let lastDate = React.useRef<Date>(new Date())
+    const lastDate = React.useRef<Date>(new Date())
     const searchParams = useSearchParams();
     const messageDiv = React.useRef<HTMLDivElement>(null);
     const me = props.conversation.users?.find((user) => user.id === props.myId);
@@ -36,7 +36,7 @@ export default function ConversationWindow(props: ConversationWindowProps) {
                         return
                       }
                   
-                      let parsedToken = JSON.parse(token);
+                      const parsedToken = JSON.parse(token);
                       // Validate the token by making an API call
                         try {
                           const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/chat/${props.conversation.id}/`, {
@@ -62,7 +62,7 @@ export default function ConversationWindow(props: ConversationWindowProps) {
                               throw new Error('Something went wrong')
                             }
                           };
-                          let conv: ConversationData = await res.json();
+                          const conv: ConversationData = await res.json();
                           setRTMessages(conv.messages);
                         } catch (error) {
                           console.log(error)
@@ -83,8 +83,8 @@ export default function ConversationWindow(props: ConversationWindowProps) {
             'body' in lastJsonMessage && 
             'sender_id' in lastJsonMessage && 
             'id' in lastJsonMessage) {
-            let recipient = props.conversation.users?.find((user) => user.id === lastJsonMessage.recipient_id);
-            let sender = props.conversation.users?.find((user) => user.id === lastJsonMessage.sender_id);
+            const recipient = props.conversation.users?.find((user) => user.id === lastJsonMessage.recipient_id);
+            const sender = props.conversation.users?.find((user) => user.id === lastJsonMessage.sender_id);
             const message: Message = {
                 id: lastJsonMessage.id as number,
                 text: lastJsonMessage.body as string,
