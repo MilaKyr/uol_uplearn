@@ -1,11 +1,10 @@
-from django.urls import path, include
+from django.urls import path
 from . import views
-from rest_framework import routers
 
-router = routers.DefaultRouter()
-router.register(r'', views.ConversationView, basename="conversation")
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('<int:pk>/seen', views.ConversationView.as_view({'put': 'seen'}), name="seen-messages"),
+    path('conversations/', views.ConversationListView.as_view()),
+    path('conversations/new', views.ConversationCreateView.as_view()),
+    path('conversations/<str:pk>/', views.ConversationRetrieveView.as_view()),
+    path('conversations/<str:pk>/seen', views.ConversationUpdateView.as_view()),
 ]

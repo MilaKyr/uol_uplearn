@@ -23,11 +23,11 @@ class TokenAuthMiddleware(BaseMiddleware):
 
     async def __call__(self, scope, receive, send):
         close_old_connections()
-        print(scope['query_string'].decode())
-        query = dict((x.split('=') for x in scope['query_string'].decode().split('&')))
-        token_key = query.get('token')
-        scope['user'] = await get_user(token_key)
-        print(scope['user'])
+        if 'query_string' in scope:
+            query = dict((x.split('=') for x in scope['query_string'].decode().split('&')))
+            token_key = query.get('token')
+            scope['user'] = await get_user(token_key)
+            return await super().__call__(scope, receive, send)
         return await super().__call__(scope, receive, send)
 
 

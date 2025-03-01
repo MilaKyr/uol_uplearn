@@ -1,12 +1,14 @@
 import logging
 import datetime
 import json
+import uuid
 
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 
 from elearning.models import *
-
+from chat.models import Conversation, Message
+from notifications.models import Notification
 from django.contrib.auth import get_user_model
 from django.core.files.images import ImageFile
 from django.utils.timezone import make_aware
@@ -15,8 +17,19 @@ from .permissions import permissions
 
 BATCH_SIZE=20
 
+def add_users_to_groups(users_data) -> None:
+    teacher_group = Group.objects.get(name="teacher")
+    student_group = Group.objects.get(name="student")
+    for user in users_data:
+        instance = User.objects.get(email=user["email"], first_name=user["first_name"], last_name=user["last_name"])
+        if user["role"] == "student":
+            instance.groups.add(student_group)
+        else:
+            instance.groups.add(teacher_group)
+
 def delete_all_objects() -> None:
     User = get_user_model()
+    KeyHolder.objects.all().delete()
     Group.objects.all().delete()
     User.objects.all().delete()
     Tag.objects.all().delete()
@@ -28,6 +41,8 @@ def delete_all_objects() -> None:
     Feedback.objects.all().delete()
     CourseProgress.objects.all().delete()
     Notification.objects.all().delete()
+    Conversation.objects.all().delete()
+    Message.objects.all().delete()
 
 
 def fill_database() -> None:
@@ -37,7 +52,7 @@ def fill_database() -> None:
 
     logging.info("saving Groups...")
     objs = (Group(name="student"), Group(name="teacher"))
-    objects = Group.objects.bulk_create(objs, BATCH_SIZE)
+    Group.objects.bulk_create(objs, BATCH_SIZE)
     ### Permissions
     for (group_name, permission) in permissions.items():
         for (table_name, table_perms) in permission.items():
@@ -46,10 +61,17 @@ def fill_database() -> None:
             perms = Permission.objects.filter(content_type=content_type)
             group = Group.objects.get(name=group_name)
             for perm in perms:
-                if perm in table_perms:
-                    group.permissions.add(perms)
+                if perm.name in table_perms:
+                    group.permissions.add(perm)
+            group.save()
+
+    logging.info("saving KeyHolders...")
+    objs = (KeyHolder(name=holder["name"],
+                 token=uuid.uuid5(uuid.NAMESPACE_DNS, holder["name"])) for holder in data["key_holders"])
+    KeyHolder.objects.bulk_create(objs, BATCH_SIZE)
 
     logging.info("saving User...")
+
     objs = (User(first_name=user["first_name"],
                  last_name=user["last_name"],
                  email=user["email"],
@@ -57,10 +79,10 @@ def fill_database() -> None:
                  status=user.get("status"),
                  bio=user.get("bio"),
                  password="pbkdf2_sha256$870000$HNHM7k1iJjGoBgM8gEUZ4A$IKgMAdZNB5zLpPAn9q7QkTZsFZt/PAxVzxL03yqtYow=",
-                 role=Group.objects.get(name=user["role"]),
+                 key_holder=KeyHolder.objects.get(name=user["company_name"]) if "company_name" in user else None,
                  photo=ImageFile(open(f'seeding/data/photos/users/{user["photo"]}', "rb"))) for user in data["users"])
     User.objects.bulk_create(objs, BATCH_SIZE)
-
+    add_users_to_groups(data["users"])
 
     logging.info("saving Tags...")
     objs = (Tag(name=tag) for tag in data["tags"])
@@ -129,7 +151,7 @@ def fill_database() -> None:
 
     logging.info("saving Course Progress...")
     objs = (CourseProgress(
-        enrolled_student=CourseEnrollment.objects.get(user__email=progress["user"], course__title=progress["course"]),
+        enrollment=CourseEnrollment.objects.get(user__email=progress["user"], course__title=progress["course"]),
         item=Lesson.objects.get(title=progress["item"], course__title=progress["course"]),
     ) for progress in data["course_progress"])
     CourseProgress.objects.bulk_create(objs, BATCH_SIZE)

@@ -3,7 +3,7 @@ import json
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from chat.models import Message
-from elearning.models import Notification
+from notifications.models import Notification
 
 
 
@@ -11,11 +11,8 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['user_id']
         self.group_name = f'public_room_{self.room_name}'
-        print("connecting")
         await self.channel_layer.group_add(self.group_name,
                                            self.channel_name)
-
-
         await self.accept()
 
     async def disconnect(self, code):
@@ -25,7 +22,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data=None, bytes_data=None):
-        print("recieving sonething in Notification Consumer")
         data = json.loads(text_data)
 
         if "notification_id" in data["data"]:
@@ -40,31 +36,25 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         message_id = event["id"]
         message = event["message"]
         sender_id = event["sender_id"]
-        recipient_id = event["recipient_id"]
         await self.send(text_data=json.dumps({
                 'body': message,
                 "id": message_id,
                 'sender_id': sender_id,
-                "recipient_id": recipient_id,
         }))
 
     async def new_notification(self, event):
         print("new_notification", event)
         message = event["message"]
-        sender_first_name = event["sender_first_name"]
-        sender_last_name = event["sender_last_name"]
+        sender_name = event["sender_name"]
         course_id = event["course_id"]
         course_title = event["course_title"]
-        recipient_id = event["recipient_id"]
         notification_id = event["notification_id"]
         await self.send(text_data=json.dumps({
             'body': message,
             'notification_id': notification_id,
-            'sender_first_name': sender_first_name,
-            'sender_last_name': sender_last_name,
+            'sender_name': sender_name,
             'course_id': course_id,
             'course_title': course_title,
-            "recipient_id": recipient_id,
         }))
 
     @sync_to_async

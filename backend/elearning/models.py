@@ -1,24 +1,35 @@
 import os
 import random
-
+import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+class KeyHolder(models.Model):
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    name = models.CharField(max_length=150, unique=True)
+    token = models.UUIDField(editable=False)
 
 class User(AbstractUser):
-    ROLE_CHOICES = (
-        ('administrator', 'Administrator'),
-        ('teacher', 'Teacher'),
-        ('student', 'Student'),
-    )
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     email = models.EmailField()
     status = models.CharField(max_length=256, blank=True, null=True)
-    role = models.CharField(max_length=15, choices=ROLE_CHOICES)
     photo = models.ImageField(null=True)
     bio = models.TextField(null=True)
+    key_holder = models.ForeignKey(to=KeyHolder, on_delete=models.CASCADE, null=True)
     is_online = models.BooleanField(default=False)
+
+    @property
+    def full_name(self) -> str:
+        """Returns the person's full name."""
+        return f"{self.first_name} {self.last_name}"
+
+    def is_student(self) -> bool:
+        return self.groups.filter(name='student').exists()
+
+    def is_teacher(self) -> bool:
+        return self.groups.filter(name='teacher').exists()
 
 def generate_random_color():
     r = lambda: random.randint(0, 255)
@@ -29,6 +40,7 @@ class Tag(models.Model):
     color = models.CharField(max_length=24, default=generate_random_color)
 
 class Course(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     teacher = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="courses")
     is_active = models.BooleanField(default=False)
     photo = models.ImageField(null=True)
@@ -43,6 +55,7 @@ class Course(models.Model):
         unique_together = ('teacher', 'title')
 
 class Topic(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     course = models.ForeignKey(to=Course, on_delete=models.CASCADE, related_name="topics")
     title = models.CharField(max_length=256)
     desc = models.TextField(name ="description")
@@ -53,7 +66,7 @@ class Topic(models.Model):
 
 def course_topic_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT / user_<id>/<filename>
-    return f'files/{filename}'
+    return f'files/{instance.id}_{filename}'
 
 
 class Files(models.Model):
@@ -63,6 +76,7 @@ class Files(models.Model):
         return os.path.basename(self.file.name)
 
 class Lesson(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     topic = models.ForeignKey(to=Topic, on_delete=models.CASCADE, related_name="lessons")
     course = models.ForeignKey(to=Course, on_delete=models.CASCADE, related_name="lessons")
     title = models.CharField(max_length=256)
@@ -83,6 +97,7 @@ class CourseEnrollment(models.Model):
         ('blocked', 'Blocked'),
         ('removed', 'Removed'),
     )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="enrollment")
     course = models.ForeignKey(to=Course, on_delete=models.CASCADE, related_name="registered_students")
     created = models.DateTimeField(auto_now_add=True)
@@ -93,27 +108,19 @@ class CourseEnrollment(models.Model):
 
 
 class Feedback(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(to=CourseEnrollment, on_delete=models.CASCADE, related_name="feedback")
     course = models.ForeignKey(to=Course, on_delete=models.CASCADE, related_name="feedback")
     text = models.CharField(max_length=256)
     created = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField()
 
-    class Meta:
-        unique_together = ('user', 'course')
 
 
 class CourseProgress(models.Model):
-    enrolled_student = models.ForeignKey(to=CourseEnrollment, on_delete=models.CASCADE, related_name="progress")
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    enrollment = models.ForeignKey(to=CourseEnrollment, on_delete=models.CASCADE, related_name="progress")
     item = models.ForeignKey(to=Lesson, on_delete=models.CASCADE, related_name="lesson_status")
 
     class Meta:
-        unique_together = ('enrolled_student', 'item')
-
-class Notification(models.Model):
-    recipient = models.ForeignKey(to=User,  on_delete=models.CASCADE, related_name="recipient")
-    person = models.ForeignKey(to=User, on_delete=models.DO_NOTHING, null=True, related_name="person")
-    course = models.ForeignKey(to=Course, on_delete=models.CASCADE, null=True)
-    text = models.CharField(max_length=250)
-    created = models.DateTimeField(auto_now_add=True)
-    seen = models.BooleanField(default=False)
+        unique_together = ('enrollment', 'item')

@@ -3,7 +3,6 @@ import json
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from elearning.serializers import BasicUserSerializer
 from .models import Message, Conversation
 from elearning.models import User
 
@@ -15,7 +14,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_add(self.room_group_name,
                                            self.channel_name)
         except BaseException as e:
-            print(e)
+            print("Error", e)
 
         await self.accept()
 
@@ -36,14 +35,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             sender_id = data['data']['sender_id']
             recipient_id = data['data']['recipient_id']
             body = data['data']['body']
-
             message = await self.save_message(conversation_id, body, recipient_id)
-
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'chat_message',
-                    'id': message.id,
+                    'id': str(message.id),
                     'body': body,
                     'recipient_id': recipient_id,
                     'sender_id': sender_id
@@ -56,7 +53,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         recipient_id = event["recipient_id"]
         sender_id = event["sender_id"]
         message_id = event["id"]
-
         await self.send(text_data=json.dumps({
             'body': body,
             'recipient_id': recipient_id,

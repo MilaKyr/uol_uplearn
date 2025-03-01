@@ -1,4 +1,12 @@
 {
+  "key_holders": [
+    {
+      "name": "Your tutors Company"
+    },
+    {
+      "name": "Institution"
+    }
+  ],
   "users": [
     {"first_name": "Sunil" , "last_name": "Barratt" ,
       "email": "sunil@barratt.com",
@@ -61,31 +69,33 @@
       "photo": "9d119d757ff7d7b36b9d71b86d973fbe.png"
     },
 
-
-
     {"first_name": "Norma" , "last_name": "Gregory" ,
       "email": "norma@gregory.com",
       "bio": "Passionate UX/UI educator and practitioner dedicated to shaping the next generation of design thinkers. Join me on a journey of creativity and innovation in user experience! \uD83C\uDFA8✨ #UXDesign #UITeacher #CreativeEducation",
       "role": "teacher",
-      "photo": "50382765fd5648c7876d91cc37b27394.png"
+      "photo": "50382765fd5648c7876d91cc37b27394.png",
+      "company_name": "Your tutors Company"
     },
     {"first_name": "Damien" , "last_name": "Bowen" ,
       "email": "damien@bowen.com",
       "bio": "Python Software Engineer with a strong focus on teaching and empowering others in the world of programming. Join me on this journey of learning and growth! #SoftwareEngineering #TeachingTech #LearnToCode \uD83C\uDF1F\uD83D\uDC69\u200D\uD83C\uDFEB",
       "role": "teacher",
-      "photo": "8654c911c90383bb42a6cdddd66014c5.png"
+      "photo": "8654c911c90383bb42a6cdddd66014c5.png",
+      "company_name": "Your tutors Company"
     },
     {"first_name": "Rowan" , "last_name": "Sutcliffe" ,
       "email": "rowan@sutcliffe.com",
       "bio": "Experienced game developer focused on sharing expertise and knowledge with fellow enthusiasts. Let's elevate the gaming experience together! \uD83C\uDF1F\uD83C\uDFAE #GameDevLife #TechEducation #GamingCommunity",
       "role": "teacher",
-      "photo": "bb8c76bcb73cf00e7d4ab920447a365c.png"
+      "photo": "bb8c76bcb73cf00e7d4ab920447a365c.png",
+      "company_name": "Your tutors Company"
     },
     {"first_name": "Sasha" , "last_name": "Long" ,
       "email": "sasha@long.com",
       "bio": "Rust developer and educator with a fervent interest in technology. Striving to inspire others through teaching and hands-on experience in the tech landscape. #RustDeveloper #TechCommunity #LearningTogether \uD83D\uDCDA",
       "role": "teacher",
-      "photo": "06d29f74c2f85239efe3f9ade1b96da7.png"
+      "photo": "06d29f74c2f85239efe3f9ade1b96da7.png",
+      "company_name": "Institution"
     }
   ],
   "tags": [
@@ -798,95 +808,9 @@
       "user": "susannah@rhodes.com",
       "course": "Introduction to Python",
       "status": "started"
-    },
-    {
-      "user": "roland@watkins.com",
-      "course": "Python for practitioners",
-      "status": "finished"
-    },
-    {
-      "user": "holly@richards.com",
-      "course": "Python for practitioners",
-      "status": "finished"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Python for practitioners",
-      "status": "started"
-    },
-    {
-      "user":"oliver@fish.com",
-      "course": "Python for practitioners",
-      "status": "started"
     }
   ],
   "course_progress": [
-
-    {
-      "user": "lee@heath.com",
-      "course": "Python for practitioners",
-      "item": "Lists, tuples, and dictionaries: when to use each"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Python for practitioners",
-      "item": "Manipulating data structures"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Python for practitioners",
-      "item": "Importing and using Python libraries"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Python for practitioners",
-      "item": "Popular libraries: NumPy, pandas, and more"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Python for practitioners",
-      "item": "Reading from and writing to files"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Python for practitioners",
-      "item": "Working with CSV files"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Python for practitioners",
-      "item": "Common errors and how to fix them"
-    },
-    {
-      "user": "oliver@fish.com",
-      "course": "Python for practitioners",
-      "item": "Lists, tuples, and dictionaries: when to use each"
-    },
-    {
-      "user": "oliver@fish.com",
-      "course": "Python for practitioners",
-      "item": "Manipulating data structures"
-    },
-    {
-      "user": "oliver@fish.com",
-      "course": "Python for practitioners",
-      "item": "Importing and using Python libraries"
-    },
-    {
-      "user": "oliver@fish.com",
-      "course": "Python for practitioners",
-      "item": "Popular libraries: NumPy, pandas, and more"
-    },
-    {
-      "user": "oliver@fish.com",
-      "course": "Python for practitioners",
-      "item": "Reading from and writing to files"
-    },
-    {
-      "user": "pearl@woolley.com",
-      "course": "Python for practitioners",
-      "item": "Lists, tuples, and dictionaries: when to use each"
-    },
     {
       "user": "sunil@barratt.com",
       "course": "Introduction to Python",
@@ -1226,18 +1150,6 @@
     }
   ],
   "feedback": [
-    {
-      "user": "roland@watkins.com",
-      "course": "Python for practitioners",
-      "text": "I recently completed this online course, and I must say, it was a transformative experience! From the moment I logged in, I was greeted with a beautifully designed interface that made navigation a breeze. The course is packed with valuable insights and practical strategies that you can start using right away.",
-      "rating": 4
-    },
-    {
-      "user": "holly@richards.com",
-      "course": "Python for practitioners",
-      "text": "I came into this course wanting to elevate my skills, and I left feeling equipped to tackle challenges head-on. Whether you’re a beginner trying to understand the basics or a seasoned professional looking to sharpen your skills, I can’t recommend this course enough!",
-      "rating": 5
-    },
     {
       "user": "pearl@woolley.com",
       "course": "Introduction to Python",

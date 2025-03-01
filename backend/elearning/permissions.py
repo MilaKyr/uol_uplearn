@@ -1,97 +1,73 @@
-import rest_framework.permissions
 from rest_framework import permissions
 
-from .models import CourseEnrollment, Feedback
+from .models import CourseEnrollment
+
+def find_owner(obj):
+    if obj._meta.model.__name__ == "User":
+        return obj
+    if obj._meta.model.__name__ == "Feedback":
+        return obj.user.user
+    if obj._meta.model.__name__ == "Course":
+        return obj.teacher
+    if obj._meta.model.__name__ == "CourseEnrollment":
+        return obj.course.teacher
+
+def find_course(obj):
+    if obj._meta.model.__name__ == "Course":
+        return obj
+    return obj.course
 
 
-class UserCoursePermission(permissions.BasePermission):
+class IsStudent(permissions.BasePermission):
 
     def has_permission(self, request, view):
         # Deny access if the user is not authenticated
-        if not request.user.is_authenticated:
-            return False
-        # Only a teacher can create course
-        if view.action == 'create':
-            return request.user.role == "teacher"
-        # Only a student can enroll
-        if view.action == "enroll":
-            return request.user.role == "student"
-        return True
+        return request.user.is_student()
+
+class IsTeacher(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        # Deny access if the user is not authenticated
+        return request.user.is_teacher()
+
+class UpdateDeleteIfOwner(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         # Only an owner (teacher) of the course cab update or destroy it
-        if view.action in ['update', 'partial_update', 'destroy']:
-            return obj.teacher == request.user
-
+        if request.method in ["PATCH", "PUT", "DELETE"]:
+            owner = find_owner(obj)
+            return owner == request.user
         return True
 
-class UserPermission(permissions.BasePermission):
+class IsOwner(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        owner = find_owner(obj)
+        # Only an owner (teacher) of the course cab update or destroy it
+        return owner == request.user
+
+class OwnerOrEnrolled(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        # Only an owner (teacher) of the course cab update or destroy it
+        course = find_course(obj)
+        if request.user.is_student():
+            enrolled = CourseEnrollment.objects.filter(user=request.user, course=course)
+            return enrolled.exists()
+        return course.teacher == request.user
+
+class IsEnrolled(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        course = find_course(obj)
+        enrolled = CourseEnrollment.objects.filter(course=course, user=request.user)
+        return enrolled.exists()
+
+class TeacherWriter(permissions.BasePermission):
 
     def has_permission(self, request, view):
         # Deny access if the user is not authenticated
-        if not request.user.is_authenticated:
-            return False
-        # create course can only a teacher
-        if request.method in rest_framework.permissions.SAFE_METHODS:
-            return True
-        return False
-
-    def has_object_permission(self, request, view, obj):
-        is_owner = obj == request.user
-        if view.action == "todo_for" and not is_owner:
-            return False
+        if request.method in ["POST"]:
+            return request.user.is_teacher()
         return True
-
-class TopicPermission(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        # Deny access if the user is not authenticated
-        if not request.user.is_authenticated:
-            return False
-        return True
-
-    def has_object_permission(self, request, view, obj):
-        is_owner = obj.course.teacher == request.user
-        if view.action in ["create", "update", "partial_update",
-                           "change_lesson_order", "destroy"]:
-            return is_owner
-        return True
-
-class LessonPermission(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        # Deny access if the user is not authenticated
-        if not request.user.is_authenticated:
-            return False
-        return True
-
-    def has_object_permission(self, request, view, obj):
-        is_owner = obj.topic.course.teacher == request.user
-        if view.action in ["create", "update", "partial_update",
-                           "add_content", "change_content_order", "destroy"]:
-            return is_owner
-
-        if view.action == "done":
-            return request.user.role == "student" and CourseEnrollment.objects.filter(course=obj.course, user=request.user).exists()
-
-        return True
-
-class FeedbackPermission(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        # Deny access if the user is not authenticated
-        if not request.user.is_authenticated:
-            return False
-
-        if view.action in ["create", "update", "partial_update"]:
-            return request.user.role == "student"
-
-        return True
-
-    def has_object_permission(self, request, view, obj):
-        if view.action in ["update", "partial_update"]:
-            is_owner = Feedback.objects.select_related("user").filter(id=obj.id, user__user=request.user).exists()
-            return is_owner
-
-        return False
 
