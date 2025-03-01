@@ -6,7 +6,7 @@ import uuid
 from dateutil import relativedelta
 import pytest
 from django.core.files import File
-from django.db.models import Value
+from django.db.models import Value, Prefetch
 from django.http import HttpRequest
 from django.utils import timezone
 
@@ -148,7 +148,7 @@ def test_teacher_serializer(teacher):
 def test_course_serializer(course, feedback, lesson, student, enrolled_student):
     course_instance = (Course.objects
                        .filter(id=course.id)
-                       .prefetch_related("feedback")
+                       .prefetch_related("registered_students")
                        .prefetch_related("topics")
                        .annotate(average_rating=Value(4.75))
                        .annotate(n_students=Value(3))
@@ -190,8 +190,8 @@ def test_course_serializer(course, feedback, lesson, student, enrolled_student):
             {
                 "id": str(feedback.id),
                 "user": {
-                    "id": str(feedback.user.user.id),
-                    "name": f"{feedback.user.user.first_name} {feedback.user.user.last_name}",
+                    "id": str(feedback.enrollment.user.id),
+                    "name": f"{feedback.enrollment.user.first_name} {feedback.enrollment.user.last_name}",
                     "photo": "",
                 },
                 "text": feedback.text,
@@ -217,7 +217,7 @@ def test_course_w_progress_short_serializer(course, student, enrolled_student):
                        .prefetch_related("registered_students")
                        .prefetch_related("topics")
                        .prefetch_related("topics__study_lessons")
-                       .prefetch_related("feedback")
+                       .prefetch_related("registered_students__feedback")
                        .filter(registered_students__user=enrolled_student.user)
                        .annotate(overall=Value(5))
                        .all()
@@ -243,7 +243,7 @@ def test_course_w_progress_short_serializer_no_tasks(course, student, enrolled_s
                        .prefetch_related("registered_students")
                        .prefetch_related("topics")
                        .prefetch_related("topics__study_lessons")
-                       .prefetch_related("feedback")
+                       .prefetch_related("registered_students__feedback")
                        .filter(registered_students__user=enrolled_student.user)
                        .annotate(overall=Value(0))
                        .all()
@@ -380,7 +380,7 @@ def test_course_create_serializer_start_fail( teacher):
         ]
     }
     with pytest.raises(ValidationError):
-        serializer = CourseCreateSerializer(context={"teacher_id": teacher.id}, data=new_course)
+        serializer = CourseShortSerializer(context={"teacher_id": teacher.id}, data=new_course)  #CHANGED
         serializer.is_valid(raise_exception=True)
 
 
@@ -410,7 +410,7 @@ def test_course_create_serializer_fails():
         ]
     }
     with pytest.raises(ValidationError):
-        serializer = CourseCreateSerializer(context={"teacher_id": 23}, data=new_course)
+        serializer = CourseShortSerializer(context={"teacher_id": 23}, data=new_course) #CHANGED
         serializer.is_valid(raise_exception=True)
         serializer.save()
 

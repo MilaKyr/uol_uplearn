@@ -109,8 +109,7 @@ class CourseEnrollment(models.Model):
 
 class Feedback(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(to=CourseEnrollment, on_delete=models.CASCADE, related_name="feedback")
-    course = models.ForeignKey(to=Course, on_delete=models.CASCADE, related_name="feedback")
+    enrollment = models.OneToOneField(to=CourseEnrollment, on_delete=models.CASCADE, related_name="feedback")
     text = models.CharField(max_length=256)
     created = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField()

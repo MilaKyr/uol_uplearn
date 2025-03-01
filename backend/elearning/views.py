@@ -34,10 +34,10 @@ class CourseListCreateView(generics.ListCreateAPIView):
     """
     queryset = (Course.objects
                 .filter(is_active=True)
-                .prefetch_related("feedback")
                 .prefetch_related("registered_students")
-                .annotate(average_rating=Avg('feedback__rating', default=0, output_field=FloatField()))
-                .annotate(n_students=Count('registered_students__id', output_field=IntegerField()))
+                .prefetch_related("registered_students__feedback")
+                .annotate(average_rating=Avg('registered_students__feedback__rating', default=0, output_field=FloatField()))
+                .annotate(n_students=Count('registered_students__feedback__id', output_field=IntegerField(), distinct=True))
                 )
     serializer_class = CourseShortSerializer
     permission_classes = [permissions.IsAuthenticated, TeacherWriter]
@@ -83,10 +83,11 @@ class CourseDetail(generics.RetrieveDestroyAPIView):
         Returns course details with statistics: average rating and number of students rated the course
     """
     queryset = (Course.objects
-                .prefetch_related("feedback")
-                .prefetch_related("feedback__user")
-                .annotate(average_rating=Avg('feedback__rating',default=0,output_field=FloatField()))
-                .annotate(n_students=Count('registered_students__id',output_field=IntegerField()))
+                .prefetch_related("registered_students", 'registered_students__feedback')
+                .annotate(
+        average_rating=Avg('registered_students__feedback__rating', default=0, output_field=FloatField()))
+                .annotate(
+        n_students=Count('registered_students__feedback__id', output_field=IntegerField(), distinct=True))
     )
     serializer_class = CourseSerializer
     permission_classes = [permissions.IsAuthenticated, UpdateDeleteIfOwner]
@@ -114,10 +115,11 @@ class CourseStudyDetail(generics.RetrieveAPIView):
         if the lesson is done
     """
     queryset = (Course.objects
-                .prefetch_related("feedback")
-                .prefetch_related("feedback__user")
-                .annotate(average_rating=Avg('feedback__rating', default=0, output_field=FloatField()))
-                .annotate(n_students=Count('registered_students__id', output_field=IntegerField()))
+                .prefetch_related("registered_students__feedback")
+                .annotate(
+        average_rating=Avg('registered_students__feedback__rating', default=0, output_field=FloatField()))
+                .annotate(
+        n_students=Count('registered_students__feedback__id', output_field=IntegerField(), distinct=True))
                 )
     serializer_class = CourseSerializer
     permission_classes = [permissions.IsAuthenticated, OwnerOrEnrolled]
@@ -336,7 +338,7 @@ class UserRetrieveView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
-        if self.request.user.role == "student":
+        if self.request.user.is_student():
             return StudentSerializer
         return self.serializer_class
 
@@ -357,10 +359,10 @@ class UserRetrieveView(generics.RetrieveAPIView):
 
     def _get_teacher_courses(self, user):
         return (self._get_course_queryset()
-                .prefetch_related("feedback")
+                .prefetch_related("registered_students__feedback")
                 .filter(teacher=user)
-                .annotate(average_rating=Avg('feedback__rating',default=0,output_field=FloatField()))
-                .annotate(n_students=Count('feedback__id',output_field=IntegerField()))
+                .annotate(average_rating=Avg('registered_students__feedback__rating',default=0,output_field=FloatField()))
+                .annotate(n_students=Count('registered_students__feedback__id',output_field=IntegerField(), distinct=True))
                 .all()
                 )
 

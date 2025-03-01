@@ -6,7 +6,7 @@ def find_owner(obj):
     if obj._meta.model.__name__ == "User":
         return obj
     if obj._meta.model.__name__ == "Feedback":
-        return obj.user.user
+        return obj.enrollment.user
     if obj._meta.model.__name__ == "Course":
         return obj.teacher
     if obj._meta.model.__name__ == "CourseEnrollment":

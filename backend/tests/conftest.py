@@ -86,8 +86,8 @@ def enrolled_student(student, course):
     return CourseEnrollment.objects.create(user=student, course=course, status="started")
 
 @pytest.fixture
-def feedback(enrolled_student, course):
-    return Feedback.objects.create(user=enrolled_student, course=course,
+def feedback(enrolled_student):
+    return Feedback.objects.create(enrollment=enrolled_student,
                                    text="test", rating=5)
 
 @pytest.fixture

@@ -158,8 +158,7 @@ def fill_database() -> None:
 
     logging.info("saving Feedback...")
     objs = (Feedback(
-        user=CourseEnrollment.objects.get(user__email=feedback["user"], course__title=feedback["course"]),
-        course=Course.objects.get(title=feedback["course"]),
+        enrollment=CourseEnrollment.objects.get(user__email=feedback["user"], course__title=feedback["course"]),
         text=feedback["text"],
         rating=feedback["rating"],
     ) for feedback in data["feedback"])

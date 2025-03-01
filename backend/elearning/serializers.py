@@ -1,5 +1,7 @@
 import base64
 
+from django.db.models import prefetch_related_objects
+from django.db.models.query_utils import select_related_descend
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import Group
 from django.db import transaction, IntegrityError
@@ -149,7 +151,7 @@ class StudentFeedbackSerializer(serializers.ModelSerializer):
     rating = serializers.IntegerField(validators=[feedback_between_1_5])
 
     def get_user(self, instance):
-        return UserShortSerializer(instance.user.user).data
+        return UserShortSerializer(instance.enrollment.user).data
 
     class Meta:
         model = Feedback
@@ -287,11 +289,18 @@ class CourseShortSerializer(CourseBasicSerializer):
             'teacher', 'start_date', 'duration', 'average_rating', 'n_students', 'created', 'tags']
 
 
+
 class CourseSerializer(CourseShortSerializer):
     """ Serializes course with topics and feedback. """
     topics = TopicWithLessonsSerializer(many=True, read_only=True)
-    feedback = StudentFeedbackSerializer(many=True, read_only=True)
+    feedback = serializers.SerializerMethodField()
     enrolled = serializers.SerializerMethodField()
+
+    def get_feedback(self, instance):
+        registered_students = instance.registered_students.all()
+        prefetched = Feedback.objects.filter(enrollment__in=registered_students).all()
+        serializer = StudentFeedbackSerializer(prefetched, many=True, read_only=True)
+        return serializer.data
 
     def get_enrolled(self, _):
         return self.context.get("enrolled", False)
@@ -317,7 +326,9 @@ class CourseRetireveUpdateSerializer(CourseBasicSerializer):
         fields = CourseBasicSerializer.Meta.fields + ['start_date', 'duration', 'topics', 'is_active', 'description',
                 'created', 'tags']
 
+
 class CourseCreateSerializer(serializers.Serializer):
+
     """ Creates new course """
     id = serializers.UUIDField()
     title = serializers.CharField()
@@ -426,35 +437,6 @@ class CourseWithProgressSerializer(CourseBasicSerializer):
         model = Course
         fields = CourseBasicSerializer.Meta.fields + ['enrolled', 'progress', 'status']
 
-class CourseCreateFeedback(serializers.Serializer):
-    """ Creates new feedback for the course """
-    course_id = serializers.UUIDField()
-    text = serializers.CharField()
-    created = serializers.ReadOnlyField()
-    rating = serializers.IntegerField(validators=[feedback_between_1_5])
-
-    class Meta:
-        model = Feedback
-
-    def create(self, validated_data):
-        """ Creates new feedback """
-        try:
-            course_id = validated_data.pop('course_id')
-            student = self.context["request"].user
-            # get course
-            course = Course.objects.get(id=course_id)
-            # get enrollment
-            course_enrollment = CourseEnrollment.objects.get(user=student, course=course)
-            if course_enrollment.status != "finished":
-                raise PermissionDenied()
-            feedback = Feedback.objects.create(user=course_enrollment, course=course, **validated_data)
-            return feedback
-        except Course.DoesNotExist as error:
-            raise NotFound(error)
-        except CourseEnrollment.DoesNotExist:
-            # return no information other that it's denied for security concerns
-            raise PermissionDenied()
-
 class FeedbackSerializer(serializers.ModelSerializer):
     """ Serializes Feedback model """
 
@@ -468,14 +450,38 @@ class CourseFeedbackSerializer(serializers.Serializer):
     feedback = serializers.SerializerMethodField()
 
     def get_feedback(self, instance):
-        if instance.feedback.exists():
-            feedback = instance.feedback.get()
-            return FeedbackSerializer(feedback).data
+        if instance.feedback is not None:
+            return FeedbackSerializer(instance.feedback).data
 
     class Meta:
         model = CourseEnrollment
         fields = ['course', 'feedback' ]
 
+class CourseCreateFeedback(serializers.Serializer):
+    """ Creates new feedback for the course """
+    course_id = serializers.UUIDField(write_only=True)
+    text = serializers.CharField()
+    created = serializers.ReadOnlyField()
+    rating = serializers.IntegerField(validators=[feedback_between_1_5])
+
+    def create(self, validated_data):
+        """ Creates new feedback """
+        try:
+            course_id = validated_data.pop('course_id')
+            student = self.context["request"].user
+            # get course
+            course = Course.objects.get(id=course_id)
+            # get enrollment
+            course_enrollment = CourseEnrollment.objects.get(user=student, course=course)
+            if course_enrollment.status != "finished":
+                raise PermissionDenied()
+            feedback = Feedback.objects.create(enrollment=course_enrollment, **validated_data)
+            return feedback
+        except Course.DoesNotExist as error:
+            raise NotFound(error)
+        except CourseEnrollment.DoesNotExist:
+            # return no information other that it's denied for security concerns
+            raise PermissionDenied()
 
 class TodoListSerializer(serializers.Serializer):
     """ Serializes a to-do task for student """

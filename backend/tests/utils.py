@@ -81,6 +81,7 @@ def create_course(token):
     response = client.post("/api/courses/", data=course_payload,
                 headers={'AUTHORIZATION': f" Bearer {token}"}, format="json")
     result = json.loads(response.content)
+    print(result)
     return response.status_code, result
 
 
