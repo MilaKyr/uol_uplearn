@@ -32,9 +32,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG", default=0))
+DEBUG = True #bool(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1").split(",")
+ALLOWED_HOSTS = ["127.0.0.1"] #os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1").split(",")
 
 AUTH_USER_MODEL = "elearning.User"
 
@@ -82,13 +82,14 @@ INSTALLED_APPS = [
     'notifications',
     "elearning.apps.ElearningConfig",
     "corsheaders",
-
+    'rest_framework_swagger',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     "django.contrib.sites",
 
     "rest_framework",
@@ -101,9 +102,6 @@ INSTALLED_APPS = [
 
     "dj_rest_auth",
     "dj_rest_auth.registration",
-
-
-
 ]
 
 MIDDLEWARE = [
@@ -238,7 +236,8 @@ REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_HTTPONLY": False,
     'LOGIN_SERIALIZER': 'elearning.serializers.CustomLoginSerializer',
-    'USER_DETAILS_SERIALIZER': 'elearning.serializers.AuthUserSerializer',
+    'USER_DETAILS_SERIALIZER': 'elearning.serializers.UserAuthSerializer',
+    'REGISTER_SERIALIZER': 'elearning.serializers.CustomRegisterSerializer',
 }
 
 if DEBUG:
@@ -253,7 +252,7 @@ CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
-                "hosts": [(os.getenv('REDIS_HOST', '127.0.0.1'), 6379)],
+                "hosts": [('127.0.0.1', 6379)],
             },
         },
     }

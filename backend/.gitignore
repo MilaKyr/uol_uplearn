@@ -174,3 +174,4 @@ cython_debug/
 *.jpg
 *.pdf
 .idea/
+*seeding/data/photos/*

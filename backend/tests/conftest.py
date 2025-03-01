@@ -1,40 +1,48 @@
+import uuid
+
 import pytest
 from django.core.files.images import ImageFile
 from django.db.models.signals import post_save
 from django.utils import timezone
 import datetime
 from django.contrib.auth.models import Group
-
-from elearning.models import User, Course, Lesson, Feedback, CourseEnrollment, Topic, Notification, Tag
+from notifications.models import Notification
+from elearning.models import User, Course, Lesson, Feedback, CourseEnrollment, Topic, Tag, KeyHolder
 from django.db.models import signals
 
 COURSE_IMG_PATH = 'seeding/data/photos/courses/rubaitul-azad-ZIPFteu-R8k-unsplash_JRGhzsf.jpg'
+
 @pytest.fixture
-def teacher():
-    return User.objects.create(username="test_teacher",
-                               first_name="John", last_name="Smith",
-                               email="abc@abc.com", password="Abc12345!",
-                               role="teacher",
-                               bio="some bio")
+def key_holder():
+    return KeyHolder.objects.create(name='some-name', token=uuid.uuid5(uuid.NAMESPACE_DNS, 'some-name'))
 
 @pytest.fixture
 def student_group():
     return Group.objects.create(name='student')
 
-
 @pytest.fixture
 def teacher_group():
     return Group.objects.create(name='teacher')
 
+@pytest.fixture
+def teacher(key_holder, teacher_group):
+    teacher = User.objects.create(username="test_teacher",
+                               key_holder=key_holder,
+                               first_name="John", last_name="Smith",
+                               email="abc@abc.com", password="Abc12345!",
+                               bio="some bio")
+    teacher.groups.add(teacher_group)
+    return teacher
 
 @pytest.fixture
-def student():
-    return User.objects.create(username="student1", first_name="James", last_name="Johns",
-                               email="abc@abc.com", password="12345678!!!",
-                               role="student")
+def student(student_group):
+    student = User.objects.create(username="student1", first_name="James", last_name="Johns",
+                               email="abc@abc.com", password="12345678!!!")
+    student.groups.add(student_group)
+    return student
 
 @pytest.fixture
-def course(teacher):
+def course(teacher, key_holder):
     now = timezone.now()
     return Course.objects.create(teacher=teacher,
                                  photo=ImageFile(open(COURSE_IMG_PATH, "rb")),
@@ -63,7 +71,7 @@ def topic(course):
 
 @pytest.fixture
 def lesson(topic, course):
-    now = datetime.datetime.now()
+    now = timezone.now()
     deadline = now + datetime.timedelta(days=1)
     return Lesson.objects.create(topic=topic, course=course, title="Item title",
                                     deadline=deadline)

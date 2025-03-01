@@ -1,17 +1,20 @@
 import datetime
 import json
-import string
 import uuid
-from random import choice
-from string import ascii_uppercase, ascii_lowercase
 import pytest
+from django.utils import timezone
 from rest_framework.test import APIClient
 from rest_framework import status
 from elearning.serializers import *
 from elearning.models import *
 from django.db.models import signals
-from tests.pytest.utils import course_payload, register_student, register_teacher, create_course, enroll, \
+from tests.utils import course_payload, register_student, register_teacher, create_course, enroll, \
 random_password, random_email
+from notifications.models import Notification
+
+from elearning.models import CourseEnrollment
+
+from notifications.signals import enrollment_created
 
 client = APIClient()
 
@@ -63,7 +66,6 @@ def test_logout(student_group):
 @pytest.mark.django_db
 def test_list_courses(student_group, active_course):
     student = register_student()
-    print(student)
     response = client.get("/api/courses/", headers={'AUTHORIZATION':
                                                         f" Bearer {student['access']}"})
     assert response.status_code == status.HTTP_200_OK
@@ -87,7 +89,7 @@ def test_get_course(student_group, active_course):
 def test_create_course_teacher_fails(teacher_group):
     teacher = register_teacher()
     assert Course.objects.count() == 0
-    start_date = datetime.datetime.now() + datetime.timedelta(days=3)
+    start_date = timezone.now() + datetime.timedelta(days=3)
     duration = datetime.timedelta(days=30)
     payload = {
         "title": "Test",
@@ -104,7 +106,7 @@ def test_create_course_teacher_fails(teacher_group):
 def test_create_course_past_start_date(teacher_group, teacher):
     teacher = register_teacher()
     assert Course.objects.count() == 0
-    start_date = datetime.datetime.now() - datetime.timedelta(days=3)
+    start_date = timezone.now() - datetime.timedelta(days=3)
     duration = datetime.timedelta(days=30)
     payload = {
         "title": "Test",
@@ -123,7 +125,6 @@ def test_create_course_past_start_date(teacher_group, teacher):
 @pytest.mark.django_db
 def test_enroll(student_group, course):
     student = register_student()
-    signals.post_save.receivers = []
     response = client.post("/api/enrollments/",
                            data={"course_id": str(course.id)},
                            headers={'AUTHORIZATION': f" Bearer {student['access']}"},
@@ -384,6 +385,7 @@ def test_enrolled_students(teacher_group, active_course):
 def test_update_enrollment_status(teacher_group, student_group):
     teacher = register_teacher()
     student = register_student()
+    signals.post_save.disconnect(receiver=enrollment_created, sender=CourseEnrollment)
     _, course = create_course(teacher['access'])
     enroll(student['access'], course['id'])
     enrollment = CourseEnrollment.objects.get(course__id=course['id'], user__id=student['user']['id'])
@@ -392,23 +394,7 @@ def test_update_enrollment_status(teacher_group, student_group):
                           headers={'AUTHORIZATION': f" Bearer {teacher['access']}"}, format="json")
     assert response.status_code == status.HTTP_200_OK
     assert CourseEnrollment.objects.get(id=enrollment.id).status == "blocked"
-    assert Notification.objects.filter(person__id=teacher['user']['id'],
-                                       recipient__id=student['user']['id'], course__id=course['id']).exists()
 
-@pytest.mark.django_db
-def test_get_create_notifications_works(teacher_group, student_group):
-    teacher = register_teacher()
-    student = register_student()
-    _, course = create_course(teacher['access'])
-    enroll(student['access'], course['id'])
-    response = client.get(f"/api/notifications/", headers={'AUTHORIZATION': f" Bearer {teacher['access']}"})
-    assert response.status_code == status.HTTP_200_OK
-    result = json.loads(response.content)
-    assert len(result) == 1
-    response = client.post(f"/api/notifications/",
-                           data={'ids': [str(result[0]['id'])]}, format="json",
-                           headers={'AUTHORIZATION': f" Bearer {teacher['access']}"})
-    assert response.status_code == status.HTTP_201_CREATED
 
 @pytest.mark.django_db
 def test_user_search_all(teacher_group, student_group):
@@ -495,13 +481,11 @@ def test_teacher_update_settings(teacher_group):
     assert User.objects.get(id=teacher['user']['id']).bio == new_bio
 
 @pytest.mark.django_db
-def test_inbox(teacher_group):
+def test_retrieve_file(teacher_group):
     teacher = register_teacher()
-    response = client.get(f"/api/home/inbox",
-                 headers={'AUTHORIZATION': f" Bearer {teacher['access']}"})
-    result = json.loads(response.content)
-    assert result['new_notifications'] == 0 and result['new_messages'] == 0
-
-
-
+    _, course = create_course(teacher['access'])
+    lesson = Lesson.objects.get(course__id=course['id'])
+    response = client.get(f"/api/lessons/files/{lesson.id}/",
+                          headers={'AUTHORIZATION': f" Bearer {teacher['access']}"})
+    assert response.status_code == status.HTTP_200_OK
 

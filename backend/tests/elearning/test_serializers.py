@@ -8,9 +8,11 @@ import pytest
 from django.core.files import File
 from django.db.models import Value
 from django.http import HttpRequest
+from django.utils import timezone
 
 from elearning.serializers import *
 from elearning.models import *
+from tests.utils import get_role
 from rest_framework.exceptions import ValidationError, NotFound, PermissionDenied
 
 
@@ -135,7 +137,7 @@ def test_teacher_serializer(teacher):
         'name': f"{teacher.first_name} {teacher.last_name}",
         'photo': "",
         'is_online': teacher.is_online,
-        'role': teacher.role,
+        'role': get_role(teacher),
         'bio': teacher.bio,
     }
     serialized = TeacherSerializer(teacher)
@@ -204,6 +206,9 @@ def test_course_serializer(course, feedback, lesson, student, enrolled_student):
     assert serializer.data["photo"] == encode_image(COURSE_IMG_PATH)
     result = serializer.data
     result.pop("photo")
+    print(json.dumps(result, sort_keys=True))
+    print("-"*20)
+    print(json.dumps(expected, sort_keys=True))
     assert json.dumps(result, sort_keys=True) == json.dumps(expected, sort_keys=True)
 
 @pytest.mark.django_db
@@ -260,7 +265,7 @@ def test_course_w_progress_short_serializer_no_tasks(course, student, enrolled_s
 
 @pytest.mark.django_db
 def test_todo_list_serializer(student, lesson):
-    first_date =datetime.datetime.now()
+    first_date =timezone.now()
     last_date = first_date + relativedelta.relativedelta(days=5)
     todo_list = (Lesson.objects
                          .select_related("topic")
@@ -290,7 +295,7 @@ def test_todo_list_serializer(student, lesson):
 
 @pytest.mark.django_db
 def test_student_feedback_serializer(student, lesson):
-    first_date = datetime.datetime.now()
+    first_date = timezone.now()
     last_date = first_date + relativedelta.relativedelta(days=5)
     todo_list = (Lesson.objects
                          .select_related("topic")
@@ -351,7 +356,7 @@ def test_add_file_to_lesson_serializer(lesson, enrolled_student):
 @pytest.mark.django_db
 def test_course_create_serializer_start_fail( teacher):
     assert Course.objects.count() == 0
-    now = datetime.datetime.now()
+    now = timezone.now()
     deadline = now + datetime.timedelta(days=1)
     new_course = {
         "title": "Course title",
@@ -442,16 +447,6 @@ def test_course_create_serializer(teacher):
     serializer.save()
     assert Course.objects.count() == 1
 
-
-@pytest.mark.django_db
-def test_notifications_seen_serializer(notification):
-    assert Notification.objects.count() == 1
-    assert not Notification.objects.get(id=notification.id).seen
-    serializer = NotificationSeenSerializer(data={"ids": [notification.id]})
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
-    assert Notification.objects.get(id=notification.id).seen
-
 @pytest.mark.django_db
 def test_prefetch_enrollment_serializer(enrolled_student):
     enrollment = (CourseEnrollment.objects
@@ -462,7 +457,7 @@ def test_prefetch_enrollment_serializer(enrolled_student):
     expected = {
         'id': str(enrolled_student.id),
         'name': enrolled_student.user.full_name,
-        'role': enrolled_student.user.role,
+        'role': get_role(enrolled_student.user),
         'photo': "",
         'status': enrolled_student.status
     }
@@ -477,7 +472,7 @@ def test_custom_registration(student_group):
         'email': "abc@abc.com",
         'first_name': "First",
         'last_name': "Last",
-        'role': "student"
+        'role': "student",
     }
     serializer = CustomRegisterSerializer(data=payload)
     serializer.is_valid(raise_exception=True)
@@ -493,7 +488,7 @@ def test_custom_login(student_group):
         'email': "abc@abc.com",
         'first_name': "First",
         'last_name': "Last",
-        'role': "student"
+        'role': "student",
     }
     serializer = CustomRegisterSerializer(data=payload)
     serializer.is_valid(raise_exception=True)

@@ -14,11 +14,11 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 
-django_asgi_app = get_asgi_application()  # pragma: no cover
-
 import chat.routing
 import notifications.routing
 from chat.token_auth import TokenAuthMiddleware
+
+django_asgi_app = get_asgi_application()  # pragma: no cover
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
