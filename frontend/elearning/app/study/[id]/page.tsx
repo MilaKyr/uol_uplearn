@@ -58,7 +58,7 @@ export default function StudyDetail() {
 
   const getCourse = async () => {
     const { data, status } = await api.get(`/api/courses/study/${courseId}/`)
-    if (status === 401 || status === 403) {
+    if (status === 401){
       const check_if_exists = notificationsStore.notifications.find((notif) => notif.title === "Session expired")
       if (check_if_exists === undefined) {
         notifications.show({
@@ -70,31 +70,42 @@ export default function StudyDetail() {
         });
         router.push('/')
       }
-    }
-    setCourse(data);
-    setLoading(false);
-    if (searchParams.size > 0) {
-      const params = searchParams.get("selected")
-      if (params && params.includes("_")) {
-        const [component, id] = params.split("_")
-        if (component === "topic") {
-          setCurrent("topic");
-          setTopic(id);
-          setSelected(params)
-        } else {
-          setCurrent("lesson");
-          setLesson(id)
-          setSelected(params);
+    } else if (status === 403) {
+      notifications.show({
+        title: "You cannot access this course",
+        message: "",
+        autoClose: 6000,
+        icon: <IconExclamationCircle />,
+        color: 'red',
+      });
+      router.back();
+    } else {
+      setCourse(data);
+      setLoading(false);
+      if (searchParams.size > 0) {
+        const params = searchParams.get("selected")
+        if (params && params.includes("_")) {
+          const [component, id] = params.split("_")
+          if (component === "topic") {
+            setCurrent("topic");
+            setTopic(id);
+            setSelected(params)
+          } else {
+            setCurrent("lesson");
+            setLesson(id)
+            setSelected(params);
+          }
+        }
+      } else {
+        setCurrent("topic")
+        const topic = data.topics[0];
+        if (topic) {
+          setTopic(topic.id);
+          setSelected('topic_' + topic.id)
         }
       }
-    } else {
-      setCurrent("topic")
-      const topic = data.topics[0];
-      if (topic) {
-        setTopic(topic.id);
-        setSelected('topic_' + topic.id)
-      }
     }
+    
   }
 
   const getUserAvatar = async (id: string) => {
@@ -139,7 +150,7 @@ export default function StudyDetail() {
       title: "You have new message!",
       message: messageBody,
       autoClose: false,
-      icon: <Avatar src={`data:image/jpeg;base64,${avatar.photo}`} />,
+      icon: <Avatar src={`${avatar.photo}`} />,
       color: 'blue',
       onClose: () => {
         sendJsonMessage({
@@ -172,7 +183,7 @@ export default function StudyDetail() {
           }
         });
       },
-      icon: <Avatar src={`data:image/jpeg;base64,${courseImage.photo}`} />,
+      icon: <Avatar src={`${courseImage.photo}`} />,
       color: 'blue',
     });
   }
@@ -246,7 +257,7 @@ export default function StudyDetail() {
       Highlight,
       TextStyle,
       Color,
-      Image,
+      Image.configure({ inline: true, allowBase64: true}),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Youtube.configure({
         controls: false,

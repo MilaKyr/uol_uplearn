@@ -88,6 +88,7 @@ export default function LessonMain(props: { id: string, editor: Editor }) {
           }
         };
         const lesson = await res.json();
+        console.log(lesson)
         props.editor.commands.setContent(lesson.html || "")
         setLesson(lesson);
         if (lesson.has_files) {

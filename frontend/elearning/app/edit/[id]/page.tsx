@@ -24,9 +24,8 @@ import { useRouter, useParams, usePathname, useSearchParams } from 'next/navigat
 import CourseMain from "@/app/components/edit/CourseMain";
 import TopicMain from "@/app/components/edit/TopicMain";
 import LessonMain from "@/app/components/edit/LessonMain";
-import ImageResize from 'tiptap-extension-resize-image';
 import { CourseNavBar } from "@/app/components/navbars/CourseNavbar";
-import { CourseEditData, LessonEditData } from "@/app/types";
+import { CourseEditData } from "@/app/types";
 import { notifications, useNotifications } from "@mantine/notifications";
 import useWebSocket from "react-use-websocket";
 import { getToken, getUser } from "@/app/actions/getAuth";
@@ -213,7 +212,6 @@ export default function CourseEdit() {
       Highlight,
       TextStyle,
       Color,
-      ImageResize,
       Image.configure({ inline: true, allowBase64: true }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Youtube.configure({
@@ -329,23 +327,9 @@ export default function CourseEdit() {
 
 
   const clickLesson = (topicId: string, lessonId: string) => {
-    let selected: LessonEditData;
-    course?.topics.map((topic) => {
-      if (topic.id === topicId) {
-        topic.lessons.map((lesson) => {
-          if (lesson.id === lessonId) {
-            selected = { ...lesson, topic_id: topicId };
-          }
-        })
-      }
-      if (selected.html === null) {
-        editor?.commands.setContent(contentPlaceholder)
-      } else {
-        editor?.commands.setContent(selected.html);
-      }
-      setLessonId(lessonId);
-      setCurrent("lesson");
-    })
+    setTopicId(topicId);
+    setLessonId(lessonId);
+    setCurrent("lesson");
   }
 
   return (
@@ -364,7 +348,7 @@ export default function CourseEdit() {
       </AppShell.Header>
 
       <AppShell.Navbar>
-        <CourseNavBar selected={current} course={course!} onClickTitle={() => setCurrent("main")} onClickTopic={clickTopic} onClickLesson={clickLesson} />
+        {course && <CourseNavBar selected={current} course={course} onClickTitle={() => setCurrent("main")} onClickTopic={clickTopic} onClickLesson={clickLesson} />}
       </AppShell.Navbar>
 
       <AppShell.Main>

@@ -44,6 +44,7 @@ urlpatterns = [
     path('todo_for', views.TodoListView.as_view()),
     path("users/avatar/<str:pk>/", views.UserAvatarRetrieveView.as_view()),
     path('users/search', views.UserSearchListView.as_view()),
+    path('teacher/<str:pk>/', views.TeacherRetrieveView.as_view()),
 
     path('enrollments/students', views.EnrolledStudentsView.as_view()),
     path('enrollments/<str:pk>/', views.EnrollmentStatusUpdateView.as_view()),

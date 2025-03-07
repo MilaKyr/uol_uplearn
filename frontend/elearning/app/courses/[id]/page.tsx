@@ -10,7 +10,6 @@ import {
   Group, Avatar, Timeline, Button, Center,
 } from '@mantine/core';
 import { IconCurrentLocation, IconExclamationCircle } from '@tabler/icons-react';
-import { printDuration } from '@/app/components/utils';
 import { notifications, useNotifications } from "@mantine/notifications";
 import { HeaderTabs } from '@/app/components/header/Header2';
 import { CourseDetail } from '@/app/types';
@@ -103,7 +102,7 @@ export default function Course() {
       title: "You have new message!",
       message: messageBody,
       autoClose: false,
-      icon: <Avatar src={`data:image/jpeg;base64,${avatar.photo}`} />,
+      icon: <Avatar src={`${avatar.photo}`} />,
       color: 'blue',
       onClose: () => {
         sendJsonMessage({
@@ -136,7 +135,7 @@ export default function Course() {
           }
         });
       },
-      icon: <Avatar src={`data:image/jpeg;base64,${courseImage.photo}`} />,
+      icon: <Avatar src={`${courseImage.photo}`} />,
       color: 'blue',
     });
   }
@@ -242,8 +241,8 @@ export default function Course() {
                   <Group justify='space-between'>
 
 
-                    <Text size="lg" c="gray.7"><Text fw={700} component="span">Starts:</Text> {course?.start_date && new Date(course?.start_date).toLocaleDateString()}</Text>
-                    <Text size="lg" c="gray.7"><Text fw={700} component="span">Duration:</Text>{printDuration(course?.duration)}</Text>
+                    <Text size="lg" c="gray.7"><Text fw={700} component="span">Starts:</Text> {course?.start_date && course?.start_date}</Text>
+                    <Text size="lg" c="gray.7"><Text fw={700} component="span">Duration:</Text>{course?.duration} days</Text>
                   </Group>
 
 

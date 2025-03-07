@@ -15,7 +15,7 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(OpenApiTypes.OBJECT)
     def get_last_message(self, instance):
-        last_message = Message.objects.filter(conversation=instance).last()
+        last_message = Message.objects.filter(conversation=instance).order_by('created').last()
         msg_serializer = MessageSerializer(last_message)
         return msg_serializer.data
 

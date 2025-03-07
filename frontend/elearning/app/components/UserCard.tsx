@@ -25,7 +25,7 @@ export default function UserCard(props: {id: number}) {
 
         try {
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/users/${props.id}/`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/teacher/${props.id}/`, {
             headers: {
               Authorization: `Bearer ${parsedToken.access}`,
               "Content-Type": "application/json"
@@ -33,6 +33,7 @@ export default function UserCard(props: {id: number}) {
           });
           if (!res.ok) throw new Error('Spmething went wrong');
           const user: UserProfile = await res.json();
+          console.log(user)
           setUser(user);
         } catch (error) {
           console.error(error)
@@ -52,7 +53,7 @@ export default function UserCard(props: {id: number}) {
 
           </Card.Section>
           <Avatar
-            src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${user?.photo}`}
+            src={`${user?.photo}`}
             size={80}
             radius={80}
             mx="auto"

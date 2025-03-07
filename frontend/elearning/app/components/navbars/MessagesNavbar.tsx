@@ -2,7 +2,7 @@
 
 import React, { useCallback, Suspense } from 'react';
 import { IconExclamationCircle } from '@tabler/icons-react';
-import { Badge, Group, Text, UnstyledButton, Stack, Avatar, Indicator, } from '@mantine/core';
+import { Badge, Group, Text, UnstyledButton, Stack, Avatar, Indicator, Space, } from '@mantine/core';
 import classes from './MessagesNavbar.module.css';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { MessagesNavBarProps, ConversationUserData } from '@/app/types';
@@ -99,7 +99,7 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
     return (
         <Suspense>
             <nav className={classes.navbar}>
-                {currentUser.role === "teacher" && <UserNameSearch />}
+                {currentUser.role === "teacher" ? <UserNameSearch /> : <Space h="xl" />}
                 
                 <div className={classes.section}>
                     <div className={classes.mainLinks}>

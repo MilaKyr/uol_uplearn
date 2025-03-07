@@ -77,7 +77,7 @@ export default function UserPage() {
             title: "You have new message!",
             message: messageBody,
             autoClose: false,
-            icon: <Avatar src={`data:image/jpeg;base64,${avatar.photo}`} />,
+            icon: <Avatar src={`${avatar.photo}`} />,
             color: 'blue',
             onClose: () => {
                 sendJsonMessage({
@@ -110,7 +110,7 @@ export default function UserPage() {
                     }
                 });
             },
-            icon: <Avatar src={`data:image/jpeg;base64,${courseImage.photo}`} />,
+            icon: <Avatar src={`${courseImage.photo}`} />,
             color: 'blue',
         });
     }

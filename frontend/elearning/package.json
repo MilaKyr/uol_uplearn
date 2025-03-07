@@ -49,7 +49,8 @@
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "swr": "^2.3.2",
-    "tiptap-extension-resize-image": "^1.2.1"
+    "tiptap-extension-resize-image": "^1.2.1",
+    "tiptap-react-image-resize": "^1.2.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

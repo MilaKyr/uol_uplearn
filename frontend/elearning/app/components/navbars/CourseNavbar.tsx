@@ -80,7 +80,7 @@ export function CourseNavBar(props: CourseNavbarProps) {
       <div className={classes.section}>
         <div className={classes.mainLinks}>
          
-          {props.course?.topics.map((topic) => (
+          {props.course && props.course?.topics.map((topic) => (
 
             <div key={topic.id} className={classes.mainLinks}>
               <Button size={'xl'}  color={selected === `topic_${topic.id}` ? 'indigo.2' : 'transparent'} key={topic.id} 

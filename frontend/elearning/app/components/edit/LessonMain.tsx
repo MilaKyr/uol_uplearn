@@ -164,7 +164,9 @@ export default function LessonMain(props: {
             throw new Error('')
           }
         };
+       
         const lesson = await res.json();
+        console.log(lesson)
         props.editor.commands.setContent(lesson.html || "");
         lessonForm.setValues({ title: lesson.title });
         setLesson(lesson);

@@ -1,7 +1,6 @@
 import React from "react";
 import { IconClockHour3, IconExclamationCircle, IconCircleCheck } from "@tabler/icons-react";
 import { useRouter } from 'next/navigation';
-import { printDuration } from "./utils";
 import { Card, Group, Title, Image, UnstyledButton, Divider, Text, Avatar, Badge } from "@mantine/core";
 import Rating from "./elements/Rating";
 import { LearnMore } from "./buttons/LearnMore";
@@ -100,7 +99,7 @@ export default function CourseCard(props: {
         <Text size="sm" >Starts: {props.course.start_date}</Text>
         <Group gap={4} justify="space-between" mb="xs">
           <IconClockHour3 color='#888a85' strokeWidth={1} />
-          <Text c="dimmed" size="sm" fw={600}>{printDuration(props.course.duration)}</Text>
+          <Text c="dimmed" size="sm" fw={600}>{props.course.duration}</Text>
         </Group>
       </Group>
 

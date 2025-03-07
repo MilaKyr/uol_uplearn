@@ -553,7 +553,7 @@ export default function CreateCourse() {
             </Button>
           )}
           {active !== 2 && <Button onClick={nextStep}>Next step</Button>}
-          {active === 2 && <Button onClick={submit}>Submit</Button>}
+          {active === 2 && <Button onClick={submit}>Create</Button>}
 
         </Group>
       </>

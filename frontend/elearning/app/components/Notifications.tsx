@@ -34,9 +34,13 @@ export default function Notifications() {
     }
 
     const handleRouteChange = async () => {
-        const ids = notifications.filter((notification) => !notification.seen).map((not) => not.id);
+        const ids = notifications.filter((not) => {
+            console.log(not.seen);
+            return !not.seen
+        });
         ids.map(async (id) => {
-            await api.patch(`${url}/${id}`, JSON.stringify({ "seen": true }))
+            const {status} = await api.patch(`${url}${id.id}`, JSON.stringify({ "seen": true }));
+            console.log(status)
         })
             
     }
@@ -47,7 +51,7 @@ export default function Notifications() {
         return () => {
             handleRouteChange()
         }
-    }, [])
+    }, [notifications])
 
     if (isLoading) return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
 

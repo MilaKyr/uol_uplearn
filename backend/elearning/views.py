@@ -18,7 +18,7 @@ from notifications.models import Notification
 from rest_framework.views import APIView
 
 from .permissions import IsStudent, IsTeacher, IsEnrolled, \
-    TeacherWriter, OwnerOrEnrolled, UpdateDeleteIfOwner, IsOwner
+    TeacherWriter, OwnerOrEnrolled, UpdateDeleteIfOwner, IsOwner, HasAccess
 from .models import Course, User, Topic, Lesson, Feedback, CourseEnrollment, \
     Tag
 from .serializers import CourseSerializer, TopicSerializer, CourseShortSerializer, \
@@ -127,7 +127,7 @@ class CourseStudyDetail(generics.RetrieveAPIView):
         n_students=Count('registered_students__feedback__id', output_field=IntegerField(), distinct=True))
                 )
     serializer_class = CourseSerializer
-    permission_classes = [permissions.IsAuthenticated, OwnerOrEnrolled]
+    permission_classes = [permissions.IsAuthenticated,  HasAccess, OwnerOrEnrolled]
 
 
 class CoursePhotoView(generics.RetrieveUpdateAPIView):
@@ -447,6 +447,11 @@ class TagsView(generics.ListAPIView):
     """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class TeacherRetrieveView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = TeacherSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 class UserSearchListView(generics.ListAPIView):
