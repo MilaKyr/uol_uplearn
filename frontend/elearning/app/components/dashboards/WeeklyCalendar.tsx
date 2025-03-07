@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { notifications } from "@mantine/notifications";
 import { IconExclamationCircle } from "@tabler/icons-react";
 import { TodoData } from '@/app/types';
-import { Button } from '@mantine/core';
 
 function getDay(date: Date) {
     const day = date.getDay();
@@ -34,7 +33,6 @@ export default function WeeklyCalendar(props: { userId: string, onClick: (data: 
     const router = useRouter();
     const [hovered, setHovered] = React.useState<Date | null>(null);
     const [value, setValue] = React.useState<Date | null>(new Date());
-    const calendar = React.useRef<HTMLDivElement>(undefined);
 
     const getUrl = (date: Date | null) => {
         const onejan = new Date(date!.getFullYear(), 0, 1);
