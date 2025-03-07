@@ -1,169 +1,26 @@
 'use client';
 
 import React from "react";
-import {
-    Group, Title, Stack, TextInput, Avatar,
-    Button, Textarea, FileButton, Tabs
-} from "@mantine/core";
-import { IconMoodEdit, IconMail, IconUser } from '@tabler/icons-react';
+import {LoadingOverlay, Tabs} from "@mantine/core";
+import { IconMoodEdit, IconMail, IconUser, IconExclamationCircle } from '@tabler/icons-react';
 import { useForm, hasLength, isEmail, isNotEmpty } from '@mantine/form';
 import 'dayjs/locale/en';
 import { useRouter } from 'next/navigation';
-import { UserSettingsData } from "../types";
+import { UserSettingsData, UserSettingsProps } from "../types";
+import { notifications } from "@mantine/notifications";
+import { api } from "../actions/api";
+import { BioForm, EmailForm, PersonalForm, StatusForm } from "./forms/SettingForms";
+import { SettingsBanner } from "./banners/Settings";
 
-export default function UserSettings(props: UserSettingsData) {
-
+export default function UserSettings(props: UserSettingsProps) {
     const router = useRouter();
+    const [user, setUser] = React.useState<UserSettingsData>();
 
-    const [file, setFile] = React.useState<File>();
-    const [showFile, setShowFile] = React.useState<string>(props.photo || "");
-
-    const uploadPhoto = (uploaded: File | null) => {
-        if (uploaded) {
-            const newPhoto = URL.createObjectURL(uploaded)
-            setShowFile(newPhoto);
-            setFile(uploaded);
-            props.onClick(newPhoto)
-        }
-    }
-
-
-    const sendPhoto = async () => {
-        if (file) {
-            const token = window.sessionStorage.getItem("jwt");
-
-            if (!token) {
-                router.replace('/') // If no token is found, redirect to login page
-                return
-            }
-
-            const parsedToken = JSON.parse(token);
-
-            try {
-                const formData = new FormData();
-                formData.append('photo', file);
-
-                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/photo`, {
-                    headers: {
-                        Authorization: `Bearer ${parsedToken.access}`,
-                    },
-                    method: 'PUT',
-                    body: formData,
-                });
-                if (!res.ok) throw new Error('Spmething went wrong');
-                router.refresh();
-            } catch (error) {
-                console.error(error)
-            }
-        }
-    }
-
-    const sendStatus = async () => {
-        const token = window.sessionStorage.getItem("jwt");
-
-        if (!token) {
-            router.replace('/') // If no token is found, redirect to login page
-            return
-        }
-
-        const parsedToken = JSON.parse(token);
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/update/status`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${parsedToken.access}`,
-                },
-                method: 'PUT',
-                body: JSON.stringify(formStatus.values),
-            });
-            if (!res.ok) throw new Error('Something went wrong');
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-
-    const sendPersonal = async () => {
-        const token = window.sessionStorage.getItem("jwt");
-
-        if (!token) {
-            router.replace('/') // If no token is found, redirect to login page
-            return
-        }
-
-        const parsedToken = JSON.parse(token);
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/update/name`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${parsedToken.access}`,
-                },
-                method: 'PUT',
-                body: JSON.stringify(formPersonal.values),
-            });
-            if (!res.ok) throw new Error('Something went wrong');
-            window.sessionStorage.removeItem("jwt");
-            router.push('/')
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-
-    const sendEmail = async () => {
-        const token = window.sessionStorage.getItem("jwt");
-
-        if (!token) {
-            router.replace('/') // If no token is found, redirect to login page
-            return
-        }
-
-        const parsedToken = JSON.parse(token);
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/update/email`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${parsedToken.access}`,
-                },
-                method: 'PUT',
-                body: JSON.stringify(emailForm.values),
-            });
-            if (!res.ok) throw new Error('Something went wrong');
-            window.sessionStorage.removeItem("jwt");
-            router.push('/')
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    const sendBio = async () => {
-        const token = window.sessionStorage.getItem("jwt");
-
-        if (!token) {
-            router.replace('/') // If no token is found, redirect to login page
-            return
-        }
-
-        const parsedToken = JSON.parse(token);
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/user/update/bio`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${parsedToken.access}`,
-                },
-                method: 'PUT',
-                body: JSON.stringify(formBio.values),
-            });
-            if (!res.ok) throw new Error('Something went wrong');
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
+    const [isLoading, setLoading] = React.useState(true);
 
     const formPersonal = useForm({
-        mode: 'controlled',
-        initialValues: { first_name: props.first_name, last_name: props.last_name },
+        mode: 'uncontrolled',
+        initialValues: { first_name: '', last_name: '' },
         validate: {
             first_name: hasLength({ min: 1 }, 'Must be at least 1 characters'),
             last_name: hasLength({ min: 2 }, 'Must be at least 2 characters'),
@@ -173,8 +30,8 @@ export default function UserSettings(props: UserSettingsData) {
 
 
     const formStatus = useForm({
-        mode: 'controlled',
-        initialValues: { status: props.status, },
+        mode: 'uncontrolled',
+        initialValues: { status: '', },
         validate: {
             status: hasLength({ min: 3, max: 100 }, 'Must be at least 3 and at most 100 characters long'),
         },
@@ -182,8 +39,8 @@ export default function UserSettings(props: UserSettingsData) {
 
 
     const formBio = useForm({
-        mode: 'controlled',
-        initialValues: { bio: props.bio, },
+        mode: 'uncontrolled',
+        initialValues: { bio: '' },
         validate: {
             bio: isNotEmpty('Enter your bio description'),
         },
@@ -191,91 +48,65 @@ export default function UserSettings(props: UserSettingsData) {
 
 
     const emailForm = useForm({
-        mode: 'controlled',
-        initialValues: { email: props.email },
+        mode: 'uncontrolled',
+        initialValues: { email: '' },
         validate: {
             email: isEmail('Invalid email'),
         },
     })
 
+    const getSettings = async () => {
+        const { data, status } = await api.get(`/api/home/settings/${props.userId}`)
+        if (status === 401 || status === 403) {
+            notifications.show({
+                title: "Session expired",
+                message: "Please log in to continue",
+                autoClose: false,
+                icon: <IconExclamationCircle />,
+                color: 'red',
+            });
+            router.push('/')
+        }
+        console.log("data", data)
+        setUser(data);
+        setLoading(false);
+        formPersonal.setValues({ first_name: data.first_name, last_name: data.last_name });
+        emailForm.setValues({ email: data.email });
+        if (data.role === "student") {
+            formStatus.setValues({ status: data.status })
+        } else {
+            formBio.setValues({ bio: data.bio })
+        }
+    }
 
+
+    React.useEffect(() => {
+        getSettings();
+    }, [])
+
+    if (isLoading) return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
+
+    const panelMoodName = user?.role === "student" ? "Status" : "Bio"
+    const panelMood = user?.role === "student" ? <StatusForm userId={props.userId} form={formStatus} /> : <BioForm userId={props.userId} form={formBio} />
 
     return (
         <>
-
-            <Stack mb={24} p={12} justify="space-between" align="flex-start" style={{ backgroundColor: 'var(--mantine-color-blue-light)', borderRadius: 10 }}>
-                <Title c="dimmed">User settings</Title>
-
-                <Group py={24} my={12} align="flex-end">
-                    <Avatar
-                        size="xl"
-                        radius="lg"
-                        name={props.first_name + " " + props.last_name}
-                        src={showFile}
-                    />
-                    <FileButton onChange={(payload) => uploadPhoto(payload)} accept="image/png,image/jpeg">
-                        {(props) => <Button variant="outline" {...props}>Upload image</Button>}
-                    </FileButton>
-                    <Button onClick={sendPhoto} mt="md">Save</Button>
-                </Group>
-            </Stack>
+            <SettingsBanner name={`${user?.first_name} ${user?.last_name}`} userId={props.userId} />
 
             <Tabs defaultValue="mood" radius="lg" variant="outline">
                 <Tabs.List grow justify="space-between">
-                    <Tabs.Tab value="mood" leftSection={<IconMoodEdit size={16} />}>
-                        {props.role === "student" ? "Status" : "Bio"}
-                    </Tabs.Tab>
-                    <Tabs.Tab value="personal" leftSection={<IconUser size={16} />}>
-                        Personal data
-                    </Tabs.Tab>
-                    <Tabs.Tab value="email" leftSection={<IconMail size={16} />}>
-                        Email
-                    </Tabs.Tab>
+                    <Tabs.Tab value="mood" leftSection={<IconMoodEdit size={16} />}>{panelMoodName}</Tabs.Tab>
+                    <Tabs.Tab value="personal" leftSection={<IconUser size={16} />}>Personal data</Tabs.Tab>
+                    <Tabs.Tab value="email" leftSection={<IconMail size={16} />}>Email</Tabs.Tab>
                 </Tabs.List>
 
-                <Tabs.Panel value="mood">
-                    {props.role === "student" ? (
-                        <form style={{ paddingBlock: 12 }}>
-                            <TextInput {...formStatus.getInputProps('status')} py={6} label="Your status"
-                                placeholder={"Write your status here..."} />
-                            <Button onClick={sendStatus} mt="md">Save</Button>
-                        </form>
+                <Tabs.Panel value="mood">{panelMood}</Tabs.Panel>
 
-                    ) : (
-                        <form style={{ paddingBlock: 12 }}>
-                            <Textarea autosize {...formBio.getInputProps('bio')} py={6} label="Your bio"
-                                placeholder={"Write your bio here..."} />
-                            <Button onClick={sendBio} mt="md">Save</Button>
+                <Tabs.Panel value="personal"><PersonalForm userId={props.userId} form={formPersonal} /></Tabs.Panel>
 
-
-
-
-                        </form>
-                    )}
-                </Tabs.Panel>
-
-                <Tabs.Panel value="personal">
-                    <form style={{ paddingBottom: 12 }}>
-                        <TextInput {...formPersonal.getInputProps('first_name')} py={6} label="First Name" />
-                        <TextInput {...formPersonal.getInputProps('last_name')} py={6} label="Last Name" />
-                        <Button onClick={sendPersonal} mt="md">Save</Button>
-
-                    </form>
-                </Tabs.Panel>
-
-                <Tabs.Panel value="email">
-                    <form style={{ paddingBottom: 12 }}>
-                        <TextInput {...emailForm.getInputProps('email')} py={6} label="New email" />
-                        <Button onClick={sendEmail} mt="md">Change</Button>
-
-
-                    </form>
-                </Tabs.Panel>
-
+                <Tabs.Panel value="email"><EmailForm userId={props.userId} form={emailForm} /></Tabs.Panel>
             </Tabs>
-
-
-
         </>
     );
 }
+

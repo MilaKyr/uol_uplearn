@@ -1,22 +1,18 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Burger, Container, Group, Image } from '@mantine/core';
-import classes from './Header.module.css';
+import { Burger, Group, Image } from '@mantine/core';
 
 interface burgerOption {
   opened: boolean;
   toggle: () =>  void
 }
 
-export function Header(props: burgerOption) {
+export const Header = (props: burgerOption) => (
 
-  return (
-
-      <Container size="md" className={classes.inner}>
         <Group justify="space-between" h="100%" px="md">
         <Burger opened={props.opened} onClick={props.toggle} hiddenFrom="xs" size="sm" />
-        <Link href="/home" > 
+        <Link href="/" > 
         <Image 
         height={48}
         w="auto"
@@ -24,6 +20,4 @@ export function Header(props: burgerOption) {
         src='/logo.png' />
         </Link>
        </Group>
-      </Container>
   );
-}

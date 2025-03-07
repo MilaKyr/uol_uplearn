@@ -4,7 +4,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import { notifications } from "@mantine/notifications";
 
 
-export const createConversation = async (router: AppRouterInstance, recipientId: number) => {
+export const createConversation = async (router: AppRouterInstance, recipientId: string) => {
     const token = window.sessionStorage.getItem("jwt");
   
       if (!token) {
@@ -16,7 +16,7 @@ export const createConversation = async (router: AppRouterInstance, recipientId:
     
       // Validate the token by making an API call
       try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/chat/`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/chat/conversations/new`, {
             headers: {
               Authorization: `Bearer ${parsedToken.access}`,
               "Content-Type": "application/json"

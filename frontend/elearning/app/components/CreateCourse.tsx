@@ -7,7 +7,7 @@ import { Image, Group, Title,
   Center, NumberInput, TagsInput, Grid,  LoadingOverlay } from "@mantine/core";
 import { IconGripVertical, IconTrash, IconPhoto, IconCheck } from '@tabler/icons-react';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { DateTimePicker } from '@mantine/dates';
+import { DatePickerInput } from '@mantine/dates';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { randomId } from '@mantine/hooks';
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
@@ -27,7 +27,7 @@ export default function CreateCourse() {
     const [active, setActive] = React.useState(0);
     const [tags, setTags] = React.useState<string[]>();
     const [imgBackground, setImgBackground] = React.useState('#f8f8ff');
-    const [newCourseId, setNewCourseId] = React.useState<number|null>(null);
+    const [newCourseId, setNewCourseId] = React.useState<string|null>(null);
     const [courseImg, setCourseImg] = React.useState<File|null>();
     const [courseImgShow, setCourseImgShow] = React.useState<File|string>("https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg");
 
@@ -47,15 +47,16 @@ export default function CreateCourse() {
         const parsedToken = JSON.parse(token);
         // Validate the token by making an API call
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/new`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/new_course_id`, {
               headers: {
                 Authorization: `Bearer ${parsedToken.access}`,
               },
             })
     
             if (!res.ok) throw new Error('');
-            const id: number = await res.json();           
+            const id: string = await res.json();           
             setNewCourseId(id);
+            form.setValues({id: id})
           } catch (error) {
             console.log(error);
             notifications.show({
@@ -68,6 +69,9 @@ export default function CreateCourse() {
     }
 
     const submit = async () => {
+      if (form.validate().hasErrors) {
+        return 
+      }
       setLoading(true);
       try {
         await submitCourse();
@@ -93,11 +97,10 @@ export default function CreateCourse() {
         });
         setLoading(false);
       }
-
-
     }
 
     const submitCourse = async () => {
+      
       
       const token = window.sessionStorage.getItem("jwt");
     
@@ -110,8 +113,8 @@ export default function CreateCourse() {
         const parsedToken = JSON.parse(token);
         // Validate the token by making an API call
 
-            form.setFieldValue('pk', newCourseId)
             const toSend = form.values;
+
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/`, {
               headers: {
                 "Content-Type": "application/json",
@@ -131,7 +134,7 @@ export default function CreateCourse() {
                   headers: {
                     Authorization: `Bearer ${parsedToken.access}`,
                   },
-                  method: 'PUT',
+                  method: 'PATCH',
                   body: formData,
                 });
                 if (!res_photo.ok) throw new Error('Something went wrong');
@@ -154,7 +157,7 @@ export default function CreateCourse() {
         // Validate the token by making an API call
         const getTags = async () => {
           try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/tags`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/tags/`, {
               headers: {
                 Authorization: `Bearer ${parsedToken.access}`,
               },
@@ -172,29 +175,31 @@ export default function CreateCourse() {
             router.replace('/') // Redirect to login if token validation fails
           }
         }
-    
+        const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1));
+        form.setValues({start_date: tomorrow, end_date: tomorrow})
         getTags()
       }, [router])
 
     const form = useForm({
       mode: 'controlled',
       initialValues: {
+        id: '',
         title: '',
-        start_date: '',
-        end_date: '',
+        start_date: new Date,
+        end_date: new Date,
         description: '',
         tags: [],
         topics: [
           {title: '', description: '', n_hours: 1, key: randomId(), 
             lessons: [
-              {title: '', deadline: '', key: randomId()}
+              {title: '', deadline: new Date, key: randomId()}
           ]}
         ],
       },
       validate: {
         title: (value: string) => value.trim().length < 6 ? 'Title must include at least 6 characters': null,
-        start_date: (value: string) => value === "" || new Date(value) < new Date() ? 'Start date cannot be empty or in the past' : null,
-        end_date: (value, values) =>  value === "" || new Date(values.start_date) > new Date(value) ? 'End date must be after start date' : null,
+        start_date: (value: Date) => value < new Date() ? 'Start date cannot be empty or in the past' : null,
+        end_date: (value, values) =>  values.start_date > value ? 'End date must be after start date' : null,
         description: isNotEmpty("Cannot be empty"),
         tags: isNotEmpty("Cannot be empty"),
         topics: {
@@ -206,7 +211,20 @@ export default function CreateCourse() {
 
               lessons: {
                 title: (value) => active === 2 && (value === '' || value === undefined) ? "Cannot be empty" : null,
-                deadline: (value, values) =>  active === 2 &&  (value === "" || new Date(value) < new Date(values.start_date) || new Date(value) > new Date(values.end_date)  ? 'Deadline must be after start date and before end date' : new Date(value) < new Date(Math.max.apply(null, values.topics.map((topic) => topic.lessons.map((less) => new Date(less.deadline).valueOf())).flat()))) ? "Deadline must be after all previous lessons' deadlines" : null,
+                deadline: (value, values) =>  {
+                  if (active === 2) {
+                    console.log("validating")
+                    if (value < values.start_date) {
+                      return `Deadline must be after start date`
+                    } else if (value > values.end_date) {
+                        return `Deadline must be before the end date`
+                    } else if (value < new Date(Math.max.apply(null, values.topics.map((topic) => topic.lessons.map((less) => less.deadline.valueOf())).flat()))) {
+                      return "Deadline must be after all previous lessons' deadlines" 
+                    } else {
+                      return null
+                    }
+                  } 
+                }
               }
             }
         },
@@ -254,15 +272,16 @@ export default function CreateCourse() {
     
     const nextStep = async () =>
         setActive((current) => {
+          console.log(form.validate().hasErrors)
           if (active === 0) {
             setCourseId();
           } 
           if ((active === 0) && (courseImg === undefined)) {
             setImgBackground('#ffa8a8');
-            console.log("im here")
             return current;
           }
           if (form.validate().hasErrors) {
+            console.log("current step,", current)
             console.log("im here2", form.validate())
             return current;
           }
@@ -271,7 +290,14 @@ export default function CreateCourse() {
 
     const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
 
-
+    const getListStyle = (isDraggingOver: boolean) => ({
+      background: isDraggingOver ? "lightblue" : "#e9ecef",
+      borderRadius: 10, 
+      padding: 10,
+      margin: 10,
+      width: '100%'
+    });
+    
 
     const deleteImage = () => {
       setCourseImgShow("https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg");
@@ -336,21 +362,21 @@ export default function CreateCourse() {
               {...form.getInputProps('title')}
             />
 
-            <Group justify="space-between">
-            <DateTimePicker
+            <Group justify="flex-start" gap={36}>
+            <DatePickerInput
               mt="md"
               required
-              valueFormat="DD/MM/YYYY HH:mm:ss"
+              valueFormat="DD/MM/YYYY"
               label="Start date"
               placeholder="Course start date"
               key={form.key('start_date')}
               {...form.getInputProps('start_date')}
             />
 
-            <DateTimePicker
+            <DatePickerInput
               mt="md"            
               required
-              valueFormat="DD/MM/YYYY HH:mm:ss"
+              valueFormat="DD/MM/YYYY"
               label="End date"
               placeholder="Course end date"
               key={form.key('end_date')}
@@ -404,7 +430,7 @@ export default function CreateCourse() {
             </DragDropContext>
 
             <Group justify="center" mt="md">
-                <Button onClick={() => form.insertListItem('topics', { title: '', description: '', nHours: 1 , key: randomId(), lessons: [
+                <Button onClick={() => form.insertListItem('topics', { title: '', description: '', n_hours: 1 , key: randomId(), lessons: [
               {title: '', deadline: '', key: randomId()}] })}>
                 Add topic
                 </Button>
@@ -417,16 +443,39 @@ export default function CreateCourse() {
           <Stepper.Step label="Third step" description="Lessons">
           <div>
           
-            <DragDropContext key={"third-step"} onDragEnd={({ destination, source }) =>
-            destination?.index !== undefined &&  form.reorderListItem(`topics.${source.droppableId}.lessons`, { from: source.index, to: destination.index })
+            <DragDropContext key={"third-step"} onDragEnd={({ source, destination }) => {
+            if (destination?.index !== undefined) {
+              if (source.droppableId === destination?.droppableId) {
+                const founded = form.values.topics.findIndex((tpc) => `dnd-${tpc.key}` === source.droppableId);
+                if (founded !== undefined) {
+                  form.reorderListItem(`topics.${founded}.lessons`, { from: source.index, to: destination.index })
+                  return ;
+                }
+                return ;
+              } else {
+                const indexSource = form.values.topics.findIndex((topic) => `dnd-${topic.key}` === source.droppableId);
+                const indexDestination = form.values.topics.findIndex((topic) => `dnd-${topic.key}` === destination.droppableId);
+                const allValues = form.getValues();
+                const item = allValues.topics[indexSource].lessons.find((lesson, index) => index == source.index);
+                if (item !== undefined) {
+                  form.insertListItem(`topics.${indexDestination}.lessons`, item);
+                  form.removeListItem(`topics.${indexSource}.lessons`, source.index);
+                  form.reorderListItem(`topics.${indexDestination}.lessons`, { from: source.index, to: destination.index })
+                }
+                return ;
+              }
+            }
+            
+          }
         }>
           {form.values.topics.map((topic, tp_index) => {
             return (
 
             <Droppable key={topic.key} droppableId={`dnd-${topic.key}`}>
-            {(provided) => (
+            {(provided, snapshot) => (
                 <div
                   ref={provided.innerRef}
+                  style={getListStyle(snapshot.isDraggingOver)}
                   {...provided.droppableProps}
                 >
                   <Group key={topic.key} justify="flex-start" mt="md">
@@ -445,10 +494,10 @@ export default function CreateCourse() {
                         {...provided.dragHandleProps}
     
                       >
-                        <Draggable key={item.key} index={index} draggableId={item.key}>
-                            {(provided) => (
-                              <Group ref={provided.innerRef} mt="xs" {...provided.draggableProps}>
-                                <Center {...provided.dragHandleProps}>
+                        {/* <Draggable key={item.key} index={index} draggableId={item.key}>
+                            {(provided, snapshot) => ( */}
+                              <Group mt="xs" >
+                                <Center >
                                   <IconGripVertical size={18} />
                                 </Center>
                                 <TextInput
@@ -456,19 +505,18 @@ export default function CreateCourse() {
                                   key={form.key(`topics.${tp_index}.lessons.${index}.title`)}
                                   {...form.getInputProps(`topics.${tp_index}.lessons.${index}.title`)}
                                 />
-                                <DateTimePicker
+                                <DatePickerInput
                                   placeholder="Deadline"
                                   key={form.key(`topics.${tp_index}.lessons.${index}.deadline`)}
                                   {...form.getInputProps(`topics.${tp_index}.lessons.${index}.deadline`)}
                                 />
-                          <ActionIcon color="red" onClick={() => form.removeListItem(`topics.${tp_index}.lessons`, index)}>
-                              <IconTrash size={16} />
-                            </ActionIcon>
+                                <ActionIcon color="red" onClick={() => form.removeListItem(`topics.${tp_index}.lessons`, index)}>
+                                    <IconTrash size={16} />
+                                  </ActionIcon>
                               </Group>
-                              
-                            )}
-                          </Draggable>
-                      </div>
+                            {/* )} */}
+                          {/* </Draggable> */}
+                       </div>
                     )}
                   </Draggable>
                 ))}
@@ -512,3 +560,21 @@ export default function CreateCourse() {
 
 
 
+{/* <Group ref={provided.innerRef} mt="xs" {...provided.draggableProps}>
+                                <Center {...provided.dragHandleProps}>
+                                  <IconGripVertical size={18} />
+                                </Center>
+                                <TextInput
+                                  placeholder="Lesson title"
+                                  key={form.key(`topics.${tp_index}.lessons.${index}.title`)}
+                                  {...form.getInputProps(`topics.${tp_index}.lessons.${index}.title`)}
+                                />
+                                <DatePickerInput
+                                  placeholder="Deadline"
+                                  key={form.key(`topics.${tp_index}.lessons.${index}.deadline`)}
+                                  {...form.getInputProps(`topics.${tp_index}.lessons.${index}.deadline`)}
+                                />
+                                <ActionIcon color="red" onClick={() => form.removeListItem(`topics.${tp_index}.lessons`, index)}>
+                                    <IconTrash size={16} />
+                                  </ActionIcon>
+                              </Group> */}

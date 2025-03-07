@@ -1,7 +1,9 @@
 
+import { KeyedMutator } from "swr";
+
 export interface CourseStudentHomeData {
   enrolled: string;
-  id: number;
+  id: string;
   photo: string;
   progress: number;
   status: string;
@@ -14,7 +16,6 @@ export interface StudentProfileData extends BasicUserData {
 
 export interface SearchedUserData extends BasicUserData {
   status?: string;
-  role: string;
 }
 
 export interface Auth {
@@ -22,9 +23,8 @@ export interface Auth {
     access: string;
   },
   user: {
-    id: number;
-    first_name: string;
-    last_name: string;
+    id: string;
+    name: string;
     role: string;
     is_online: boolean;
   }
@@ -45,42 +45,46 @@ export interface CourseEditData extends CourseListData {
   is_active: boolean;
 }
 
+export interface UserSettingsProps {
+  userId: string;
+}
+
 export interface UserSettingsData {
-  id: number;
-  photo: string;
+  id: string;
   first_name: string;
   last_name: string;
   role: string;
   status?: string;
   bio?: string;
-  email: string;
   onClick: (photo: string) => void;
 }
 
 export interface BasicUserData {
-  id: number | undefined;
+  id: string;
   photo: string | undefined,
-  first_name: string | undefined;
-  last_name: string | undefined;
+  name: string;
+  role: string;
 }
 
 interface BasicCourseData {
-  id: number | undefined;
+  id: string | undefined;
   photo: string | undefined,
   title: string | undefined;
 }
 
 export interface FeedbackData {
-  id: number;
-  rating: number;
+  feedback: {
+    id: string;
+    rating: number;
+    text: string;
+    created: string;
+  }
   course: BasicCourseData;
-  text: string;
-  created: string;
 }
 
 
 export interface CourseFeedbackData {
-  id: number;
+  id: string;
   rating: number;
   course: BasicCourseData;
   text: string;
@@ -92,32 +96,30 @@ export interface TodoData {
   course_id: number;
   course_title: string;
   deadline: string;
-  id: number;
+  id: string;
   title: string;
   topic_id: number;
   topic_title: string;
 }
 
 export interface CourseTitle {
-  id: number;
+  id: string;
   title: string;
 }
 
 export interface UserProfile {
-  id: number;
+  id: string;
   photo: string | undefined,
-  first_name: string;
-  last_name: string;
+  name: string;
   role: string;
   status: string | undefined;
   bio: string | undefined;
 }
 
 export interface HomeData {
-  id: number;
+  id: string;
   photo: string,
-  first_name: string;
-  last_name: string;
+  name: string;
   role: string;
   email: string;
   status?: string;
@@ -127,10 +129,9 @@ export interface HomeData {
 }
 
 export interface UserGuestData {
-  id: number;
+  id: string;
   photo: string | undefined,
-  first_name: string;
-  last_name: string;
+  name: string;
   role: string;
   is_online: boolean;
   status: string | undefined;
@@ -139,18 +140,18 @@ export interface UserGuestData {
 }
 
 export interface NotificationData {
-  id: number;
+  id: string;
   seen: boolean;
   person: BasicUserData;
   course: BasicCourseData;
   text: string;
+  created: string;
 
 }
 export interface StudentHomeData {
-  id: number;
+  id: string;
   photo: string | undefined,
-  first_name: string;
-  last_name: string;
+  name: string;
   role: string;
   email: string;
   status: string;
@@ -162,21 +163,20 @@ export interface StudentDashboardData {
   course_id: number;
   course_title: string;
   deadline: string;
-  id: number;
+  id: string;
   title: string;
   topic_id: number;
   topic_title: string;
 }
 
 export interface UserNavbarProps {
-  id: number | undefined;
-  photo: string | undefined;
-  role: string | undefined;
-  first_name: string | undefined;
-  last_name: string | undefined;
+  id: string;
+  photo: string;
+  role: string;
+  name: string;
   selected: string;
   onClick: (label: string) => void;
-  setLoading: (toSet: boolean) => void;
+  mutate: KeyedMutator<Promise<Response>>;
 }
 
 export interface ConversationUserData extends BasicUserData {
@@ -186,7 +186,7 @@ export interface ConversationUserData extends BasicUserData {
 
 
 export interface ConversationData {
-  id: number;
+  id: string;
   users: ConversationUserData[];
   messages: Message[];
   unread_messages_ids: number[];
@@ -196,41 +196,45 @@ export interface ConversationData {
 
 export interface MessagesNavBarProps {
   selected: string;
-  chatOwnerId: number;
-  onClick: (id: number) => void;
+  chatOwnerId: string;
+  onClick: (id: string) => void;
 }
 
 export interface ConversationWindowProps {
   conversation: ConversationData;
-  myId: number;
+  myId: string;
   token: string | undefined;
   messages: Message[];
 }
 
 
 export interface Message {
-  id: number;
+  id: string;
   recipient: ConversationUserData;
   sender: ConversationUserData;
   text: string;
-  conversationId: number;
+  conversationId: string;
   created?: string;
 }
 
 export type Course = {
-  id: number;
+  id: string;
   title: string;
   tag: string;
-  average_rating: number;
-  n_students: number,
+  is_active?: boolean;
+  average_rating?: number;
+  n_students?: number,
   photo: string;
-  start_date: Date;
-  duration: string;
-  registered_students: BasicUserData[];
+  start_date?: Date;
+  duration?: string;
+  registered_students?: BasicUserData[];
+  enrolled?: string;
+  progress?: number;
+  status?: string;
 }
 
 export type CourseEdit = {
-  id: number;
+  id: string;
   title: string;
   tags: TagData[];
   is_active: boolean;
@@ -241,7 +245,7 @@ export type CourseEdit = {
 }
 
 export interface LessonProps {
-  id: number;
+  id: string;
   title: string;
   html: string;
 }
@@ -253,26 +257,30 @@ export interface LessonStudyData extends LessonData {
 
 export interface LessonEditData extends LessonData {
   html: string;
+  topic_id: string;
 }
 
 export interface LessonData {
-  id: number;
+  id: string;
   title: string;
   deadline: string;
 
 }
 
 export interface TopicStudyData {
-  id: number;
+  id: string;
   title: string;
   n_hours: number;
+  description: string;
   lessons: LessonStudyData[];
 }
 
 export interface TopicProps {
-  id: number;
+  id: string;
+  courseId: number;
   title: string;
   n_hours: number;
+  description: string;
   lessons: LessonData[];
 }
 
@@ -284,13 +292,12 @@ export interface TagData {
 
 interface TeacherBasicData {
   id: number;
-  first_name: string;
-  last_name: string;
+  name: string;
   photo: string;
 }
 
 export interface CourseListData {
-    id: number;
+    id: string;
     title: string;
     photo: string;
     tags: TagData[];

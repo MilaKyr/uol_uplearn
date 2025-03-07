@@ -26,7 +26,7 @@ export default function TodoTask(props: { task: TodoData }) {
             alignItems: 'baseline', justifyContent: 'center'
         }} component={Link} href={`study/${props.task.course_id}?` + createQueryString('selected', `lesson_${props.task.id}`)}>
             <Stack gap={2} px={12}>
-                <Text fw={600} size="sm">{new Date(props.task.deadline).toLocaleDateString()}</Text>
+                <Text fw={600} size="sm">{props.task.deadline}</Text>
                 <Stack align="flex-start" gap={0}>
                     <Text td="underline" size="sm" pt={6} fw={700} c="dimmed">{props.task.course_title}</Text>
                     <Text size="sm" fw={500} c="dimmed">{props.task.topic_title}</Text>

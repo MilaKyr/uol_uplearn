@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { getHotkeyHandler } from '@mantine/hooks';
 import { createConversation } from "@/app/actions/CreateConversation";
 import { BasicUserData } from "@/app/types";
+import { IconSearch } from "@tabler/icons-react";
 
 export default function UserNameSearch() {
     const router = useRouter();
@@ -63,18 +64,19 @@ export default function UserNameSearch() {
     >
      <Combobox.Target>
         <InputBase
-         rightSection={<Combobox.Chevron />}
+         rightSection={<IconSearch />}
          rightSectionPointerEvents="none"
          placeholder="Search by person's name"
           value={searchValue}
           onChange={(event) => {
             setSearchValue(event.currentTarget.value);
+            if (event.currentTarget.value === "") {
+              setUsers([]);
+            }
             combobox.openDropdown();
           }}
           onKeyDown={getHotkeyHandler([['Enter', search],
           ])}
-          onClick={() => combobox.openDropdown()}
-          onFocus={() => combobox.openDropdown()}
           onBlur={() => {
             combobox.closeDropdown();
             setSearchValue(searchValue || '');
@@ -85,12 +87,12 @@ export default function UserNameSearch() {
       <Combobox.Dropdown>
         <Combobox.Options>
         <ScrollArea.Autosize type="scroll" mah={200}>
-          {users.length === 0 ? <Combobox.Empty>Nothing found</Combobox.Empty> : (
+          {searchValue !== "" && users.length === 0 ? <Combobox.Empty>Nothing found</Combobox.Empty> : (
             users.map((user, index) => (
               <Combobox.Option value={`${index}`} key={index}>
                 <Group>
-                  <Avatar src={`data:image/jpeg;base64,${user.photo}`}radius="xl" />
-                <Text>{user.first_name} {user.last_name}</Text>
+                  <Avatar src={`${user.photo}`} radius="xl" />
+                <Text>{user.name}</Text>
                 </Group>
                 
               </Combobox.Option>

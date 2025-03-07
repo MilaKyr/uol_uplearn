@@ -8,7 +8,6 @@ import { NotificationData } from "@/app/types";
 
 const NotificationListItem = (props: {notification: NotificationData }) => {
     const themeIconColor = props.notification.seen ? "gray" : "violet";
-    const name = props.notification.person.first_name + " " + props.notification.person.last_name
     return (
         <List.Item
             key={props.notification.id}
@@ -25,10 +24,10 @@ const NotificationListItem = (props: {notification: NotificationData }) => {
                 <Link href={`/users/${props.notification.person.id}`} >
                     <Group>
                         <Avatar
-                            src={`data:image/jpeg;base64,${props.notification.person.photo}`}
-                            name={name}
+                            src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${props.notification.person.photo}`}
+                            name={props.notification.person.name}
                         />
-                        <Text>{props.notification.person.first_name} {props.notification.person.last_name}</Text>
+                        <Text>{props.notification.person.name}</Text>
                     </Group>
                 </Link>
 
@@ -37,14 +36,17 @@ const NotificationListItem = (props: {notification: NotificationData }) => {
                 <Link href={`/courses/${props.notification.course.id}`} >
                     <Group>
                         <Avatar
-                            src={`data:image/jpeg;base64,${props.notification.course.photo}`}
+                            src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${props.notification.course.photo}`}
                             name={props.notification.course.title}
                         />
                         <Text>{props.notification.course.title}</Text>
                     </Group>
-
-                </Link>
+                </Link> 
+                <Group justify="flex-end">
+                 <Text size="xs" c="dimmed">({props.notification.created})</Text>
+                </Group>
             </Group>
+            
         </List.Item>
     )
 }

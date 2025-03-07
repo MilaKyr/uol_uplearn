@@ -9,12 +9,13 @@ interface CourseButtonInfo {
 }
 
 export function CourseButton(props: CourseButtonInfo) {
+
   return (
     <UnstyledButton className={classes.course} onClick={props.onClick}>
       <Group>
         <Avatar
         name={props.title}
-          src={props.photo}
+          src={`${props.photo}`}
           radius="xl"
         />
 

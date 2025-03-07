@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import {
-    Image, Group, Title, Stack, Text, Avatar,
+    Image, Group, Title, Stack, Text, Avatar, LoadingOverlay,
     Button, Table, BackgroundImage, Divider, Card, Badge,
     Spoiler, SimpleGrid, Blockquote, Center, CloseButton,
     UnstyledButton,
@@ -14,101 +14,64 @@ import { useRouter } from 'next/navigation';
 import { HeaderTabs } from "../header/Header2";
 import { notifications } from '@mantine/notifications';
 import { UserGuestData } from '@/app/types';
+import { api } from "@/app/actions/api";
 
 
-
-export default function UserGuest(props: { id: number }) {
+export default function UserGuest(props: { id: string }) {
     const router = useRouter();
     const [opened, { toggle }] = useDisclosure();
     const [user, setUser] = React.useState<UserGuestData | null>(null);
+    const [isLoading, setLoading] = React.useState(true);
+
+    const getUser = async () => {
+        const { data, status } = await api.get(`/api/dashboard/${props.id}`)
+        if (status === 401 || status === 403) {
+            notifications.show({
+                title: "Session expired",
+                message: "Please log in to continue",
+                autoClose: false,
+                icon: <IconExclamationCircle />,
+                color: 'red',
+            });
+            router.push('/')
+        }
+        console.log(data)
+        setUser(data);
+        setLoading(false);
+    }
 
     React.useEffect(() => {
-        const getUser = async () => {
-            const token = window.sessionStorage.getItem("jwt");
-
-            if (!token) {
-                router.replace('/') // If no token is found, redirect to login page
-                return
-            }
-
-            const parsedToken = JSON.parse(token);
-
-            try {
-
-                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/users/${props.id}/`, {
-                    headers: {
-                        Authorization: `Bearer ${parsedToken.access}`,
-                        "Content-Type": "application/json"
-                    },
-                });
-                if (!res.ok) throw new Error('Spmething went wrong');
-                const user = await res.json();
-                console.log(user)
-                setUser(user);
-            } catch (error) {
-                console.error(error)
-            }
-        }
-
         getUser();
-
     }, [])
 
     const onClose = () => {
         router.back()
     }
 
-    const createConversation = async (recipientId: number) => {
-        const token = window.sessionStorage.getItem("jwt");
-
-        if (!token) {
-            router.replace('/') // If no token is found, redirect to login page
-            return
+     const createConversation = async (recipientId: string) => {
+        const jsonData = JSON.stringify({ "recipient_id": recipientId })
+        const { data, status } = await api.post(`/api/chat/`, jsonData)
+        if (status === 401 || status === 403) {
+          notifications.show({
+            title: "Session expired",
+            message: "Please log in to continue",
+            autoClose: false,
+            icon: <IconExclamationCircle />,
+            color: 'red',
+          });
+          router.push('/')
         }
+        return data
+      }
 
-        const parsedToken = JSON.parse(token);
-
-        // Validate the token by making an API call
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/chat/`, {
-                headers: {
-                    Authorization: `Bearer ${parsedToken.access}`,
-                    "Content-Type": "application/json"
-                },
-                method: "POST",
-                body: JSON.stringify({ "recipient_id": recipientId })
-            })
-
-            if (!res.ok) {
-                if (res.status === 401) {
-                    notifications.show({
-                        title: "Session expired",
-                        message: "Please log in to continue",
-                        autoClose: false,
-                        icon: <IconExclamationCircle />,
-                        color: 'red',
-                    });
-                    window.sessionStorage.removeItem("jwt");
-                    router.push('/') // Redirect to login if token validation fails
-                } else {
-                    throw new Error('Something went wrong')
-                }
-            };
-            const result = await res.json()
-            return result
-
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    const startConversation = async (recipientId: number | undefined) => {
+    const startConversation = async (recipientId: string | undefined) => {
         if (recipientId) {
             const conv = await createConversation(recipientId);
             router.push(`/messages?selected=${conv.id}`)
         }
     }
 
+    if (isLoading) return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
 
     return (
         <>
@@ -123,7 +86,7 @@ export default function UserGuest(props: { id: number }) {
                     >
                         <Group m={24} justify="space-between" align="flex-start">
                             <Stack>
-                                <Title >{user?.first_name} {user?.last_name}</Title>
+                                <Title >{user?.name}</Title>
                                 {user?.is_online && <Badge
                                     size="lg"
                                     variant="gradient"
@@ -139,8 +102,8 @@ export default function UserGuest(props: { id: number }) {
                                 size="xl"
                                 radius="lg"
                                 color="initials"
-                                name={user?.first_name + " " + user?.last_name}
-                                src={`data:image/jpeg;base64,${user?.photo}`}
+                                name={user?.name}
+                                src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${user?.photo}`}
                             />
                         </Group>
 
@@ -188,7 +151,7 @@ export default function UserGuest(props: { id: number }) {
                                                             <Avatar
                                                                 visibleFrom="xs"
                                                                 radius="sm"
-                                                                src={`data:image/jpeg;base64,${course.photo}`} />
+                                                                src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${course.photo}`} />
                                                             <Stack gap={0}>
                                                                 <Text>{course.title}</Text>
                                                                 <Text size="xs" c="dimmed">{course.duration}</Text>
@@ -211,7 +174,7 @@ export default function UserGuest(props: { id: number }) {
                                             href={`/courses/${course.id}`}
                                         >
                                             <Card.Section>
-                                                <Image h={200} alt="Course image" src={`data:image/jpeg;base64,${course.photo}`} />
+                                                <Image h={200} alt="Course image" src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${course.photo}`} />
                                             </Card.Section>
                                             <Title pt={24} order={3}>{course.title}</Title>
                                         </Card>

@@ -1,13 +1,13 @@
-import React, { useCallback, Suspense } from "react";
+import React, { useCallback } from "react";
 import Link from "next/link";
-import { Text,Divider, Title, Timeline, LoadingOverlay } from '@mantine/core';
+import { Text,Divider, Title, Timeline, LoadingOverlay, Stack, Flex } from '@mantine/core';
 import { IconExclamationCircle, } from '@tabler/icons-react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { selectIcon } from "../utils";
 import { notifications } from "@mantine/notifications";
 import { TopicStudyData } from "@/app/types";
 
-export default function TopicMain(props: { id: number }) {
+export default function TopicMain(props: { id: string }) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -73,27 +73,27 @@ export default function TopicMain(props: { id: number }) {
 
     if (isLoading) return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
     return (
-        <Suspense>
-        <div>
+        <Stack w={{base: 300, xs: 500,  xl: 900}}>
             <Title>{topic?.title}</Title>
             <Text pt={6} c="dimmed">Estimated time demand: {topic?.n_hours}h</Text>
+            <Flex >
+            <Text pt={6} c="dimmed">{topic?.description}</Text>
+            </Flex>
             <Divider pb={24} />
             <Title order={4}>Lessons:</Title>
             <Timeline bulletSize={24} my={24}>
                 {topic?.lessons.map((lesson) => {
                     const icon = selectIcon(lesson.done, new Date(lesson.deadline), undefined )
-                    const deadline = new Date(lesson.deadline).toLocaleString();
                     return (
                         <Timeline.Item
                             key={lesson.id}
                             bullet={icon}
                             title={<Link href={pathname + '?' + createQueryString('selected', `lesson_${lesson.id}`) }>{lesson.title}</Link>}>
-                            <Text c="dimmed">Deadline: {deadline}</Text>
+                            <Text c="dimmed">Deadline: {lesson.deadline}</Text>
                         </Timeline.Item>
                     )
                 })}
             </Timeline>
-        </div>
-        </Suspense>
+        </Stack>
     )
 }

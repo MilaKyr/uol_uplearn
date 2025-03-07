@@ -1,20 +1,22 @@
-import React, {Suspense} from "react";
+import React, { Suspense } from "react";
 import { Card, Group, Stack, Center, Textarea, ActionIcon, Avatar, Text, ScrollArea } from "@mantine/core";
 import { IconSend, IconExclamationCircle } from "@tabler/icons-react";
-import { ConversationWindowProps, Message, ConversationData, ConversationUserData } from "@/app/types";
+import { ConversationWindowProps, Message, ConversationUserData } from "@/app/types";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { notifications } from "@mantine/notifications";
 import useWebSocket from 'react-use-websocket';
 import { getHotkeyHandler } from '@mantine/hooks';
+import { api } from "@/app/actions/api";
+
 
 export default function ConversationWindow(props: ConversationWindowProps) {
+
     const router = useRouter()
-    const lastDate = React.useRef<Date>(new Date())
+    const lastDate = React.useRef<string>("")
     const searchParams = useSearchParams();
     const messageDiv = React.useRef<HTMLDivElement>(null);
     const me = props.conversation.users?.find((user) => user.id === props.myId);
     const other = props.conversation.users?.find((user) => user.id !== props.myId);
-
     const [rtMessages, setRTMessages] = React.useState<Message[]>(props.messages);
     const [messageToSend, setMessageToSend] = React.useState<string>('');
 
@@ -26,67 +28,40 @@ export default function ConversationWindow(props: ConversationWindowProps) {
         },
     )
 
+    const getConversation = async () => {
+        const { data, status } = await api.get(`/api/chat/conversations/${props.conversation.id}/`)
+        if (status === 401 || status === 403) {
+            notifications.show({
+                title: "Session expired",
+                message: "Please log in to continue",
+                autoClose: false,
+                icon: <IconExclamationCircle />,
+                color: 'red',
+            });
+            router.push('/')
+        }
+        setRTMessages(data.messages);
+    }
 
     React.useEffect(() => {
-        const getConversation = async () => {
-            const token = window.sessionStorage.getItem("jwt");
-                  
-                      if (!token) {
-                        router.replace('/') // If no token is found, redirect to login page
-                        return
-                      }
-                  
-                      const parsedToken = JSON.parse(token);
-                      // Validate the token by making an API call
-                        try {
-                          const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/chat/${props.conversation.id}/`, {
-                            headers: {
-                              Authorization: `Bearer ${parsedToken.access}`,
-                              "Content-Type": "application/json",
-                              "Access-Control-Allow-Origin":"*"
-                            },
-                          })
-                          if (!res.ok) {
-                            if (res.status === 401) {
-                                console.log("res STATUS 401")
-                              notifications.show({
-                                title: "Session expired",
-                                message: "Please log in to continue",
-                                autoClose: false,
-                                icon: <IconExclamationCircle />,
-                                color: 'red',
-                              });
-                              window.sessionStorage.removeItem("jwt");
-                              router.push('/') // Redirect to login if token validation fails
-                            } else {
-                              throw new Error('Something went wrong')
-                            }
-                          };
-                          const conv: ConversationData = await res.json();
-                          setRTMessages(conv.messages);
-                        } catch (error) {
-                          console.log(error)
-                      }
-          }
-          getConversation();
-
-        }, [searchParams])
+        getConversation();
+    }, [searchParams])
 
     React.useEffect(() => {
         console.log("Connection status", readyState)
     }, [readyState])
 
     React.useEffect(() => {
-        if (lastJsonMessage && 
-            typeof lastJsonMessage === 'object' && 
-            'recipient_id' in lastJsonMessage && 
-            'body' in lastJsonMessage && 
-            'sender_id' in lastJsonMessage && 
+        if (lastJsonMessage &&
+            typeof lastJsonMessage === 'object' &&
+            'recipient_id' in lastJsonMessage &&
+            'body' in lastJsonMessage &&
+            'sender_id' in lastJsonMessage &&
             'id' in lastJsonMessage) {
             const recipient = props.conversation.users?.find((user) => user.id === lastJsonMessage.recipient_id);
             const sender = props.conversation.users?.find((user) => user.id === lastJsonMessage.sender_id);
             const message: Message = {
-                id: lastJsonMessage.id as number,
+                id: lastJsonMessage.id as string,
                 text: lastJsonMessage.body as string,
                 recipient: recipient as ConversationUserData,
                 sender: sender as ConversationUserData,
@@ -98,15 +73,15 @@ export default function ConversationWindow(props: ConversationWindowProps) {
             if (lastJsonMessage.recipient_id === props.myId) {
                 sentSeenStatus(lastJsonMessage.id as number)
             }
-            
+
         }
-        
+
         scrollToBottom();
     }, [lastJsonMessage])
 
     const sentSeenStatus = async (id: number) => {
-        if (lastJsonMessage && 
-            typeof lastJsonMessage === 'object' && 
+        if (lastJsonMessage &&
+            typeof lastJsonMessage === 'object' &&
             'id' in lastJsonMessage) {
             sendJsonMessage({
                 event: 'seen',
@@ -115,35 +90,35 @@ export default function ConversationWindow(props: ConversationWindowProps) {
                 }
             });
         }
-        
+
     }
 
     const sendMessage = async () => {
-        sendJsonMessage({
-            event: 'chat_message',
-            data: {
-                body: messageToSend,
-                recipient_id: other?.id,
-                sender_id: me?.id,
-                conversation_id: props.conversation?.id
-            }
-        });
-        setMessageToSend('');
+        if (messageToSend !== "") {
+            sendJsonMessage({
+                event: 'chat_message',
+                data: {
+                    body: messageToSend,
+                    recipient_id: other?.id,
+                    sender_id: me?.id,
+                    conversation_id: props.conversation?.id
+                }
+            });
+            setMessageToSend('');
 
-        setTimeout(() => {
-            scrollToBottom()
-        }, 50)
+            setTimeout(() => {
+                scrollToBottom()
+            }, 50)
+        }
+
     }
 
     const showDate = (messageCreated: string) => {
-        lastDate.current = new Date(messageCreated);
+        lastDate.current = messageCreated;
         return (
             <Center>
-                <Text c="dimmed" size="xs">{new Date(
-                    messageCreated
-                ).toLocaleDateString(
-                    "gb-EN",{year: "numeric",day: "numeric",month: "long"})}</Text>
-                </Center>
+                <Text c="dimmed" size="xs">{messageCreated}</Text>
+            </Center>
         )
     }
 
@@ -155,40 +130,40 @@ export default function ConversationWindow(props: ConversationWindowProps) {
 
     return (
         <Suspense>
-            <Card  h={900} shadow="sm" padding="lg" radius="md" withBorder>
-            <ScrollArea.Autosize type={'never'} viewportRef={messageDiv} onLoad={scrollToBottom}>
-                {rtMessages && rtMessages.map((message, index) => (
-                <Stack key={index}>
-                            {message.created && message.created !== lastDate.current.toDateString() && showDate(message.created)}
-                    { message.recipient.id === props.myId ? (
-                        <Group key={index} my={24} pr={15} py={4} style={{ width: "fit-content", backgroundColor: 'var(--mantine-color-blue-light)', borderRadius: 20 }} justify={'flex-start'}>
-                            <Avatar src={`data:image/jpeg;base64,${message.sender.photo}`}
-                                radius="xl" />
-                            <Text size="md">{message.text}</Text>
-                        </Group>
-                    ) : (
-                        <Group key={index} my={24} py={4} justify={'flex-end'}>
-                            <Group pl={15} style={{ width: 'fit-content', backgroundColor: 'var(--mantine-color-blue-light)', borderRadius: 20 }}>
-                            <Text>{message.text}</Text>
-                            <Avatar src={`data:image/jpeg;base64,${message.sender.photo}`}
-                                radius="xl" />
-                            </Group> 
-                        </Group>
-                    )}
-                    </Stack>
-                ))}
-            </ScrollArea.Autosize>
+            <Card h={window.innerHeight - window.innerHeight / 4} shadow="sm" padding="lg" radius="md" >
+                <ScrollArea.Autosize type={'never'} viewportRef={messageDiv} onLoad={scrollToBottom}>
+                    {rtMessages && rtMessages.map((message, index) => (
+                        <Stack key={index}>
+                            {message.created && message.created !== lastDate.current && showDate(message.created)}
+                            {message.recipient.id === props.myId ? (
+                                <Group key={index} my={10} pr={15} py={4} style={{ width: "fit-content", backgroundColor: 'var(--mantine-color-blue-light)', borderRadius: 20 }} justify={'flex-start'}>
+                                    <Avatar src={`${message.sender.photo}`}
+                                        radius="xl" />
+                                    <Text size="md">{message.text}</Text>
+                                </Group>
+                            ) : (
+                                <Group key={index} my={10} py={4} justify={'flex-end'}>
+                                    <Group pl={15} style={{ width: 'fit-content', backgroundColor: 'var(--mantine-color-blue-light)', borderRadius: 20 }}>
+                                        <Text>{message.text}</Text>
+                                        <Avatar src={`${message.sender.photo}`}
+                                            radius="xl" />
+                                    </Group>
+                                </Group>
+                            )}
+                        </Stack>
+                    ))}
+                </ScrollArea.Autosize>
             </Card>
-            <Group gap={0} pl={15} my={24} justify="flex-end" align={'flex-end'}>
+            <Group gap={0} my={24} justify="flex-start" align={'flex-end'}>
                 <Textarea
                     autosize
                     value={messageToSend}
                     onChange={(e) => setMessageToSend(e.target.value)}
                     onKeyDown={getHotkeyHandler([
                         ['Enter', sendMessage],
-                      ])}
+                    ])}
                     radius={0}
-                    style={{ width: '95%', borderTopLefttRadius: 10, borderBottomLeftRadius: 10 }} size="md"
+                    style={{ width: '95%' }} size="md"
                     placeholder="Type your message.."
                 ></Textarea>
                 <ActionIcon

@@ -1,9 +1,10 @@
-import React, {Suspense} from "react";
+import React from "react";
 import { useDisclosure } from '@mantine/hooks';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import {
-    Container, BackgroundImage, Stack, Title, Text, Modal, Rating,
+    BackgroundImage, Stack, Title, Text, Modal, Rating,
     Textarea, Button, Table, ActionIcon, Group, Avatar,
+    Center,
 } from "@mantine/core";
 import { IconEdit, IconCirclePlus, IconExclamationCircle } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
@@ -12,13 +13,13 @@ import { FeedbackData } from "../types";
 export default function Feedbacks() {
     const router = useRouter();
     const [opened, { open, close }] = useDisclosure(false);
-    const [courseId, setCourseId] = React.useState<number>();
+    const [courseId, setCourseId] = React.useState<string>();
     const [title, setTitle] = React.useState<string>();
     const [currRating, setCurrRating] = React.useState<number>();
     const [currComment, setCurrComment] = React.useState<string>();
     const [feedbacks, setFeedbacks] = React.useState<FeedbackData []>([]);
     const [method, setMethod] = React.useState("POST");
-    const [feedbackId, setFeedbackId] = React.useState<number>();
+    const [feedbackId, setFeedbackId] = React.useState<string>();
     const pathname = usePathname()
     const searchParams = useSearchParams()
 
@@ -54,6 +55,7 @@ export default function Feedbacks() {
                 }
             };
             const thisfeedbacks = await res.json();
+            console.log("thisfeedbacks", thisfeedbacks)
             setFeedbacks(thisfeedbacks);
         } catch (error) {
             console.error(error)
@@ -98,6 +100,7 @@ export default function Feedbacks() {
                 }
             };
             close();
+            window.location.reload();
         } catch (error) {
             console.error(error)
         }
@@ -111,6 +114,7 @@ export default function Feedbacks() {
             return
         }
 
+        
         const parsedToken = JSON.parse(token);
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/feedbacks/${feedbackId}/`, {
@@ -144,8 +148,8 @@ export default function Feedbacks() {
         await getFeedback();
     }
     return (
-        <Suspense>
-        <Container>
+
+        <Stack>
 
             <BackgroundImage mb={24}
                 src="/feedback_bk_img.jpg"
@@ -171,15 +175,15 @@ export default function Feedbacks() {
                 />
                 <Text c="dimmed" size="xs"> Maximum 100 characters</Text>
                 <Button onClick={() => {
-                    if (method === "POST") {
-                        sendFeedback()
+                    if (feedbackId === undefined && method === "POST") {
+                        return sendFeedback();
                     }
                     updateFeedback();
 
                 }} mt={24}>Save</Button>
             </Modal>
-
-            <Table
+            
+            {feedbacks && feedbacks.length > 0 ? (<Table
                 verticalSpacing="lg"
                 highlightOnHover
                 highlightOnHoverColor={'var(--mantine-color-blue-light)'}>
@@ -192,36 +196,38 @@ export default function Feedbacks() {
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                    {feedbacks.map((feedback, index) => {
-                        const icon = feedback.rating === 0 ? <IconCirclePlus /> : <IconEdit />;
-                        const btnColor = feedback.rating === 0 ? "green.7" : "gray.7";
-                        const btnType = feedback.rating === 0 ? "filled" : "default";
-                        const method = feedback.rating === 0 ? "POST" : "PUT";
+                    {feedbacks.map((courseFeedback, index) => {
+                        const icon = courseFeedback.feedback === null || courseFeedback.feedback.rating === 0 ? <IconCirclePlus /> : <IconEdit />;
+                        const btnColor = courseFeedback.feedback === null || courseFeedback.feedback.rating === 0 ? "green.7" : "gray.7";
+                        const btnType = courseFeedback.feedback === null || courseFeedback.feedback.rating === 0 ? "filled" : "default";
+                        const method = courseFeedback.feedback === null || courseFeedback.feedback.rating === 0 ? "POST" : "PUT";
+                        console.log(method)
                         return (
                             <Table.Tr key={index}>
                                 <Table.Td>
-                                    <Group>
+                                    <Group gap={6}>
                                         <Avatar
                                             visibleFrom="xs"
                                             radius="sm"
-                                            src={`data:image/jpeg;base64,${feedback.course.photo}`} />
-                                        <Text>{feedback.course.title}</Text>
+                                            src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${courseFeedback.course.photo}`} />
+                                        <Text>{courseFeedback.course.title}</Text>
 
                                     </Group>
                                 </Table.Td>
                                 <Table.Td>
-                                    <Rating size="md" value={feedback.rating || 0} fractions={2} readOnly />
+                                    <Rating size="md" value={courseFeedback.feedback?.rating || 0} fractions={2} readOnly />
                                 </Table.Td>
-                                <Table.Td> <Text ta={'justify'} >{feedback.text}</Text></Table.Td>
-                                <Table.Td align="right">
+                                <Table.Td style={{width: '50%'}}> <Text ta={'justify'} style={{wordBreak: 'normal', width: '90%'}} >{courseFeedback.feedback?.text}</Text></Table.Td>
+                                
+                                <Table.Td align="left">
 
                                     <ActionIcon variant={btnType} color={btnColor} size="lg" radius="lg" onClick={
                                         () => {
-                                            setFeedbackId(feedback.id);
-                                            setCourseId(feedback.course.id);
-                                            setTitle(": " + feedback.course.title);
-                                            setCurrRating(feedback?.rating || 0)
-                                            setCurrComment(feedback?.text || "");
+                                            setFeedbackId(courseFeedback.feedback?.id);
+                                            setCourseId(courseFeedback.course.id);
+                                            setTitle(": " + courseFeedback.course.title);
+                                            setCurrRating(courseFeedback.feedback?.rating || 0)
+                                            setCurrComment(courseFeedback.feedback?.text || "");
                                             setMethod(method);
 
                                             open()
@@ -234,8 +240,11 @@ export default function Feedbacks() {
                     })}
 
                 </Table.Tbody>
-            </Table>
-        </Container>
-        </Suspense>
+            </Table>): (
+                <Center><Title c="dimmed" order={3}>Once you finish the course, you can leave a feedback</Title></Center>
+            )}
+            
+        </Stack>
+
     )
 }

@@ -4,7 +4,7 @@ import classes from './StudyLesson.module.css';
 import { selectIcon } from "../utils";
 
 interface Lesson {
-    id: number;
+    id: string;
     selected: boolean;
     onClick: () => void;
     done?: boolean;
@@ -19,10 +19,11 @@ export default function StudyLessonButton(props: Lesson) {
 
     return (
 
-        <Button color={props.selected ? 'indigo.2' : 'transparent'} className={classes.mainLink} key={props.id} onClick={props.onClick}>
+        <Button size={'xl'} color={props.selected ? 'indigo.2' : 'transparent'} className={classes.mainLink} key={props.id} onClick={props.onClick}>
             <div className={classes.mainLinkInner}>
-                {icon}
-                <span>{props.title}</span>
+            {icon}
+            <span style={{fontSize: 12, lineHeight: 1.2, textAlign: 'start', wordWrap: 'break-word', textWrap: 'balance', flex: 4}}>{props.title}</span>
+               
             </div>
         </Button>
 

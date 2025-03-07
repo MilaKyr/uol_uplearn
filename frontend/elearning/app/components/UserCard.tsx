@@ -1,7 +1,7 @@
 'use client';
 
 import React from "react";
-import { Image, Group, Text, Avatar, Divider, Card, 
+import { Image, Text, Avatar, Divider, Card, 
  } from "@mantine/core";
 import 'dayjs/locale/en';
 import { useRouter } from 'next/navigation';
@@ -52,21 +52,16 @@ export default function UserCard(props: {id: number}) {
 
           </Card.Section>
           <Avatar
-            src={`data:image/jpeg;base64,${user?.photo}`}
+            src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${user?.photo}`}
             size={80}
             radius={80}
             mx="auto"
             mt={-30}
             style={{borderWidth: 2, borderColor: 'var(--mantine-color-body)'}}
           />
-          <Group gap={4} justify="center" align="center">
           <Text ta="center" fz="lg" fw={500} mt="sm">
-            {user?.first_name}
+            {user?.name}
           </Text>
-          <Text ta="center" fz="lg" fw={500} mt="sm">
-            {user?.last_name}
-          </Text>
-          </Group>
          <Divider py={12}/>
           <Text ta="center" fz="sm" c="dimmed">
             {user?.role === "teacher" ? user?.bio : user?.status}

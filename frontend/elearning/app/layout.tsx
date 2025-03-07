@@ -9,8 +9,8 @@ import { Notifications } from '@mantine/notifications';
 
 
 export const metadata = {
-  title: 'My Mantine app',
-  description: 'I have followed setup instructions carefully',
+  title: 'UpLearn',
+  description: 'E-learning platform for all',
 };
 
 export default function RootLayout({

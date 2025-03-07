@@ -3,32 +3,25 @@ import { Avatar, Group, Text, UnstyledButton } from '@mantine/core';
 import classes from './UserButton.module.css';
 
 interface UserButtonInfo {
-  user: {
-    first_name: string;
-    last_name: string
-  },
-  photo: string | undefined;
+  name: string;
+  photo: string;
   onClick: () => void;
 }
 
-export function UserButton(props: UserButtonInfo) {
-  const usersName = props.user.first_name + " " + props.user.last_name;
-  
-  return (
+export const UserButton = (props: UserButtonInfo) => (
     <UnstyledButton className={classes.user} onClick={props.onClick}>
       <Group>
         <Avatar
-        name={usersName}
-          src={props.photo}
+        name={props.name}
+          src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${props.photo}`}
           radius="xl"
         />
 
         <div style={{ flex: 1 }}>
           <Text size="sm" fw={500}>
-           {usersName}
+           {props.name}
           </Text>
         </div>
       </Group>
     </UnstyledButton>
-  );
-}
+);

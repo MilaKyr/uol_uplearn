@@ -7,173 +7,179 @@ import {
   IconHome,
   IconLogout,
   IconMessage,
+  IconPlus,
+  IconSchool,
   IconSettings,
   IconStar,
+  IconUsersGroup,
 } from '@tabler/icons-react';
 import cx from 'clsx';
 import {
   Avatar,
   Burger,
-  Container,
   Group,
   Menu,
   Text,
   UnstyledButton,
   useMantineTheme,
   Image,
+  Grid,
 } from '@mantine/core';
 import classes from './Header.module.css';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { BasicUserData } from '@/app/types';
+import { api } from '@/app/actions/api';
+import { getUser } from '@/app/actions/getAuth';
 
 interface burgerOption {
   opened: boolean;
-  toggle: () =>  void;
+  toggle: () => void;
 }
 
 export function HeaderTabs(props: burgerOption) {
+  const user = getUser();
   const theme = useMantineTheme();
-  const [user, setUser] = React.useState<BasicUserData>();
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const router = useRouter()
 
- React.useEffect(() => {
-             const token = window.sessionStorage.getItem("jwt");
-         
-             if (!token) {
-               router.replace('/') // If no token is found, redirect to login page
-               return
-             }
-         
-             const parsedToken = JSON.parse(token);
-
-             setUser(parsedToken.user)
-     }, [router]);
-
-     const logOut = async () => {
-      const token = window.sessionStorage.getItem("jwt");
-    
-        if (!token) {
-          router.replace('/') // If no token is found, redirect to login page
-          return
-        }
-    
-        const parsedToken = JSON.parse(token);
-        // Validate the token by making an API call
-          try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/logout/`, {
-              headers: {
-                Authorization: `Bearer ${parsedToken.access}`,
-                "Content-Type": "application/json",
-              },
-              method: 'POST',
-            });
-            if (!res.ok) throw new Error('Token validation failed');
-
-          } catch (error) {
-            console.error(error)
-          } finally  {
-            window.sessionStorage.removeItem("jwt");
-            router.replace('/') // Redirect to login if token validation fails
-          }
-    }
+  const handleLogout = async () => {
+    await api.logout();
+    router.push('/');
+  }
 
   return (
-    <Container size="md" className={classes.inner}>
-        <Group justify="space-between" h="100%" px="md">
+    <Grid px={12} pt={12} justify="flex-start" align="center" gutter={{ base: 'xl', xs: 'xl', md: 'xl', xl: 50 }}>
+      <Grid.Col span={1} hiddenFrom="xs" >
         <Burger opened={props.opened} onClick={props.toggle} hiddenFrom="xs" size="sm" />
-        <Link href="/home" > 
-         <Image 
-                height={48}
-                w="auto"
-                fit="contain"
-                src='/logo.png' />
-          </Link>
-          <Group justify='space-around'>
-          
+      </Grid.Col>
 
-          <Menu
-            width={260}
-            position="bottom-end"
-            transitionProps={{ transition: 'pop-top-right' }}
-            onClose={() => setUserMenuOpened(false)}
-            onOpen={() => setUserMenuOpened(true)}
-            withinPortal
-          >
-            <Menu.Target>
-              <UnstyledButton 
-                className={cx(classes.user, { [classes.userActive]: userMenuOpened })}
-              >
-                <Group gap={7}>
-                  <Avatar src={`data:image/jpeg;base64,${user?.photo}`} 
-                  alt={user?.first_name + " " +user?.last_name} radius="xl" size={20} />
-                  <Text fw={500} size="sm" lh={1} mr={3}>
-                    {user?.first_name} {user?.last_name}
-                  </Text>
-                  <IconChevronDown size={12} stroke={1.5} />
-                </Group>
-              </UnstyledButton>
-            </Menu.Target>
+      <Grid.Col span={{ base: 3, xs: 3, sm: 2, md: 3, lg: 1, xl: 2 }}>
+        <Link href={`/home/${user.id}`} >
+          <Image
+            height={48}
+            w="auto"
+            fit="contain"
+            src='/logo.png' />
+        </Link>
+      </Grid.Col>
 
-            <Menu.Dropdown>
+
+      <Grid.Col offset={{ base: 4, xs: 4, md: 0, lg: 2, xl: 0 }} span={4}>
+
+        <Menu
+          width={260}
+          position="bottom-end"
+          transitionProps={{ transition: 'pop-top-right' }}
+          onClose={() => setUserMenuOpened(false)}
+          onOpen={() => setUserMenuOpened(true)}
+          withinPortal
+        >
+          <Menu.Target>
+            <UnstyledButton
+              className={cx(classes.user, { [classes.userActive]: userMenuOpened })}
+            >
+              <Group gap={7} align='flex-end'>
+                <Avatar src={`${user?.photo}`}
+                  alt={user?.name} radius="xl" size={20} />
+                <Text visibleFrom='xs' fw={500} size="sm" lh={1} mr={3}>
+                  {user?.name}
+                </Text>
+                <IconChevronDown size={12} stroke={1.5} />
+              </Group>
+            </UnstyledButton>
+          </Menu.Target>
+
+          <Menu.Dropdown>
             <Menu.Item
-            component={Link}
-            href={{
-              pathname: '/home',
-              query: { selected: 'dashboard' },
-            }}
-                leftSection={<IconHome size={16} color={theme.colors.gray[6]} stroke={1.5} />}
-              >
-                Home
-              </Menu.Item>
-              <Menu.Item
               component={Link}
               href={{
-                pathname: '/home',
+                pathname: `/home/${user.id}`,
+                query: { selected: 'dashboard' },
+              }}
+              leftSection={<IconHome size={16} color={theme.colors.gray[6]} stroke={1.5} />}
+            >
+              Home
+            </Menu.Item>
+            <Menu.Item
+              component={Link}
+              href={{
+                pathname: `/home/${user.id}`,
                 query: { selected: 'notifications' },
               }}
-                leftSection={<IconBell size={16} color={theme.colors.red[6]} stroke={1.5} />}
-              >
-                Notifications
-              </Menu.Item>
+              leftSection={<IconBell size={16} color={theme.colors.teal[6]} stroke={1.5} />}
+            >
+              Notifications
+            </Menu.Item>
+            <Menu.Item
+              component={Link}
+              href={'/messages'}
+              leftSection={<IconMessage size={16} color={theme.colors.blue[6]} stroke={1.5} />}
+            >
+              Messages
+            </Menu.Item>
+            {user?.role === "student" &&
               <Menu.Item
+                component={Link}
+                href={{
+                  pathname: `/home/${user.id}`,
+                  query: { selected: 'courses' },
+                }}
+                leftSection={<IconSchool size={16} color={theme.colors.violet[6]} stroke={1.5} />}
+              >
+                Browse Courses
+              </Menu.Item>}
+
+            {user?.role === "teacher" &&
+              <Menu.Item
+                component={Link}
+                href={{
+                  pathname: `/home/${user.id}`,
+                  query: { selected: 'add_course' },
+                }}
+                leftSection={<IconPlus size={16} color={theme.colors.yellow[6]} stroke={1.5} />}
+              >
+                Add course
+              </Menu.Item>}
+
+            {user?.role === "teacher" &&
+              <Menu.Item
+                component={Link}
+                href={{
+                  pathname: `/home/${user.id}`,
+                  query: { selected: 'users' },
+                }}
+                leftSection={<IconUsersGroup size={16} color={theme.colors.violet[6]} stroke={1.5} />}
+              >
+                Users
+              </Menu.Item>}
+
+            {user?.role === "student" && <Menu.Item
               component={Link}
               href={{
-                pathname: '/home',
-                query: { selected: 'messages' },
-              }}
-                leftSection={<IconMessage size={16} color={theme.colors.blue[6]} stroke={1.5} />}
-              >
-                Messages
-              </Menu.Item>
-              <Menu.Item
-              component={Link}
-              href={{
-                pathname: '/home',
+                pathname: `/home/${user.id}`,
                 query: { selected: 'feedbacks' },
               }}
-                leftSection={<IconStar size={16} color={theme.colors.yellow[6]} stroke={1.5} />}
-              >
-                Feedbacks
-              </Menu.Item>
+              leftSection={<IconStar size={16} color={theme.colors.yellow[6]} stroke={1.5} />}
+            >
+              Feedbacks
+            </Menu.Item>}
 
-              <Menu.Label>Settings</Menu.Label>
-              <Menu.Item 
+            <Menu.Label>Settings</Menu.Label>
+            <Menu.Item
               component={Link}
               href={{
-                pathname: '/home',
+                pathname: `/home/${user.id}`,
                 query: { selected: 'settings' },
               }}
               leftSection={<IconSettings size={16} stroke={1.5} />}>
-                Account settings
-              </Menu.Item>
-              <Menu.Item onClick={logOut} leftSection={<IconLogout size={16} stroke={1.5} />}>Logout</Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-          </Group>
-          
-        </Group>
-        </Container>
+              Account settings
+            </Menu.Item>
+            <Menu.Item onClick={handleLogout} 
+            leftSection={<IconLogout size={16} stroke={1.5} color={theme.colors.red[6]} />}>Logout</Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+
+      </Grid.Col>
+    </Grid>
   );
 }

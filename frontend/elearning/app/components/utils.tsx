@@ -35,21 +35,28 @@ export function printDuration(duration: string | undefined): string {
 export const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 export function selectIcon(done: boolean | undefined, deadline: Date, className?: string) {
+
+    const props = {
+      size:20, 
+      className: className,
+      stroke:1.5
+    }
+
   if (done === undefined || done === null) {
-      return <IconCircleDashedCheck  size={20} className={className} stroke={1.5} />
+      return <IconCircleDashedCheck  {...props} />
   }
 
   if (done) {
-      return <IconCircleCheckFilled color="green" size={20} className={className} stroke={1.5} />
+      return <IconCircleCheckFilled color="green" {...props} />
   }
 
   const diff = deadline.valueOf()  - new Date().valueOf() ;
   if (deadline < new Date()) {
-      return <IconExclamationCircleFilled color="orange" size={20} className={className} stroke={1.5} />
+      return <IconExclamationCircleFilled color="orange" {...props} />
   } 
 
   if (Math.abs(Math.round(diff)/ (1000 * 60 * 60 * 24)) <= 2) {
-      return <IconExclamationCircleFilled color="orange" size={20} className={className} stroke={1.5} />
+      return <IconExclamationCircleFilled color="orange" {...props} />
   } 
-  return <IconCircleCheck color="gray" size={20} className={className}  stroke={1.5} />
+  return <IconCircleCheck color="gray" {...props} />
 }

@@ -78,6 +78,10 @@
     height: 20px;
     pointer-events: none;
   }
+
+  .logOut {
+    color: red;
+  }
   
   .collections {
     padding-left: calc(var(--mantine-spacing-md) - 6px);

@@ -1,11 +1,12 @@
-import React, { useCallback, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
 import { Calendar } from '@mantine/dates';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { notifications } from "@mantine/notifications";
 import { IconExclamationCircle } from "@tabler/icons-react";
 import { TodoData } from '@/app/types';
+import { Button } from '@mantine/core';
 
 function getDay(date: Date) {
     const day = date.getDay();
@@ -29,19 +30,16 @@ function isInWeekRange(date: Date, value: Date | null) {
 }
 
 
-export default function WeeklyCalendar(props: { userId: number | undefined, onClick: (data: TodoData[]) => void }) {
+export default function WeeklyCalendar(props: { userId: string, onClick: (data: TodoData[]) => void }) {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const [hovered, setHovered] = React.useState<Date | null>(null);
-    const [value, setValue] = React.useState<Date | null>(null);
+    const [value, setValue] = React.useState<Date | null>(new Date());
 
     const getUrl = (date: Date | null) => {
         const onejan = new Date(date!.getFullYear(), 0, 1);
         const week = Math.ceil((((date!.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
-        return `${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/students/${props.userId}/todo_for` + '?' + createQueryString(
-            'month', `${date?.getMonth()}`,) + '&' + createQueryString(
-                'week', `${week}`) + '&' + createQueryString(
-                    'year', `${date?.getFullYear()}`)
+        return `${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/todo_for` + '?' +
+        `month=${date?.getMonth()}` + '&' + `week=${week}` + '&' + `year=${date?.getFullYear()}`
     }
 
     const getTodo = async (date: Date | null) => {
@@ -55,7 +53,7 @@ export default function WeeklyCalendar(props: { userId: number | undefined, onCl
         const parsedToken = JSON.parse(token);
         // Validate the token by making an API call
 
-
+        console.log(getUrl(date))
         try {
             const res = await fetch(getUrl(date), {
                 headers: {
@@ -88,15 +86,6 @@ export default function WeeklyCalendar(props: { userId: number | undefined, onCl
         }
     }
 
-    const createQueryString = useCallback(
-        (name: string, value: string) => {
-            const params = new URLSearchParams(searchParams.toString())
-            params.set(name, value)
-
-            return params.toString()
-        },
-        [searchParams]
-    );
 
     const onClick = async (date: Date | null) => {
         setValue(date);
@@ -122,6 +111,9 @@ export default function WeeklyCalendar(props: { userId: number | undefined, onCl
                 };
             }}
         />
+        <Button onClick={()=>onClick(new Date())}>
+            Go to current week
+        </Button>
         </Suspense>
     )
 }

@@ -28,7 +28,7 @@ export default function CourseSearch(props: { onClick: (newCourses: CourseListDa
       const parsedToken = JSON.parse(token);
       // Validate the token by making an API call
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/tags`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/tags/`, {
           headers: {
             Authorization: `Bearer ${parsedToken.access}`,
           },

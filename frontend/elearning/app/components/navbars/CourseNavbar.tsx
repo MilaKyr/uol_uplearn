@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useCallback, Suspense } from 'react';
+import React, { useCallback } from 'react';
 import {IconArrowBadgeRight } from '@tabler/icons-react';
-import {Button,} from '@mantine/core';
+import {Button, ScrollArea,} from '@mantine/core';
 
 import classes from './CourseNavBar.module.css';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
@@ -15,8 +15,8 @@ interface CourseNavbarProps {
   course: CourseEditData;
   selected?: string;
   onClickTitle: () => void;
-  onClickTopic: (topicId: number) => void;
-  onClickLesson: (topicId: number, lessonId: number) => void;
+  onClickTopic: (topicId: string) => void;
+  onClickLesson: (topicId: string, lessonId: string) => void;
 }
 
 
@@ -33,9 +33,10 @@ export function CourseNavBar(props: CourseNavbarProps) {
       if (params) {
         setSelected(params);
       }
+    } else {
+      setSelected(props?.selected);
     }
-    
-  }, [router, searchParams, pathname])
+  }, [searchParams, pathname])
 
 
   const createQueryString = useCallback(
@@ -49,13 +50,13 @@ export function CourseNavBar(props: CourseNavbarProps) {
   );
 
 
-  const handleTopicClick = (id: number) => {
+  const handleTopicClick = (id: string) => {
     router.push(pathname + '?' + createQueryString('selected', `topic_${id}`));
     props.onClickTopic(id)
     setSelected(`topic_${id}`);
   }
 
-  const handleLessonClick = (topicId: number, lessonId: number) => {
+  const handleLessonClick = (topicId: string, lessonId: string) => {
     router.push(pathname + '?' + createQueryString('selected', `lesson_${lessonId}`));
     props.onClickLesson(topicId, lessonId)
     setSelected(`lesson_${lessonId}`);
@@ -64,26 +65,32 @@ export function CourseNavBar(props: CourseNavbarProps) {
   const titleClick = () => {
     router.push(pathname);
     props.onClickTitle();
+    setSelected("main")
   }
 
   return (
-    <Suspense>
+  <ScrollArea type="never" >
     <nav className={classes.navbar}>
 
       <div className={classes.section}>
-        <CourseButton title={props.course?.title} photo={`data:image/jpeg;base64,${props.course?.photo}`} onClick={titleClick} />
+        <CourseButton title={props.course?.title} photo={`${props.course?.photo}`} onClick={titleClick} />
       </div>
 
-
+      
       <div className={classes.section}>
         <div className={classes.mainLinks}>
+         
           {props.course?.topics.map((topic) => (
 
             <div key={topic.id} className={classes.mainLinks}>
-              <Button color={selected === `topic_${topic.id}` ? 'indigo.2' : 'transparent'} key={topic.id} onClick={() => handleTopicClick(topic.id)} className={classes.mainLink}>
+              <Button size={'xl'}  color={selected === `topic_${topic.id}` ? 'indigo.2' : 'transparent'} key={topic.id} 
+              onClick={() => handleTopicClick(topic.id)} className={classes.mainLink}>
                 <div className={classes.mainLinkInner}>
                   <IconArrowBadgeRight className={classes.mainLinkIcon} stroke={1.5} />
-                  <span style={{ textDecorationLine: 'underline' }}>{topic.title}</span>
+                  <span style={{textAlign: 'start', wordWrap: 'break-word',
+                    fontSize: 14,
+                    lineHeight: 1.3,
+                    textWrap: 'balance', flex: 4, textDecorationLine: 'underline'}}>{topic.title}</span>
                 </div>
               </Button>
 
@@ -95,10 +102,11 @@ export function CourseNavBar(props: CourseNavbarProps) {
               </div>
             </div>
           ))}
-
+     
         </div>
       </div>
+      
     </nav>
-    </Suspense>
+    </ScrollArea>
   );
 }

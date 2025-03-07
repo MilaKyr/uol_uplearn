@@ -11,7 +11,7 @@ import { notifications } from "@mantine/notifications";
 import { Editor } from "@tiptap/react";
 import { LessonStudyData } from "@/app/types";
 
-export default function LessonMain(props: { id: number, editor: Editor }) {
+export default function LessonMain(props: { id: string, editor: Editor }) {
   const id = props.id;
 
   const [files, setFiles] = React.useState<FileWithPath[]>([]);
@@ -20,6 +20,7 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
   const [isLoading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
+
     const getFiles = async () => {
       const token = window.sessionStorage.getItem("jwt");
 
@@ -29,7 +30,7 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
       }
       const parsedToken = JSON.parse(token);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${id}/files`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/files/${id}/`, {
           headers: {
             Authorization: `Bearer ${parsedToken.access}`,
           },
@@ -135,14 +136,15 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
       router.replace('/') // If no token is found, redirect to login page
       return
     }
+    
     const parsedToken = JSON.parse(token);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/${props.id}/done`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/lessons/progress/${props.id}/`, {
         headers: {
           Authorization: `Bearer ${parsedToken.access}`,
           "Content-Type": "application/json"
         },
-        method: "POST"
+        method: "PUT"
       });
       if (!res.ok) {
         if (res.status === 401) {
@@ -175,6 +177,7 @@ export default function LessonMain(props: { id: number, editor: Editor }) {
   return (
     <Stack>
       <Title>{lesson?.title}</Title>
+      <Text c="dimmed">Deadline: {lesson?.deadline}</Text>
       <Divider />
       <RichTextEditor editor={props.editor} >
         <RichTextEditor.Content />

@@ -1,187 +1,125 @@
 import React from "react";
 import { ScrollArea, Table, Group, ActionIcon, Center, Text, Avatar, UnstyledButton, Modal, Button } from "@mantine/core";
-import { IconBarrierBlockOff, IconBarrierBlock, IconTrash, IconCheck } from '@tabler/icons-react';
+import { IconBarrierBlockOff, IconBarrierBlock, IconTrash, IconCheck, IconExclamationCircle } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { notifications } from "@mantine/notifications";
 import { useDisclosure } from '@mantine/hooks';
 import { StudentProfileData } from "../types";
+import { api } from "../actions/api";
 
-export default function CourseStudentList(props: { courseId: number }) {
+export default function CourseStudentList(props: { courseId: string }) {
     const [students, setStudents] = React.useState<StudentProfileData[]>([])
     const router = useRouter();
     const [openedRemove, removeHandle] = useDisclosure(false);
-    const [enrollmentId, setEnrollmentId] = React.useState<number>();
+    const [enrollmentId, setEnrollmentId] = React.useState<string>();
 
-    React.useEffect(() => {
-        const getStudent = async () => {
-            const token = window.sessionStorage.getItem("jwt");
-
-            if (!token) {
-                router.replace('/') // If no token is found, redirect to login page
-                return
-            }
-
-            const parsedToken = JSON.parse(token);
-            // Validate the token by making an API call
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${props.courseId}/students`, {
-                    headers: {
-                        Authorization: `Bearer ${parsedToken.access}`,
-                    },
-                })
-
-                if (!res.ok) throw new Error('Token validation failed');
-                const data = await res.json();
-
-                setStudents(data)
-            } catch (error) {
-                console.error(error)
-            }
-        }
-        getStudent();
-    }, []);
-
-    const block = async (enrollmentId: number | undefined, block: boolean) => {
-        if (enrollmentId) {
-            const token = window.sessionStorage.getItem("jwt");
-
-            if (!token) {
-                router.replace('/') // If no token is found, redirect to login page
-                return
-            }
-    
-            const parsedToken = JSON.parse(token);
-            // Validate the token by making an API call
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/enrollments/${enrollmentId}/block`, {
-                    headers: {
-                        Authorization: `Bearer ${parsedToken.access}`,
-                        "Content-Type": "application/json"
-                    },
-                    method: "PUT",
-                    body: JSON.stringify({ block: block })
-                })
-    
-                if (!res.ok) throw new Error('Token validation failed');
-                if (block) {
-                    notifications.show({
-                        title: 'Student has been successfully blocked',
-                        message: "This student will no longer have access to the course. You can unblock them at any time",
-                        withCloseButton: true,
-                        color: 'teal',
-                        icon: <IconCheck />,
-                    })
-                } else {
-                    notifications.show({
-                        title: 'Student has been successfully unblocked',
-                        message: "This student can access to the course. You can block them at any time",
-                        withCloseButton: true,
-                        color: 'teal',
-                        icon: <IconCheck />,
-                    })
-                }
-                router.refresh()
-            } catch (error) {
-                console.error(error)
-                router.replace('/') // Redirect to login if token validation fails
-            }
-            const newStudents = [...students];
-            newStudents.map((enrolled_stds) => {
-                if (enrolled_stds.id === enrollmentId) {
-                    enrolled_stds.status = block ? "blocked" : "started";
-                }
+    const getStudents = async () => {
+        const { data, status } = await api.get(`/api/courses/students?course_id=${props.courseId}`)
+        if (status === 401 || status === 403) {
+            notifications.show({
+                title: "Session expired",
+                message: "Please log in to continue",
+                autoClose: false,
+                icon: <IconExclamationCircle />,
+                color: 'red',
             });
-            setStudents(newStudents);
+            router.push('/')
         }
+        console.log(data)
+        setStudents(data)
     }
 
-    const remove = async () => {
-        const token = window.sessionStorage.getItem("jwt");
-
-        if (!token) {
-            router.replace('/') // If no token is found, redirect to login page
-            return
-        }
-
-        const parsedToken = JSON.parse(token);
-        // Validate the token by making an API call
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/enrollments/${enrollmentId}/remove`, {
-                headers: {
-                    Authorization: `Bearer ${parsedToken.access}`,
-                    "Content-Type": "application/json"
-                },
-                method: "PUT",
-            })
-
-            if (!res.ok) throw new Error('Token validation failed');
+    const updateStatus = async (enrollId: string, newStatus: string) => {
+        const jsonData = JSON.stringify({ status: newStatus });
+        const { status } = await api.patch(`/api/enrollments/${enrollId}/`, jsonData)
+        if (status === 401 || status === 403) {
             notifications.show({
-                title: 'Student has been successfully removed',
-                message: "This student can no longer access the course",
-                withCloseButton: true,
-                color: 'teal',
-                icon: <IconCheck />,
-            })
-        } catch (error) {
-            console.error(error)
-            router.replace('/') // Redirect to login if token validation fails
+                title: "Session expired",
+                message: "Please log in to continue",
+                autoClose: false,
+                icon: <IconExclamationCircle />,
+                color: 'red',
+            });
+            router.push('/')
         }
-
+        const statusName = newStatus === "started" ? "un-blocked" : newStatus;
+        const statusDescription = newStatus === "started" ?
+            "This student can access to the course. You can block them at any time" : status === "blocked" ?
+                "This student will no longer have access to the course. You can un-block them at any time" :
+                "This student will no longer have access to the course";
+        notifications.show({
+            title: `Student has been successfully ${statusName}`,
+            message: statusDescription,
+            withCloseButton: true,
+            color: 'teal',
+            icon: <IconCheck />,
+        })
         const newStudents = [...students];
         newStudents.map((enrolled_stds) => {
-            if (enrolled_stds.id === enrollmentId) {
-                enrolled_stds.status = "removed";
+            console.log(enrolled_stds, enrolled_stds.id === enrollId)
+            if (enrolled_stds.id === enrollId) {
+                enrolled_stds.status = newStatus;
             }
         });
         setStudents(newStudents);
+        removeHandle.close()
     }
+
+    React.useEffect(() => {
+        getStudents();
+    }, []);
+
+    const handleRemove = (enrollId: string) => {
+        setEnrollmentId(enrollId)
+        removeHandle.open();
+    }
+
 
     return (
         <>
             <ScrollArea>
-            <Table>
-            <Table.Thead></Table.Thead>
-            <Table.Tbody>
-                    {students?.map((enrolledStudent: StudentProfileData) => (
-                        <Table.Tr
-                            key={enrolledStudent.id}>
+                <Table>
+                    <Table.Thead></Table.Thead>
+                    <Table.Tbody>
+                        {students?.map((enrolledStudent: StudentProfileData) => (
+                            <Table.Tr
+                                key={enrolledStudent.id}>
                                 <Table.Td>
                                     <Group>
-                                    <Avatar
-                                            name={`${enrolledStudent.first_name} ${enrolledStudent.last_name}`}
-                                            src={`data:image/jpeg;base64,${enrolledStudent.photo}`}
+                                        <Avatar
+                                            name={`${enrolledStudent.name}`}
+                                            src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${enrolledStudent.photo}`}
 
                                         />
-                                <UnstyledButton component="a" href={"/users/" + enrolledStudent.id} color="black">{enrolledStudent.first_name} {enrolledStudent.last_name}</UnstyledButton>
-                                </Group>
+                                        <UnstyledButton component="a" href={"/users/" + enrolledStudent.id} color="black">{enrolledStudent.name}</UnstyledButton>
+                                    </Group>
                                 </Table.Td>
                                 <Table.Td>
-                                <ActionIcon 
-                                onClick={() => block(enrolledStudent.id, enrolledStudent.status !== "blocked")} 
-                                variant="filled" 
-                                color={enrolledStudent.status === "blocked" ? 'orange.2' : 'orange.6'} 
-                                size="md" 
-                                radius="md"> 
-                                    {enrolledStudent.status === "blocked" ? <IconBarrierBlockOff /> : <IconBarrierBlock />}
-                                </ActionIcon>
+                                    <ActionIcon
+                                        onClick={() => updateStatus(enrolledStudent.id, enrolledStudent.status === "blocked" ? "started" : "blocked")}
+                                        variant="filled"
+                                        color={enrolledStudent.status === "blocked" ? 'orange.2' : 'orange.6'}
+                                        size="md"
+                                        radius="md">
+                                        {enrolledStudent.status === "blocked" ? <IconBarrierBlockOff /> : <IconBarrierBlock />}
+                                    </ActionIcon>
                                 </Table.Td>
                                 <Table.Td>
-                                <ActionIcon onClick={() => {
-                                    setEnrollmentId(enrolledStudent.id)
-                                    removeHandle.open();
-                                }} variant="filled" color={'red.6'} size="md" radius="md" disabled={enrolledStudent.status === "removed"}> <IconTrash />
-                                </ActionIcon>
+                                    <ActionIcon onClick={() => handleRemove(enrolledStudent.id)} variant="filled" color={'red.6'} size="md" radius="md" disabled={enrolledStudent.status === "removed"}> <IconTrash />
+                                    </ActionIcon>
                                 </Table.Td>
 
-                        </Table.Tr>
-                    ))}
-                </Table.Tbody>
+                            </Table.Tr>
+                        ))}
+                    </Table.Tbody>
                 </Table>
             </ScrollArea>
+
+
             <Modal opened={openedRemove} onClose={() => removeHandle.close()} title="Are you sure you want to remove this student?">
                 <Center pb={20}><Text c="red" fw={700}>This cannot be undone!</Text></Center>
                 <Button size="sm"
-                    onClick={remove}
+                    onClick={() =>{if (enrollmentId) {updateStatus(enrollmentId, "removed")}}}
                     color={"red"}>{"Yes, I'm sure"}</Button>
 
             </Modal>

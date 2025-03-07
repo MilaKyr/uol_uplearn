@@ -5,12 +5,11 @@ import { useDisclosure } from "@mantine/hooks";
 import styles from "./page.module.css";
 import { Authentication } from "./components/Authentication";
 import { Header } from "./components/header/Header";
-import UserDashboardSuspensed from "./home/page";
-import { Auth } from "./types";
+import UserDashboardSuspensed from "./home/[id]/page";
 
 export default function Home() {
   const [opened, { toggle }] = useDisclosure(false);
-  const [auth, setAuth] = React.useState<Auth>();
+  const [auth, setAuth] = React.useState<string>();
 
   return (
     <main className={styles.main}>

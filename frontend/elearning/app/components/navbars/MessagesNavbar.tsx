@@ -6,68 +6,45 @@ import { Badge, Group, Text, UnstyledButton, Stack, Avatar, Indicator, } from '@
 import classes from './MessagesNavbar.module.css';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { MessagesNavBarProps, ConversationUserData } from '@/app/types';
-import { notifications } from "@mantine/notifications";
+import { notifications, useNotifications } from "@mantine/notifications";
 import { ConversationData } from "@/app/types";
 import UserNameSearch from '../search/UserNameSearch';
-
+import { api } from '@/app/actions/api';
 
 export function MessagesNavBar(props: MessagesNavBarProps) {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const router = useRouter();
-    const [selected, setSelected] = React.useState(props?.selected);
+    const notificationsStore = useNotifications();
+    const [selected, setSelected] = React.useState<string>(props?.selected);
     const [conversations, setConversations] = React.useState<ConversationData[] | undefined>();
 
-    React.useEffect(() => {
-        const getConversations = async () => {
-            const token = window.sessionStorage.getItem("jwt");
-
-            if (!token) {
-                router.replace('/') // If no token is found, redirect to login page
-                return
-            }
-
-            const parsedToken = JSON.parse(token);
-            // Validate the token by making an API call
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/chat/`, {
-                    headers: {
-                        Authorization: `Bearer ${parsedToken.access}`,
-                        "Content-Type": "application/json"
-                    },
-                })
-
-                if (!res.ok) {
-                    if (res.status === 401) {
-                        notifications.show({
-                            title: "Session expired",
-                            message: "Please log in to continue",
-                            autoClose: false,
-                            icon: <IconExclamationCircle />,
-                            color: 'red',
-                        });
-                        window.sessionStorage.removeItem("jwt");
-                        router.push('/') // Redirect to login if token validation fails
-                    } else {
-                        throw new Error('Something went wrong')
-                    }
-                };
-                const convs: ConversationData[] = await res.json();
-                setConversations(convs)
-            } catch (error) {
-                console.log(error)
+    const getConversations = async () => {
+        const { data, status } = await api.get(`/api/chat/conversations/`)
+        if (status === 401 || status === 403) {
+            const check_if_exists = notificationsStore.notifications.find((notif) => notif.title === "Session expired")
+            if (check_if_exists === undefined) {
+                notifications.show({
+                    title: "Session expired",
+                    message: "Please log in to continue",
+                    autoClose: false,
+                    icon: <IconExclamationCircle />,
+                    color: 'red',
+                });
+                router.push('/')
             }
         }
-
-        getConversations();
-
+        setConversations(data);
         if (searchParams.size > 0) {
             const params = searchParams.get("selected");
             if (params) {
                 setSelected(params);
             }
         }
+    }
 
+    React.useEffect(() => {
+        getConversations();
     }, [searchParams, pathname, selected])
 
     const createQueryString = useCallback(
@@ -80,56 +57,29 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
         [searchParams]
     );
 
-    const setSeen = async (id: number) => {
-        const token = window.sessionStorage.getItem("jwt");
-
-        if (!token) {
-            router.replace('/') // If no token is found, redirect to login page
-            return
-        }
-
-        const parsedToken = JSON.parse(token);
+    const setSeen = async (id: string) => {
         const conv: ConversationData | undefined = conversations?.find((conv) => conv.id === id)
         if (conv) {
-            // Validate the token by making an API call
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/chat/${conv.id}/seen/`, {
-                    headers: {
-                        Authorization: `Bearer ${parsedToken.access}`,
-                        "Content-Type": "application/json"
-                    },
-                    method: "PUT",
-                    body: JSON.stringify({ ids: conv.unread_messages_ids })
-                })
-
-                if (!res.ok) {
-                    if (res.status === 401) {
-                        notifications.show({
-                            title: "Session expired",
-                            message: "Please log in to continue",
-                            autoClose: false,
-                            icon: <IconExclamationCircle />,
-                            color: 'red',
-                        });
-                        window.sessionStorage.removeItem("jwt");
-                        router.push('/') // Redirect to login if token validation fails
-                    } else {
-                        throw new Error('Something went wrong')
-                    }
-                };
-            } catch (error) {
-                console.log(error)
+            const jsonData = JSON.stringify({ ids: conv.unread_messages_ids })
+            const { status } = await api.put(`/api/chat/conversations/${id}/seen`, jsonData)
+            if (status === 401 || status === 403) {
+                const check_if_exists = notificationsStore.notifications.find((notif) => notif.title === "Session expired")
+                if (check_if_exists === undefined) {
+                    notifications.show({
+                        title: "Session expired",
+                        message: "Please log in to continue",
+                        autoClose: false,
+                        icon: <IconExclamationCircle />,
+                        color: 'red',
+                    });
+                    router.push('/')
+                }
             }
         }
-        
     }
 
-
-
-
-
-    const handleClick = async (conversationId: number) => {
-        router.push('/messages' + '?' + createQueryString('selected', `${conversationId}`));
+    const handleClick = async (conversationId: string) => {
+        router.push('/messages' + '?' + createQueryString('selected', conversationId));
         await setSeen(conversationId);
         const newConversations = conversations?.map((conv) => {
             if (conv.id === conversationId) {
@@ -142,54 +92,59 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
         props.onClick(conversationId);
     }
 
-
-
-
     return (
         <Suspense>
-        <nav className={classes.navbar}>
-            <UserNameSearch />
+            <nav className={classes.navbar}>
+                <UserNameSearch />
 
-            <div className={classes.section}>
-                <div className={classes.mainLinks}>
-
+                <div className={classes.section}>
                     <div className={classes.mainLinks}>
-                        {conversations?.map((conversation) => conversation.users?.map((user: ConversationUserData) => {
-                            return user.id != props.chatOwnerId && (
-                                <UnstyledButton
-                                    onClick={() => handleClick(conversation.id)}
-                                    key={conversation.id} style={{ alignItems: 'center', width: '100%', padding: 10, height: '100%', display: 'flex', borderBottom: 10 }}>
-                                    <Group className={classes.mainLinkInner}>
-                                        <Indicator offset={6} position="bottom-end" size={16} color={user.is_online ? "violet.5" : "gray.5"} withBorder >
-                                            <Avatar src={`data:image/jpeg;base64,${user.photo}`}
-                                                radius="xl" />
-                                        </Indicator>
-                                        <Stack gap={3} justify='flex-end' align='flex-start'>
-                                            <Text c="gray.8" fw={600} size="xs" >{user.first_name} {user.last_name}</Text>
-                                            {conversation.last_message.text !== "" && <Text truncate="end" c="dimmed" size="xs" > {conversation.last_message.sender.id === props.chatOwnerId ?
-                                                `You: ${conversation.last_message.text}` : `${conversation.last_message.sender.first_name}: ${conversation.last_message.text}`} </Text>}
-                                        </Stack>
-                                    </Group>
-                                    {conversation.unread_messages > 0 && (
-                                        <Badge size="sm" variant="filled" className={classes.mainLinkBadge}>
-                                            {conversation.unread_messages}
-                                        </Badge>
-                                    )}
+
+                        <div className={classes.mainLinks}>
+                            {conversations?.map((conversation) => conversation.users?.map((user: ConversationUserData) => {
+                                const buttonColor = selected === `${conversation.id}` ? '#dbe4ff' : 'transparent';
+                                return user.id != props.chatOwnerId && (
+                                    <UnstyledButton
+                                        onClick={() => handleClick(conversation.id)}
+                                        key={conversation.id}
+                                        style={{
+                                            alignItems: 'center',
+                                            borderRadius: 10,
+                                            width: '100%', padding: 10, height: '100%',
+                                            backgroundColor: buttonColor,
+                                            display: 'flex', borderBottom: 10
+                                        }}>
+                                        <Group className={classes.mainLinkInner}>
+                                            <Indicator offset={6} position="bottom-end" size={16} color={user.is_online ? "violet.5" : "gray.5"} withBorder >
+                                                <Avatar src={`${user.photo}`}
+                                                    radius="xl" />
+                                            </Indicator>
+                                            <Stack gap={3} justify='flex-end' align='flex-start'>
+                                                <Text c="gray.8" fw={600} size="xs" >{user.name} </Text>
+                                                {conversation.last_message.text !== "" && <Text truncate="end" c="dimmed" size="xs" > {conversation.last_message.sender.id === props.chatOwnerId ?
+                                                    `You: ${conversation.last_message.text}` : `${conversation.last_message.sender.name}: ${conversation.last_message.text}`} </Text>}
+                                            </Stack>
+                                        </Group>
+                                        {conversation.unread_messages > 0 && (
+                                            <Badge size="sm" variant="filled" className={classes.mainLinkBadge}>
+                                                {conversation.unread_messages}
+                                            </Badge>
+                                        )}
 
 
 
-                                </UnstyledButton>
-                            )
-                        })
+                                    </UnstyledButton>
+                                )
+                            })
 
-                        )}
+                            )}
 
+
+                        </div>
 
                     </div>
-
                 </div>
-            </div>
-        </nav>
+            </nav>
         </Suspense>
     );
 }
