@@ -209,6 +209,9 @@ class LessonEditFilesSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         file = validated_data.pop("files")
         with transaction.atomic():
+            old_files = instance.files.all()
+            for old_file in old_files:
+                old_file.delete()
             model_file = Files.objects.create(file=file)
             instance.files.add(model_file)
         return instance
@@ -340,10 +343,6 @@ class CourseRetireveUpdateSerializer(CourseBasicSerializer):
         model = Course
         fields = CourseBasicSerializer.Meta.fields + ['start_date', 'duration', 'topics', 'is_active', 'description',
                 'created', 'tags']
-
-    def update(self, instance, validated_data):
-        print(validated_data, instance)
-        return super().update(instance, validated_data)
 
 
 class CourseCreateSerializer(serializers.Serializer):

@@ -5,7 +5,7 @@ import { Image, Group, Title,
   Stack, Text,
   Button, Divider, TextInput, Stepper,  Code, Textarea, ActionIcon,
   Center, NumberInput, TagsInput, Grid,  LoadingOverlay } from "@mantine/core";
-import { IconGripVertical, IconTrash, IconPhoto, IconCheck } from '@tabler/icons-react';
+import { IconGripVertical, IconTrash, IconPhoto, IconCheck, IconPlus } from '@tabler/icons-react';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { DatePickerInput } from '@mantine/dates';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
@@ -325,7 +325,7 @@ export default function CreateCourse() {
                multiple={false}
                onDrop={(files: File[]) => acceptFile(files[0])}
                onReject={(files) => console.log('rejected files', files)}
-               maxSize={5 * 1024 ** 2}
+               maxSize={500000}
                accept={IMAGE_MIME_TYPE}
              >
                <Group justify="center" gap="xl" mih={333} style={{borderRadius: 10, pointerEvents: 'none', backgroundColor: imgBackground }}>
@@ -346,7 +346,7 @@ export default function CreateCourse() {
                      Drag image here or click to select file
                    </Text>
                    <Text size="sm" c="dimmed" inline mt={7}>
-                    File should not exceed 5mb
+                    File should not exceed 500kb
                    </Text>
                  </div>
                </Group>
@@ -400,7 +400,7 @@ export default function CreateCourse() {
           <TagsInput
                 required
                 label="Course tags"
-                placeholder="Pick tag from list"
+                placeholder="Pick tag from list or write your own"
                 data={tags}
                 key={form.key('tags')}
                 {...form.getInputProps('tags')}
@@ -431,10 +431,10 @@ export default function CreateCourse() {
                 </Droppable>
             </DragDropContext>
 
-            <Group justify="center" mt="md">
+            <Group pl={34} justify="flex-start" mt="md">
                 <Button onClick={() => form.insertListItem('topics', { title: '', description: '', n_hours: 1 , key: randomId(), lessons: [
               {title: '', deadline: '', key: randomId()}] })}>
-                Add topic
+                <IconPlus/> Add topic
                 </Button>
             </Group>
             </div>
@@ -523,8 +523,8 @@ export default function CreateCourse() {
                   </Draggable>
                 ))}
               {provided.placeholder}
-              <Button my={24} onClick={() => form.insertListItem(`topics.${tp_index}.lessons`, { title: '', deadline: '', key: randomId() })}>
-              Add lesson
+              <Button ml={34}  my={24} onClick={() => form.insertListItem(`topics.${tp_index}.lessons`, { title: '', deadline: '', key: randomId() })}>
+              <IconPlus/> Add lesson
               </Button>
               <Divider />
               </div>

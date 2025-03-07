@@ -268,8 +268,8 @@ class LessonFilesRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         temp = tempfile.TemporaryFile()
         archive = zipfile.ZipFile(temp, 'w', zipfile.ZIP_DEFLATED)
         for file in lesson.files.all():
-            filename = file.file.path  # Replace by your files here.
-            archive.write(filename, file.filename())  # 'file%d.png' will be the
+            filename = file.file.path
+            archive.write(filename, file.filename())
         archive.close()
         temp.seek(0)
         wrapper = FileWrapper(temp)
@@ -299,7 +299,6 @@ class FeedbackListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated] # checks if user finished the course in serializer
 
     def get_queryset(self):
-        print(self.queryset.filter(user=self.request.user))
         return self.queryset.filter(user=self.request.user)
 
     def get_serializer_class(self):

@@ -14,7 +14,7 @@ export default function CourseStudentList(props: { courseId: string }) {
     const [enrollmentId, setEnrollmentId] = React.useState<string>();
 
     const getStudents = async () => {
-        const { data, status } = await api.get(`/api/courses/students?course_id=${props.courseId}`)
+        const { data, status } = await api.get(`/api/enrollments/students?course_id=${props.courseId}`)
         if (status === 401 || status === 403) {
             notifications.show({
                 title: "Session expired",

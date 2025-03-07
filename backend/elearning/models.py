@@ -3,6 +3,7 @@ import random
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 class KeyHolder(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
@@ -65,8 +66,8 @@ class Topic(models.Model):
         unique_together = ('course', 'title')
 
 def course_topic_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT / user_<id>/<filename>
-    return f'files/{instance.id}_{filename}'
+    date = timezone.now().strftime(format="%Y-%m-%d")
+    return f'files/{date}/{filename}'
 
 
 class Files(models.Model):
