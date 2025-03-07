@@ -1,8 +1,10 @@
 services:
   nginx:
     build: ./nginx
+    expose:
+      - 80
     ports:
-      - '1337:80'
+      - '80:80'
     depends_on:
       - backend
       - backend-asgi
@@ -27,6 +29,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
     volumes:
       - ./frontend/ :/user/src/frontend/
     depends_on:
@@ -40,8 +44,8 @@ services:
       - ./backend/ :/user/src/backend/
       - static-data:/var/www/uplearn/static
       - media-data:/var/www/uplearn/media
-    expose:
-      - 8000
+    ports:
+      - '8000:8000'
     depends_on:
       - backend-asgi
       - redis
