@@ -8,6 +8,5 @@ admin.site.register(Topic)
 admin.site.register(Tag)
 admin.site.register(Lesson)
 admin.site.register(Feedback)
-admin.site.register(CourseProgress)
 admin.site.register(CourseEnrollment)
 

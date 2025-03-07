@@ -2,7 +2,7 @@ import pytest
 
 from elearning.models import Course, User
 from seeding.fill_db import delete_all_objects, fill_database
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group
 
 @pytest.mark.django_db
 def test_delete_all_objects(student_group, teacher_group, course):

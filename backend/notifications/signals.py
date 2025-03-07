@@ -13,11 +13,11 @@ def message_created(sender, instance, created, **kwargs):
     if created:
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            f'public_room_{str(instance.recipient.id)}',
+            f'public_room_{f"{instance.recipient.id}"}',
             {
-                "type": "notify_me",
-                'id': str(instance.id),
-                "sender_id": str(instance.sender.id),
+                "type": "new_message",
+                'id': f"{instance.id}",
+                "sender_id": f"{instance.sender.id}",
                 "message": instance.text
             }
         )
@@ -27,13 +27,13 @@ def notification_created(sender, instance, created, **kwargs):
     if created:
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            f'public_room_{str(instance.recipient.id)}',
+            f'public_room_{f"{instance.recipient.id}"}',
             {
                 "type": "new_notification",
-                "notification_id": str(instance.id),
-                "recipient_id": str(instance.recipient.id),
+                "notification_id": f"{instance.id}",
+                "recipient_id": f"{instance.recipient.id}",
                 "sender_name": instance.person.full_name,
-                "course_id": str(instance.course.id),
+                "course_id": f"{instance.course.id}",
                 "course_title": instance.course.title,
                 "message": instance.text
             }

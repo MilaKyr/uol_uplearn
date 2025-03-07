@@ -2,12 +2,17 @@ from rest_framework import permissions, generics
 from rest_framework.response import Response
 
 from chat.models import Message
+from rest_framework.views import APIView
+
 from .models import Notification
 from .serializers import NotificationSerializer, NotificationSeenSerializer
 from .permissions import IsSeenByRecipient
 
-class InboxView(generics.RetrieveAPIView):
+class InboxView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        return self.retrieve(request, format)
 
     def retrieve(self, request, *args, **kwargs):
         n_notifications = Notification.objects.filter(recipient=request.user, seen=False).count()
@@ -17,13 +22,14 @@ class InboxView(generics.RetrieveAPIView):
             'new_messages': n_messages,
         })
 
-class NotificationListCreateView(generics.ListCreateAPIView):
+class NotificationListView(generics.ListAPIView):
     queryset = Notification.objects.all().order_by('-created')
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated, IsSeenByRecipient]
 
-    def get_serializer_class(self):
-        if self.request.method == "POST":
-            return NotificationSeenSerializer
-        return self.serializer_class
+
+class NotificationUpdateView(generics.UpdateAPIView):
+    queryset = Notification.objects.all().order_by('-created')
+    serializer_class = NotificationSeenSerializer
+    permission_classes = [permissions.IsAuthenticated, IsSeenByRecipient]
 

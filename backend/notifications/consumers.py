@@ -32,7 +32,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             await self.seen_message(message_id)
 
 
-    async def notify_me(self, event):
+    async def new_message(self, event):
         message_id = event["id"]
         message = event["message"]
         sender_id = event["sender_id"]

@@ -102,6 +102,7 @@ class CourseEnrollment(models.Model):
     course = models.ForeignKey(to=Course, on_delete=models.CASCADE, related_name="registered_students")
     created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=25, choices=STATUS_CHOICES)
+    done_lessons = models.ManyToManyField(Lesson, related_name="students")
 
     class Meta:
         unique_together = ('user', 'course')
@@ -114,12 +115,3 @@ class Feedback(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField()
 
-
-
-class CourseProgress(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    enrollment = models.ForeignKey(to=CourseEnrollment, on_delete=models.CASCADE, related_name="progress")
-    item = models.ForeignKey(to=Lesson, on_delete=models.CASCADE, related_name="lesson_status")
-
-    class Meta:
-        unique_together = ('enrollment', 'item')

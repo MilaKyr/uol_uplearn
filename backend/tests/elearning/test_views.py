@@ -215,13 +215,14 @@ def test_create_course(teacher_group):
 
 
 @pytest.mark.django_db
-def test_lesson_done(student_group, enrolled_student, lesson):
+def test_lesson_done(student_group, course, lesson):
     student = register_student()
     enroll(student['access'], str(lesson.course.id))
     response = client.patch(f"/api/lessons/progress/{lesson.id}/",
                           headers={'AUTHORIZATION': f" Bearer {student['access']}"})
     assert response.status_code == status.HTTP_200_OK
-    assert len(CourseProgress.objects.all()) == 1
+    enrollment = CourseEnrollment.objects.prefetch_related("done_lessons").get(user__id=student['user']['id'])
+    assert enrollment.done_lessons.count() == 1
 
 @pytest.mark.django_db
 def test_get_lesson_unregistered(student_group, lesson):
@@ -366,12 +367,27 @@ def test_get_study_course_teacher_works(teacher_group, course):
 
 
 @pytest.mark.django_db
-def test_get_study_course_student_works(student_group, active_course):
+def test_get_study_course_student_works(student_group, course, topic, lesson):
     student = register_student()
-    enroll(student['access'], f"{active_course.id}")
-    response = client.get(f"/api/courses/study/{active_course.id}/",
+    enroll(student['access'], f"{course.id}")
+    response = client.get(f"/api/courses/study/{course.id}/",
                           headers={'AUTHORIZATION': f" Bearer {student['access']}"})
     assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.django_db
+def test_get_study_course_student_done_works(student_group, course, topic, lesson):
+    student = register_student()
+    enroll(student['access'], f"{course.id}")
+    response = client.patch(f"/api/lessons/progress/{lesson.id}/",
+               headers={'AUTHORIZATION': f" Bearer {student['access']}"})
+    assert response.status_code == status.HTTP_200_OK
+    response = client.get(f"/api/courses/study/{course.id}/",
+                          headers={'AUTHORIZATION': f" Bearer {student['access']}"})
+    assert response.status_code == status.HTTP_200_OK
+    result = json.loads(response.content)
+    assert result['topics'][0]['lessons'][0]['done']
+
 
 @pytest.mark.django_db
 def test_enrolled_students(teacher_group, active_course):

@@ -18,7 +18,6 @@ urlpatterns = [
     path('courses/<str:pk>/', views.CourseDetail.as_view()),
     path('courses/study/<str:pk>/', views.CourseStudyDetail.as_view()),
     path('courses/edit/<str:pk>/', views.CourseEditView.as_view()),
-    path('courses/<str:pk>/students', views.EnrolledStudentsView.as_view()),
     path('courses/<str:pk>/photo', views.CoursePhotoView.as_view()),
     path('new_course_id', views.NewCourseIdView.as_view()),
 
@@ -46,7 +45,7 @@ urlpatterns = [
     path("users/avatar/<str:pk>/", views.UserAvatarRetrieveView.as_view()),
     path('users/search', views.UserSearchListView.as_view()),
 
-
+    path('enrollments/students', views.EnrolledStudentsView.as_view()),
     path('enrollments/<str:pk>/', views.EnrollmentStatusUpdateView.as_view()),
     path('enrollments/', views.EnrollmentCreateView.as_view()),
 

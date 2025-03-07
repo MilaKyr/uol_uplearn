@@ -3,6 +3,8 @@ from rest_framework import serializers
 from elearning.models import User
 from .models import Conversation, Message
 
+from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.types import OpenApiTypes
 from elearning.serializers import UserAuthSerializer
 
 class ConversationSerializer(serializers.ModelSerializer):
@@ -11,15 +13,18 @@ class ConversationSerializer(serializers.ModelSerializer):
     unread_messages_ids = serializers.SerializerMethodField()
     last_message = serializers.SerializerMethodField()
 
+    @extend_schema_field(OpenApiTypes.OBJECT)
     def get_last_message(self, instance):
         last_message = Message.objects.filter(conversation=instance).last()
         msg_serializer = MessageSerializer(last_message)
         return msg_serializer.data
 
+    @extend_schema_field(OpenApiTypes.INT)
     def get_unread_messages(self, instance):
         n_messages = instance.messages.filter(seen=False).count()
         return n_messages
 
+    @extend_schema_field(OpenApiTypes.OBJECT)
     def get_unread_messages_ids(self, instance):
         messages = instance.messages.filter(seen=False).values_list('id')
         message_ids = [f"{msg_id[0]}" for msg_id in messages if len(msg_id) > 0]
@@ -30,7 +35,7 @@ class ConversationSerializer(serializers.ModelSerializer):
         fields = ["id", "users", "unread_messages", "unread_messages_ids", "last_message"]
 
 class ConversationCreateSerializer(serializers.Serializer):
-    recipient_id = serializers.UUIDField()
+    recipient_id = serializers.UUIDField(write_only=True)
 
     def create(self, validated_data):
         sender = self.context['request'].user
@@ -62,7 +67,7 @@ class ConversationDetailSerializer(serializers.ModelSerializer):
         fields = ["id", "messages"]
 
 class SeenMessagesSerializer(serializers.Serializer):
-    ids = serializers.ListSerializer(child=serializers.UUIDField())
+    ids = serializers.ListSerializer(child=serializers.UUIDField(), write_only=True)
 
     def update(self, instance, validated_data):
         ids = validated_data.pop('ids')

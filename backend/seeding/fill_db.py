@@ -12,8 +12,12 @@ from notifications.models import Notification
 from django.contrib.auth import get_user_model
 from django.core.files.images import ImageFile
 from django.utils.timezone import make_aware
-
+from django.db.models import signals
 from .permissions import permissions
+
+# disable signals
+signals.post_save.receivers = []
+signals.post_delete.receivers = []
 
 BATCH_SIZE=20
 
@@ -28,6 +32,7 @@ def add_users_to_groups(users_data) -> None:
             instance.groups.add(teacher_group)
 
 def delete_all_objects() -> None:
+
     User = get_user_model()
     KeyHolder.objects.all().delete()
     Group.objects.all().delete()
@@ -39,7 +44,6 @@ def delete_all_objects() -> None:
     Lesson.objects.all().delete()
     CourseEnrollment.objects.all().delete()
     Feedback.objects.all().delete()
-    CourseProgress.objects.all().delete()
     Notification.objects.all().delete()
     Conversation.objects.all().delete()
     Message.objects.all().delete()
@@ -148,13 +152,10 @@ def fill_database() -> None:
         status=enrollment["status"]
     ) for enrollment in data["enrollments"])
     CourseEnrollment.objects.bulk_create(objs, BATCH_SIZE)
-
-    logging.info("saving Course Progress...")
-    objs = (CourseProgress(
-        enrollment=CourseEnrollment.objects.get(user__email=progress["user"], course__title=progress["course"]),
-        item=Lesson.objects.get(title=progress["item"], course__title=progress["course"]),
-    ) for progress in data["course_progress"])
-    CourseProgress.objects.bulk_create(objs, BATCH_SIZE)
+    for progress in data["course_progress"]:
+        enrollment = CourseEnrollment.objects.get(user__email=progress["user"], course__title=progress["course"])
+        lesson = Lesson.objects.get(title=progress["item"], course__title=progress["course"])
+        enrollment.done_lessons.add(lesson)
 
     logging.info("saving Feedback...")
     objs = (Feedback(

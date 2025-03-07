@@ -1,8 +1,10 @@
 import uuid
 
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.generics import GenericAPIView
 from rest_framework.status import  HTTP_201_CREATED
 from dj_rest_auth.views import LogoutView
-from django.db.models import Avg, FloatField, Count, IntegerField, Q, Prefetch
+from django.db.models import Avg, FloatField, Count, IntegerField, Q, Prefetch, Case, When, F, UUIDField
 from django.http import HttpResponse
 from rest_framework import permissions, status, generics
 from rest_framework.response import Response
@@ -13,19 +15,22 @@ import tempfile, zipfile
 from wsgiref.util import FileWrapper
 
 from notifications.models import Notification
+from rest_framework.views import APIView
+
 from .permissions import IsStudent, IsTeacher, IsEnrolled, \
     TeacherWriter, OwnerOrEnrolled, UpdateDeleteIfOwner, IsOwner
-from .models import Course, User, Topic, Lesson, Feedback, CourseProgress, CourseEnrollment, \
+from .models import Course, User, Topic, Lesson, Feedback, CourseEnrollment, \
     Tag
 from .serializers import CourseSerializer, TopicSerializer, CourseShortSerializer, \
     StudentSerializer, TeacherSerializer, StudentFeedbackSerializer, CourseFeedbackSerializer, \
     CourseCreateFeedback, \
-    TodoListSerializer, CourseWithProgressSerializer, CreateProgressSerializer, UserPhotoSerializer, TagSerializer, CourseCreateSerializer, \
-    CourseRetireveUpdateSerializer,  LessonEditFilesSerializer, LessonWithFilesCheckSerializer, \
+    TodoListSerializer, CourseWithProgressSerializer, CreateProgressSerializer, UserPhotoSerializer, TagSerializer, \
+    CourseCreateSerializer, \
+    CourseRetireveUpdateSerializer, LessonEditFilesSerializer, LessonWithFilesCheckSerializer, \
     CourseOwnerSerializer, CourseTitleSerializer, \
     UserAuthSerializer, PrefetchEnrollmentSerializer, CourseBasicSerializer, \
-     LessonBasicSerializer, TeacherSettingsSerializer, StudentSettingsSerializer, \
-    EnrollmentCreateSerializer, EnrollmentUpdateSerializer, PhotoBase64Serializer
+    LessonBasicSerializer, TeacherSettingsSerializer, StudentSettingsSerializer, \
+    EnrollmentCreateSerializer, EnrollmentUpdateSerializer, CoursePhotoSerializer
 
 
 class CourseListCreateView(generics.ListCreateAPIView):
@@ -46,12 +51,12 @@ class CourseListCreateView(generics.ListCreateAPIView):
         return self.queryset.exclude(registered_students__user=self.request.user)
 
     def get_serializer_class(self):
-        if self.request.method == "POST":
+        if self.request and self.request.method == "POST":
             self.serializer_class = CourseCreateSerializer
         return self.serializer_class
 
 
-class CourseSearch(CourseListCreateView):
+class CourseSearch(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated, IsStudent]
     """
         Search courses by title and/or tag
@@ -94,9 +99,9 @@ class CourseDetail(generics.RetrieveDestroyAPIView):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        course = self.get_object()
-        if self.request.user.is_student():
-            enrolled = CourseEnrollment.objects.filter(user=self.request.user, course=course)
+
+        if self.request and self.request.user.is_student():
+            enrolled = CourseEnrollment.objects.filter(user=self.request.user, course__id=self.kwargs['pk'])
             context["enrolled"] = enrolled.exists()
         return context
 
@@ -124,38 +129,23 @@ class CourseStudyDetail(generics.RetrieveAPIView):
     serializer_class = CourseSerializer
     permission_classes = [permissions.IsAuthenticated, OwnerOrEnrolled]
 
-    def retrieve(self, request, *args, **kwargs):
-        if request.user.is_student():
-            course = self.get_object()
-            course_serializer = self.serializer_class(course)
-            done = (CourseProgress.objects
-                    .filter(enrollment__user=request.user, enrollment__course=course)
-                    .values_list('item__id'))
-            done = [str(idn[0]) for idn in done]
-            response = course_serializer.data
-            for topic in response["topics"]:
-                for lesson in topic["lessons"]:
-                    lesson["done"] = lesson["id"] in done
-            return Response(response, status=status.HTTP_200_OK)
-        return super().retrieve(request, *args, **kwargs)
-
 
 class CoursePhotoView(generics.RetrieveUpdateAPIView):
     """
         Retrieve course photo
     """
     queryset = Course.objects.all()
-    serializer_class = PhotoBase64Serializer
+    serializer_class = CoursePhotoSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class NewCourseIdView(generics.ListAPIView):
+class NewCourseIdView(GenericAPIView):
     """
         Returns new UUID for course. It's called before course creation
     """
     permission_classes = [permissions.IsAuthenticated, IsTeacher]
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, format=None):
         return Response(uuid.uuid4(), status=HTTP_201_CREATED)
 
 
@@ -168,10 +158,12 @@ class EnrolledStudentsView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated, IsTeacher, IsOwner]
 
     def get_queryset(self):
-        course_id = self.kwargs['pk']
-        return self.queryset.filter(course__id=course_id)
+        course_id = self.request.GET.get("course_id")
+        if course_id is not None:
+            return self.queryset.filter(course__id=course_id)
+        return self.queryset
 
-class EnrollmentCreateView(generics.CreateAPIView):
+class EnrollmentCreateView(generics.ListCreateAPIView):
     """
         Creates new enrollment
     """
@@ -185,8 +177,8 @@ class TodoListView(generics.ListAPIView):
     """
     queryset = (Lesson.objects
                  .select_related("topic")
-                 .select_related("topic__course")
-                 .prefetch_related("topic__course__registered_students"))
+                 .select_related("course")
+                 .prefetch_related("students"))
     serializer_class = TodoListSerializer
     permission_classes = [permissions.IsAuthenticated, IsStudent]
 
@@ -210,34 +202,36 @@ class TodoListView(generics.ListAPIView):
 
     def get_queryset(self):
         first_date, last_date = self._get_dates()
-        done = (CourseProgress.objects
-                .select_related("enrollment")
-                .filter(enrollment__user=self.request.user)
-                .values_list("item")
-                .all())
-        return (self.queryset
-                .filter(deadline__range=(first_date, last_date),
-                         topic__course__registered_students__user=self.request.user)
-                .exclude(id__in=done)
-                .values("id", "course_id", "topic__course__title",
+        done = (CourseEnrollment.objects
+                .prefetch_related("done_lessons")
+                .filter(user=self.request.user, done_lessons__id__isnull=False)
+                .values_list("done_lessons__id")
+                .distinct())
+        queryset = (self.queryset
+                    .filter(course__registered_students__user=self.request.user)
+                    .filter(course__title="Introduction to Python")
+                    .filter(deadline__range=(first_date, last_date))
+                    .filter(course__registered_students__status__exact="started")
+                    .exclude(id__in=done)
+                    .distinct()
+                )
+        return queryset.values(
+            "id", "course_id", "topic__course__title",
                         "topic__id", "topic__title",
                         "title", "deadline")
-                )
 
 
-class TopicView(generics.RetrieveDestroyAPIView):
+class TopicView(generics.RetrieveUpdateDestroyAPIView):
     """
         Retieves or destroyes topic
     """
-
     queryset = Topic.objects.prefetch_related("course").all()
     serializer_class = TopicSerializer
     permission_classes = [permissions.IsAuthenticated, OwnerOrEnrolled]
 
     def _get_lessons(self, topic):
         lessons = (Lesson.objects
-                   .prefetch_related("lesson_status")
-                   .prefetch_related("lesson_status__enrolled_student")
+                   .prefetch_related("students")
                    .filter(topic=topic)
                    .all())
         lesson_serializer = LessonBasicSerializer(lessons, many=True)
@@ -254,7 +248,9 @@ class LessonRetrieveDestroyUpdateView(generics.RetrieveUpdateDestroyAPIView):
     """
         Retrieves, destroys lesson. Updates lesson's content (html field)
     """
-    queryset = Lesson.objects.prefetch_related("topic").prefetch_related("topic__course").all()
+    queryset = (Lesson.objects.prefetch_related("topic")
+                .prefetch_related("topic__course")
+                .prefetch_related("students").all())
     serializer_class = LessonWithFilesCheckSerializer
     permission_classes = [permissions.IsAuthenticated, OwnerOrEnrolled]
 
@@ -263,7 +259,6 @@ class LessonFilesRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     """
         Retrieves or updates lesson's files
     """
-
     queryset = Lesson.objects.prefetch_related("files").all()
     serializer_class = LessonEditFilesSerializer
     permission_classes = [permissions.IsAuthenticated, OwnerOrEnrolled]
@@ -287,7 +282,7 @@ class CourseProgressUpdateView(generics.UpdateAPIView):
     """
        Updates course progress
     """
-    queryset = Lesson.objects.prefetch_related("topic").prefetch_related("topic__course").all()
+    queryset = Lesson.objects.all()
     serializer_class = CreateProgressSerializer
     permission_classes = [permissions.IsAuthenticated, IsStudent, IsEnrolled]
 
@@ -295,7 +290,6 @@ class FeedbackListCreateView(generics.ListCreateAPIView):
     """
         Lists all feedbacks and creates a new one
     """
-
     queryset = (CourseEnrollment
                 .objects
                 .prefetch_related("feedback")
@@ -308,7 +302,7 @@ class FeedbackListCreateView(generics.ListCreateAPIView):
         return self.queryset.filter(user=self.request.user)
 
     def get_serializer_class(self):
-        if self.request.method == "POST":
+        if self.request and self.request.method == "POST":
             return CourseCreateFeedback
         return self.serializer_class
 
@@ -334,13 +328,12 @@ class CourseTitlesView(generics.ListAPIView):
 
 class UserRetrieveView(generics.RetrieveAPIView):
     queryset = User.objects.all()
-    serializer_class = TeacherSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
-        if self.request.user.is_student():
+        if self.request and self.request.user.is_student():
             return StudentSerializer
-        return self.serializer_class
+        return TeacherSerializer
 
     def _get_notifications(self):
         return Notification.objects.filter(recipient=self.request.user).count()
@@ -348,14 +341,20 @@ class UserRetrieveView(generics.RetrieveAPIView):
     def _get_course_queryset(self):
         return Course.objects.prefetch_related("registered_students")
 
-    def _get_student_courses(self, user):
-        return (self._get_course_queryset()
+    def _get_student_courses(self, user, is_owner):
+        queryset = (self._get_course_queryset()
                 .prefetch_related("topics")
                 .prefetch_related("topics__lessons")
-                .filter(registered_students__user=user, is_active=True)
-                .annotate(overall=Count('topics__lessons',output_field=IntegerField(),distinct=True))
-                .all()
-                )
+                .distinct()
+                .annotate(overall=Count('topics__lessons',output_field=IntegerField(),distinct=True)))
+        if is_owner:
+            return (queryset
+                    .filter(registered_students__user=user, is_active=True)
+                    .all())
+        return (queryset
+                    .filter(registered_students__status="started", registered_students__user=user, is_active=True)
+                    .all())
+
 
     def _get_teacher_courses(self, user):
         return (self._get_course_queryset()
@@ -368,13 +367,13 @@ class UserRetrieveView(generics.RetrieveAPIView):
 
     def _get_courses_info(self, user, is_owner):
         if user.is_student():
-            courses = self._get_student_courses(user)
+            courses = self._get_student_courses(user, is_owner=is_owner)
             if not is_owner:
                 return CourseBasicSerializer(courses, many=True).data
             done = (CourseEnrollment.objects
-                    .prefetch_related("progress")
+                    .select_related("done_lessons")
                     .filter(user=self.request.user)
-                    .annotate(done=Count('progress__item__id',
+                    .annotate(done=Count('done_lessons__id',
                                          distinct=True,
                                          output_field=IntegerField(),
                                          ))
@@ -393,19 +392,16 @@ class UserRetrieveView(generics.RetrieveAPIView):
     def _get_todo_for(self, month, year, tzinfo):
         first_date = datetime.datetime(year, month, 1, tzinfo=tzinfo)
         last_date = first_date + relativedelta.relativedelta(months=1)
-        done = (CourseProgress.objects
-                .select_related("enrollment")
-                .filter(enrollment__user=self.request.user)
-                .values_list("item")
-                .all())
         todo = (Lesson.objects
                 .select_related("topic")
                 .select_related("topic__course")
-                .prefetch_related("topic__course__registered_students")
+                .prefetch_related("students")
+                .filter(students__user=self.request.user)
+                .annotate(n_done=Count("students__id", distinct=True))
                 .filter(deadline__range=(first_date, last_date),
+                        n_done=0,
                         topic__course__registered_students__user=self.request.user,
                         topic__course__registered_students__status__exact="started")
-                .exclude(id__in=done)
                 .values("id", "course_id", "topic__course__title",
                         "topic__id", "topic__title",
                         "title", "deadline"))
@@ -414,7 +410,8 @@ class UserRetrieveView(generics.RetrieveAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         user = self.get_object()
-        serializer = self.serializer_class(user)
+        serializer = self.get_serializer_class()
+        serializer = serializer(user)
         response = serializer.data
         is_owner = user == request.user
         if is_owner:
@@ -432,7 +429,7 @@ class SettingsRetrieveUpdateSerializer(generics.RetrieveUpdateAPIView):
     permission_classes = [permissions.IsAuthenticated, UpdateDeleteIfOwner]
 
     def get_serializer_class(self):
-        if self.request.user.is_student():
+        if self.request and self.request.user.is_student():
             return StudentSettingsSerializer
         return self.serializer_class
 
@@ -489,12 +486,14 @@ class UserSearchListView(generics.ListAPIView):
         return queryset.distinct()
 
 class UserAvatarRetrieveView(generics.RetrieveAPIView):
+
     queryset = User.objects.all()
-    serializer_class = PhotoBase64Serializer
+    serializer_class = UserPhotoSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class EnrollmentStatusUpdateView(generics.UpdateAPIView):
+
     queryset = CourseEnrollment.objects.all()
     serializer_class = EnrollmentUpdateSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwner]

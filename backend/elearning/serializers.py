@@ -1,7 +1,5 @@
 import base64
 
-from django.db.models import prefetch_related_objects
-from django.db.models.query_utils import select_related_descend
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import Group
 from django.db import transaction, IntegrityError
@@ -11,10 +9,11 @@ from dj_rest_auth.serializers import LoginSerializer
 from rest_framework.exceptions import ValidationError, NotFound, PermissionDenied
 from rest_framework import exceptions, serializers
 from django.conf import settings
-
-from .models import Course, User, Feedback, Lesson, Topic, CourseProgress, CourseEnrollment, \
+from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.types import OpenApiTypes
+from .models import Course, User, Feedback, Lesson, Topic, CourseEnrollment, \
     Tag, Files, KeyHolder
-from .validators import feedback_between_1_5, validate_start_date
+from .validators import feedback_between_1_5, validate_start_date, greater_than_zero
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -32,23 +31,22 @@ class UserPhotoSerializer(serializers.ModelSerializer):
         model = User
         fields = ['photo']
 
+class CoursePhotoSerializer(serializers.ModelSerializer):
+    """ Serializes photo as image from User model. Used for update and create methods """
+    photo = serializers.ImageField()
 
-class PhotoBase64Serializer(serializers.Serializer):
-    """ Serializes photo as Base64 string """
-    photo = serializers.SerializerMethodField()
+    class Meta:
+        model = Course
+        fields = ['photo']
 
-    def get_photo(self, instance):
-        try:
-            with open(instance.photo.path, "rb") as image_file:
-                encoded_string = base64.b64encode(image_file.read())
-                return encoded_string
-        except ValueError:
-            return ""
 
 class FullNameSerializer(serializers.ModelSerializer):
     """ Serializes user's full name """
+
+
     name = serializers.SerializerMethodField()
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_name(self, instance):
         """Retrieves full name from model's property"""
         return instance.full_name
@@ -60,13 +58,11 @@ class FullNameSerializer(serializers.ModelSerializer):
 class UserShortSerializer(serializers.ModelSerializer):
     """ Serializes teacher's data for course serializer """
     name = serializers.SerializerMethodField()
-    photo = serializers.SerializerMethodField()
+    photo = serializers.ImageField()
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_name(self, instance):
         return instance.full_name
-
-    def get_photo(self, instance):
-        return PhotoBase64Serializer(instance).data.get("photo")
 
     class Meta:
         model = User
@@ -75,15 +71,13 @@ class UserShortSerializer(serializers.ModelSerializer):
 class UserAuthSerializer(UserShortSerializer):
     """ Basic user serializer """
     role = serializers.SerializerMethodField()
-    photo = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_role(self, instance):
         return "student" if instance.is_student() else "teacher"
 
-    def get_photo(self, instance):
-        return PhotoBase64Serializer(instance).data.get("photo")
-
+    @extend_schema_field(OpenApiTypes.STR)
     def get_name(self, instance):
         return instance.full_name
 
@@ -108,10 +102,15 @@ class StudentSerializer(UserAuthSerializer):
 
 class SettingsSerializer(serializers.ModelSerializer):
     """ Serializes settings options. """
+    role = serializers.SerializerMethodField(read_only=True)
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_role(self, instance):
+        return "teacher" if instance.is_teacher() else "student"
 
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email' ]
+        fields = ['id', 'first_name', 'last_name', 'email', 'role' ]
 
 class StudentSettingsSerializer(SettingsSerializer):
     """ Serializes student settings. Extends SettingsSerializer with `status` field """
@@ -134,11 +133,14 @@ class RegisteredStudentSerializer(serializers.ModelSerializer):
     photo = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
 
+    @extend_schema_field(OpenApiTypes.URI)
     def get_photo(self, instance):
-        return  PhotoBase64Serializer(instance.user).data.get("photo")
+        return instance.user.photo.url
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_name(self, instance):
-        return FullNameSerializer(instance.user).data["name"]
+        serializer = FullNameSerializer(instance.user)
+        return serializer.data.get("name", "")
 
     class Meta:
         model = CourseEnrollment
@@ -150,6 +152,7 @@ class StudentFeedbackSerializer(serializers.ModelSerializer):
     created = serializers.DateTimeField(format="%d %B, %Y")
     rating = serializers.IntegerField(validators=[feedback_between_1_5])
 
+    @extend_schema_field(OpenApiTypes.OBJECT)
     def get_user(self, instance):
         return UserShortSerializer(instance.enrollment.user).data
 
@@ -162,9 +165,10 @@ class LessonBasicSerializer(serializers.ModelSerializer):
     deadline = serializers.DateTimeField(format="%d %B, %Y")
     done = serializers.SerializerMethodField()
 
+    @extend_schema_field(OpenApiTypes.BOOL)
     def get_done(self, instance):
         req = self.context.get("request")
-        return instance.lesson_status.filter(enrollment__user=req.user).exists() if req else False
+        return instance.students.filter(user=req.user).exists() if req else False
 
     class Meta:
         model = Lesson
@@ -172,13 +176,16 @@ class LessonBasicSerializer(serializers.ModelSerializer):
 
 class LessonWithFilesCheckSerializer(LessonBasicSerializer):
     """ Extends LessonBasicSerializer. Returns additional field `has_files`, `html` and `created` """
+    title = serializers.CharField(allow_blank=False)
     has_files = serializers.SerializerMethodField()
     created = serializers.DateTimeField(format="%d %B, %Y")
     topic_id = serializers.SerializerMethodField()
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_topic_id(self, instance):
         return instance.topic.id
 
+    @extend_schema_field(OpenApiTypes.INT)
     def get_has_files(self, instance):
         return instance.files.count() > 0
 
@@ -207,6 +214,9 @@ class LessonEditFilesSerializer(serializers.Serializer):
         return instance
 
 class TopicSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(allow_blank=False)
+    n_hours = serializers.IntegerField(validators=[greater_than_zero])
+
     """ Serializes topic """
     class Meta:
         model = Topic
@@ -235,10 +245,8 @@ class CourseTitleSerializer(serializers.ModelSerializer):
 
 class CourseBasicSerializer(CourseTitleSerializer):
     """ Serializes only essential info about the course: id, title and image """
-    photo = serializers.SerializerMethodField()
+    photo = serializers.ImageField()
 
-    def get_photo(self, instance):
-        return PhotoBase64Serializer(instance).data.get("photo")
 
     class Meta(CourseTitleSerializer.Meta):
         model = Course
@@ -257,9 +265,11 @@ class CourseOwnerSerializer(CourseBasicSerializer):
         serialized = RegisteredStudentSerializer(students, many=True)
         return serialized.data
 
+    @extend_schema_field(OpenApiTypes.FLOAT)
     def get_average_rating(self, instance):
         return instance.average_rating
 
+    @extend_schema_field(OpenApiTypes.INT)
     def get_n_students(self, instance):
         return instance.n_students
 
@@ -277,9 +287,11 @@ class CourseShortSerializer(CourseBasicSerializer):
     created = serializers.DateTimeField(format="%d/%m/%Y",read_only=True)
     start_date = serializers.DateTimeField(format="%d %B, %Y")
 
+    @extend_schema_field(OpenApiTypes.FLOAT)
     def get_average_rating(self, instance):
         return instance.average_rating
 
+    @extend_schema_field(OpenApiTypes.INT)
     def get_n_students(self, instance):
         return instance.n_students
 
@@ -296,12 +308,14 @@ class CourseSerializer(CourseShortSerializer):
     feedback = serializers.SerializerMethodField()
     enrolled = serializers.SerializerMethodField()
 
+    @extend_schema_field(OpenApiTypes.OBJECT)
     def get_feedback(self, instance):
         registered_students = instance.registered_students.all()
         prefetched = Feedback.objects.filter(enrollment__in=registered_students).all()
         serializer = StudentFeedbackSerializer(prefetched, many=True, read_only=True)
         return serializer.data
 
+    @extend_schema_field(OpenApiTypes.BOOL)
     def get_enrolled(self, _):
         return self.context.get("enrolled", False)
 
@@ -314,10 +328,11 @@ class CourseSerializer(CourseShortSerializer):
 class CourseRetireveUpdateSerializer(CourseBasicSerializer):
     """ Serializes course for edit page """
     topics = TopicWithLessonsSerializer(many=True, read_only=True)
-    tags = TagSerializer(many=True)
+    tags = TagSerializer(many=True, read_only=True)
     duration = serializers.SerializerMethodField()
     start_date = serializers.DateTimeField(format="%d %B, %Y")
 
+    @extend_schema_field(OpenApiTypes.INT)
     def get_duration(self, instance):
         return instance.duration.days
 
@@ -326,13 +341,17 @@ class CourseRetireveUpdateSerializer(CourseBasicSerializer):
         fields = CourseBasicSerializer.Meta.fields + ['start_date', 'duration', 'topics', 'is_active', 'description',
                 'created', 'tags']
 
+    def update(self, instance, validated_data):
+        print(validated_data, instance)
+        return super().update(instance, validated_data)
+
 
 class CourseCreateSerializer(serializers.Serializer):
 
     """ Creates new course """
     id = serializers.UUIDField()
-    title = serializers.CharField()
-    description = serializers.CharField()
+    title = serializers.CharField(allow_blank=False)
+    description = serializers.CharField(allow_blank=False)
     start_date = serializers.DateTimeField(validators=[validate_start_date])
     end_date = serializers.DateTimeField(write_only=True)
     tags = serializers.ListSerializer(child=serializers.CharField())
@@ -401,6 +420,7 @@ class CourseWithProgressSerializer(CourseBasicSerializer):
     enrolled = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_status(self, instance):
         # get done data from context
         done = self.context.get("done")
@@ -413,6 +433,7 @@ class CourseWithProgressSerializer(CourseBasicSerializer):
             # This context is already pre-filtered with user's id from request
             return instance.registered_students.get(user__id=user_ids[0]).status
 
+    @extend_schema_field(OpenApiTypes.DATETIME)
     def get_enrolled(self, instance):
         # get done data from context
         done = self.context.get("done")
@@ -424,6 +445,7 @@ class CourseWithProgressSerializer(CourseBasicSerializer):
         if len(enrolled) > 0:
             return enrolled.pop()
 
+    @extend_schema_field(OpenApiTypes.FLOAT)
     def get_progress(self, instance):
         if instance.overall == 0:
             return 0.0
@@ -449,6 +471,7 @@ class CourseFeedbackSerializer(serializers.Serializer):
     course = CourseBasicSerializer(read_only=True)
     feedback = serializers.SerializerMethodField()
 
+    @extend_schema_field(OpenApiTypes.OBJECT)
     def get_feedback(self, instance):
         if instance.feedback is not None:
             return FeedbackSerializer(instance.feedback).data
@@ -463,6 +486,10 @@ class CourseCreateFeedback(serializers.Serializer):
     text = serializers.CharField()
     created = serializers.ReadOnlyField()
     rating = serializers.IntegerField(validators=[feedback_between_1_5])
+
+    class Meta:
+        model = Feedback
+        fields = ['text', 'created', 'rating', 'course_id']
 
     def create(self, validated_data):
         """ Creates new feedback """
@@ -493,27 +520,33 @@ class TodoListSerializer(serializers.Serializer):
     title = serializers.SerializerMethodField()
     deadline = serializers.SerializerMethodField()
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_course_id(self, instance):
         return instance["course_id"]
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_topic_id(self, instance):
         return instance["topic__id"]
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_id(self, instance):
         return instance["id"]
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_course_title(self, instance):
         return instance["topic__course__title"]
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_topic_title(self, instance):
         return instance["topic__title"]
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_title(self, instance):
         return instance["title"]
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_deadline(self, instance):
         return instance["deadline"].strftime("%d/%m/%Y")
-
 
     class Meta:
         fields = ["course_id", "course_title",
@@ -528,13 +561,12 @@ class CreateProgressSerializer(serializers.Serializer):
         try:
             student = self.context["request"].user
             enrollment = CourseEnrollment.objects.get(user=student, course=instance.course)
-            course_progress = CourseProgress.objects.create(enrollment=enrollment, item=instance)
+            enrollment.done_lessons.add(instance)
             last_lesson = Lesson.objects.filter(course=instance.course).latest('created')
             if last_lesson.id == instance.id:
-                enrollment = CourseEnrollment.objects.get(user=student, course=instance.course)
                 enrollment.status = "finished"
-                enrollment.save()
-            return course_progress
+            enrollment.save()
+            return instance
         except CourseEnrollment.DoesNotExist as error:
             raise NotFound(error)
 
@@ -544,14 +576,17 @@ class PrefetchEnrollmentSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField()
     photo = serializers.SerializerMethodField()
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_name(self, instance):
         return instance.user.full_name
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_role(self, instance):
         return "student" if instance.user.is_student() else "teacher"
 
+    @extend_schema_field(OpenApiTypes.URI)
     def get_photo(self, instance):
-        return PhotoBase64Serializer(instance.user).data.get("photo")
+        return instance.user.photo.url
 
 
     class Meta:

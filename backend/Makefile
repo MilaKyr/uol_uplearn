@@ -1,8 +1,15 @@
 pytest:
 	DJANGO_SETTINGS_MODULE=backend.settings pytest --disable-warnings tests/
 
+check:
+	if ! docker ps -q -f name="redis" | grep ^; \
+	then \
+	   echo "Starting docker container..."; \
+	   docker run --rm -d --quiet -p 6379:6379 --name redis redis:7; \
+	fi
+
 py-cov:
-	DJANGO_SETTINGS_MODULE=backend.settings pytest --cov-report --cov=. --ignore=tests tests/
+	DJANGO_SETTINGS_MODULE=backend.settings pytest --cov-report term --cov=. --ignore=tests tests/
 
 migrate:
 	python manage.py makemigrations
@@ -23,6 +30,6 @@ start-redis:
 stop-redis:
 	docker container stop redis
 
-test: migrate pytest
-coverage: migrate start-redis py-cov
-start: migrate load create-super-user start-redis run
+test: migrate check pytest
+coverage: migrate check py-cov
+start: migrate load create-super-user check run

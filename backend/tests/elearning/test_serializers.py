@@ -325,17 +325,18 @@ def test_student_feedback_serializer(student, lesson):
 
 @pytest.mark.django_db
 def test_update_create_progress_serializer(lesson, enrolled_student):
-    assert CourseProgress.objects.count() == 0
+    assert enrolled_student.done_lessons.count() == 0
     request = HttpRequest()
     request.user = enrolled_student.user
     CreateProgressSerializer(context={"request": request}).update(
         lesson, {"course_id": enrolled_student.course.id}
     )
-    assert CourseProgress.objects.count() == 1
+    enrolled_student.refresh_from_db()
+    assert enrolled_student.done_lessons.count() == 1
 
 @pytest.mark.django_db
 def test_update_create_progress_serializer_fails(lesson, student):
-    assert CourseProgress.objects.count() == 0
+    assert not Lesson.objects.prefetch_related("students").filter(id=lesson.id, students__user=student).exists()
     with pytest.raises(NotFound):
         request = HttpRequest()
         request.user = student

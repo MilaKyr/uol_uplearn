@@ -22,10 +22,6 @@ permissions = {
             "Can change course enrollment",
             "Can view course enrollment"
         ],
-        "courseprogress": [
-            "Can add course progress",
-            "Can view course progress"
-        ]
 
     },
     "teacher": {
