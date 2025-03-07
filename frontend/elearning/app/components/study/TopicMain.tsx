@@ -59,7 +59,7 @@ export default function TopicMain(props: { id: string }) {
                           throw new Error('Something went wrong')
                         }
                       };
-                      const data = await res.json();
+                const data = await res.json();
                 setTopic(data);
                 setLoading(false);
             } catch (error) {
@@ -69,7 +69,7 @@ export default function TopicMain(props: { id: string }) {
         }
 
         getTopic()
-    }, [])
+    }, [searchParams, pathname])
 
     if (isLoading) return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
     return (

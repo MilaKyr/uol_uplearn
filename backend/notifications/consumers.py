@@ -43,7 +43,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         }))
 
     async def new_notification(self, event):
-        print("new_notification", event)
         message = event["message"]
         sender_name = event["sender_name"]
         course_id = event["course_id"]

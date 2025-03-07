@@ -10,11 +10,13 @@ import { notifications, useNotifications } from "@mantine/notifications";
 import { ConversationData } from "@/app/types";
 import UserNameSearch from '../search/UserNameSearch';
 import { api } from '@/app/actions/api';
+import { getUser } from '@/app/actions/getAuth';
 
 export function MessagesNavBar(props: MessagesNavBarProps) {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const router = useRouter();
+    const currentUser = getUser();
     const notificationsStore = useNotifications();
     const [selected, setSelected] = React.useState<string>(props?.selected);
     const [conversations, setConversations] = React.useState<ConversationData[] | undefined>();
@@ -34,6 +36,7 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
                 router.push('/')
             }
         }
+        console.log(data)
         setConversations(data);
         if (searchParams.size > 0) {
             const params = searchParams.get("selected");
@@ -92,11 +95,12 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
         props.onClick(conversationId);
     }
 
+
     return (
         <Suspense>
             <nav className={classes.navbar}>
-                <UserNameSearch />
-
+                {currentUser.role === "teacher" && <UserNameSearch />}
+                
                 <div className={classes.section}>
                     <div className={classes.mainLinks}>
 
@@ -119,13 +123,13 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
                                                 <Avatar src={`${user.photo}`}
                                                     radius="xl" />
                                             </Indicator>
-                                            <Stack gap={3} justify='flex-end' align='flex-start'>
+                                            <Stack w={'100%'} gap={3} justify='flex-end' align='flex-start'>
                                                 <Text c="gray.8" fw={600} size="xs" >{user.name} </Text>
-                                                {conversation.last_message.text !== "" && <Text truncate="end" c="dimmed" size="xs" > {conversation.last_message.sender.id === props.chatOwnerId ?
+                                                {conversation.last_message.text !== "" && <Text w={200} truncate="end" c="dimmed" size="xs" > {conversation.last_message.sender.id === props.chatOwnerId ?
                                                     `You: ${conversation.last_message.text}` : `${conversation.last_message.sender.name}: ${conversation.last_message.text}`} </Text>}
                                             </Stack>
                                         </Group>
-                                        {conversation.unread_messages > 0 && (
+                                        {conversation.unread_messages > 0 &&  (
                                             <Badge size="sm" variant="filled" className={classes.mainLinkBadge}>
                                                 {conversation.unread_messages}
                                             </Badge>

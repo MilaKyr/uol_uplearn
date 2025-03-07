@@ -21,12 +21,14 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_unread_messages(self, instance):
-        n_messages = instance.messages.filter(seen=False).count()
+        user = self.context["request"].user
+        n_messages = instance.messages.filter(seen=False, recipient=user).count()
         return n_messages
 
     @extend_schema_field(OpenApiTypes.OBJECT)
     def get_unread_messages_ids(self, instance):
-        messages = instance.messages.filter(seen=False).values_list('id')
+        user = self.context["request"].user
+        messages = instance.messages.filter(seen=False, recipient=user).values_list('id')
         message_ids = [f"{msg_id[0]}" for msg_id in messages if len(msg_id) > 0]
         return message_ids
 

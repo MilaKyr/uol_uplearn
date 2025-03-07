@@ -104,6 +104,11 @@ class CourseEnrollment(models.Model):
     status = models.CharField(max_length=25, choices=STATUS_CHOICES)
     done_lessons = models.ManyToManyField(Lesson, related_name="students")
 
+    def __init__(self, *args, **kwargs) -> None:
+        # saving the last status for signals to check if status changed and then send a notification
+        super().__init__(*args, **kwargs)
+        self.cached_status = self.status
+
     class Meta:
         unique_together = ('user', 'course')
 

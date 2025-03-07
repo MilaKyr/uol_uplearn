@@ -82,7 +82,6 @@ export default function TopicMain(props: { id: string, courseId: string }) {
           }
         };
         const data = await res.json();
-        console.log("topic data", data)
         setTopic(data);
         setLoading(false);
         topicForm.setValues({ title: data.title, n_hours: data.n_hours });

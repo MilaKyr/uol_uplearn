@@ -55,6 +55,7 @@ export default function StudyDetail() {
     }
   );
 
+
   const getCourse = async () => {
     const { data, status } = await api.get(`/api/courses/study/${courseId}/`)
     if (status === 401 || status === 403) {
@@ -129,7 +130,6 @@ export default function StudyDetail() {
         router.push('/')
       }
     }
-    console.log(data)
     return data
   }
 
@@ -210,7 +210,30 @@ export default function StudyDetail() {
   }, [lastJsonMessage])
 
   React.useEffect(() => {
-    getCourse()
+    getCourse();
+    if (searchParams.size > 0) {
+      const params = searchParams.get("selected")
+      if (params && params.includes("_")) {
+        const [component, id] = params.split("_")
+        console.log(component, id)
+        if (component === "topic") {
+          setCurrent("topic");
+          setTopic(id);
+          setSelected(params)
+        } else {
+          setCurrent("lesson");
+          setLesson(id)
+          setSelected(params);
+        }
+      }
+    } else {
+      setCurrent("topic")
+      const topic = course?.topics[0];
+      if (topic) {
+        setTopic(topic.id);
+        setSelected('topic_' + topic.id)
+      }
+    }
   }, [router, searchParams])
 
   const editor = useEditor({

@@ -148,8 +148,8 @@ class RegisteredStudentSerializer(serializers.ModelSerializer):
 
 class StudentFeedbackSerializer(serializers.ModelSerializer):
     """ Serializes feedback and author of feedback from Feedback model. Used for update method """
-    user = serializers.SerializerMethodField()
-    created = serializers.DateTimeField(format="%d %B, %Y")
+    user = serializers.SerializerMethodField(read_only=True)
+    created = serializers.DateTimeField(format="%d %B, %Y", read_only=True)
     rating = serializers.IntegerField(validators=[feedback_between_1_5])
 
     @extend_schema_field(OpenApiTypes.OBJECT)
@@ -469,12 +469,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
 class CourseFeedbackSerializer(serializers.Serializer):
     """ Serializes feedback and course from CourseEnrollment model """
     course = CourseBasicSerializer(read_only=True)
-    feedback = serializers.SerializerMethodField()
-
-    @extend_schema_field(OpenApiTypes.OBJECT)
-    def get_feedback(self, instance):
-        if instance.feedback is not None:
-            return FeedbackSerializer(instance.feedback).data
+    feedback = FeedbackSerializer()
 
     class Meta:
         model = CourseEnrollment

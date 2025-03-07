@@ -8,17 +8,21 @@ https://docs.djangoproject.com/en/5.1/howto/deployment/asgi/
 """
 
 import os
-
+import django
 from django.core.asgi import get_asgi_application
+
+django_asgi_app = get_asgi_application()
+
 from channels.routing import ProtocolTypeRouter, URLRouter
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+django.setup() # for separate deployment
 
 import chat.routing
 import notifications.routing
 from chat.token_auth import TokenAuthMiddleware
 
-django_asgi_app = get_asgi_application()  # pragma: no cover
+# pragma: no cover
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,

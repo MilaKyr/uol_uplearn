@@ -132,7 +132,7 @@ export default function CourseEdit() {
       title: "You have new message!",
       message: messageBody,
       autoClose: false,
-      icon: <Avatar src={`data:image/jpeg;base64,${avatar.photo}`} />,
+      icon: <Avatar src={`${avatar.photo}`} />,
       color: 'blue',
       onClose: () => {
         sendJsonMessage({
@@ -165,7 +165,7 @@ export default function CourseEdit() {
           }
         });
       },
-      icon: <Avatar src={`data:image/jpeg;base64,${courseImage.photo}`} />,
+      icon: <Avatar src={`${courseImage.photo}`} />,
       color: 'blue',
     });
   }
@@ -278,7 +278,6 @@ export default function CourseEdit() {
         router.push('/')
       }
     }
-    console.log(data)
     setCourse(data);
     courseForm.setValues({ title: data.title, description: data.description });
     if (searchParams.size > 0) {
@@ -303,6 +302,23 @@ export default function CourseEdit() {
 
   React.useEffect(() => {
     getCourse()
+    if (searchParams.size > 0) {
+      const params = searchParams.get("selected")
+      if (params && params.includes("_")) {
+        const [component, id] = params.split("_")
+        if (id !== undefined) {
+          if (component === "topic") {
+            setCurrent("topic");
+            setTopicId(id);
+          } else {
+            setCurrent("lesson");
+            setLessonId(id)
+          }
+        }
+      }
+    } else {
+      setCurrent("main")
+    }
   }, [searchParams, pathname])
 
 
@@ -358,7 +374,7 @@ export default function CourseEdit() {
 
 
             {
-              current === "main" ? <CourseMain course={course!} updateForm={updateForm} courseForm={courseForm} /> :
+              current === "main" && course ? <CourseMain course={course} updateForm={updateForm} courseForm={courseForm} /> :
                 current === "topic" && topicId && course ? <TopicMain id={topicId} courseId={course?.id} /> :
                   (current === "lesson" && editor && lessonId && course) ? <LessonMain
                     id={lessonId}

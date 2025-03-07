@@ -14,7 +14,7 @@ import {
 import { RichTextEditor, useRichTextEditorContext } from '@mantine/tiptap';
 import { IconColorPicker, IconCircleCheck, IconExclamationCircle } from '@tabler/icons-react';
 import { Dropzone, PDF_MIME_TYPE, FileWithPath } from '@mantine/dropzone';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { LessonEditData } from "@/app/types";
 import { Editor as TipTapEditor } from '@tiptap/core';
 import { useDisclosure } from '@mantine/hooks';
@@ -61,6 +61,7 @@ export default function LessonMain(props: {
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
   const [lesson, setLesson] = React.useState<LessonEditData>();
   const [opened, { open, close }] = useDisclosure(false);
   const [files, setFiles] = React.useState<FileWithPath[]>([]);
@@ -75,7 +76,7 @@ export default function LessonMain(props: {
   };
 
   const lessonForm = useForm({
-    mode: 'uncontrolled',
+    mode: 'controlled',
     initialValues: { title: '' },
     validate: {
       title: isNotEmpty('Enter your bio description'),
@@ -179,7 +180,7 @@ export default function LessonMain(props: {
     }
 
     getLesson();
-  }, [searchParams])
+  }, [pathname, searchParams])
 
 
   const sendFiles = async () => {
@@ -354,13 +355,6 @@ export default function LessonMain(props: {
   const saveContent = async () => {
     await sendContent(props.editor!.getHTML());
     await sendFiles();
-    notifications.show({
-      title: "Success",
-      message: "",
-      autoClose: 6000,
-      icon: <IconCircleCheck />,
-      color: 'teal',
-    });
   }
 
   if (isLoading) return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
@@ -378,9 +372,7 @@ export default function LessonMain(props: {
       </Modal>
 
       <Stack maw={900}>
-        <Group gap={12} pr={24} justify="flex-end">
-          <ActionIcon onClick={open} variant="outline" color="red"><IconTrash /></ActionIcon>
-        </Group>
+        
         <TextInput {...lessonForm.getInputProps('title')} py={6} />
         <Divider />
         <Title pt={24} order={3}>Fill the content</Title>
@@ -501,6 +493,7 @@ export default function LessonMain(props: {
 
 
         <Group justify="flex-end">
+          <ActionIcon onClick={open} variant="outline" color="red"><IconTrash /></ActionIcon>
           <Button w={'20%'} onClick={saveContent} my={24} variant="full">Save</Button>
         </Group>
 

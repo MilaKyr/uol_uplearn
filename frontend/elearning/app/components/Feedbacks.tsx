@@ -122,7 +122,7 @@ export default function Feedbacks() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${parsedToken.access}`,
                 },
-                method: "PUT",
+                method: "PATCH",
                 body: JSON.stringify({ course_id: courseId, text: currComment, rating: currRating }),
             });
             if (!res.ok) {
@@ -201,7 +201,6 @@ export default function Feedbacks() {
                         const btnColor = courseFeedback.feedback === null || courseFeedback.feedback.rating === 0 ? "green.7" : "gray.7";
                         const btnType = courseFeedback.feedback === null || courseFeedback.feedback.rating === 0 ? "filled" : "default";
                         const method = courseFeedback.feedback === null || courseFeedback.feedback.rating === 0 ? "POST" : "PUT";
-                        console.log(method)
                         return (
                             <Table.Tr key={index}>
                                 <Table.Td>
@@ -209,7 +208,7 @@ export default function Feedbacks() {
                                         <Avatar
                                             visibleFrom="xs"
                                             radius="sm"
-                                            src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${courseFeedback.course.photo}`} />
+                                            src={`${courseFeedback.course.photo}`} />
                                         <Text>{courseFeedback.course.title}</Text>
 
                                     </Group>

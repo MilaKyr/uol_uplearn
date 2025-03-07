@@ -213,13 +213,11 @@ export default function CreateCourse() {
                 title: (value) => active === 2 && (value === '' || value === undefined) ? "Cannot be empty" : null,
                 deadline: (value, values) =>  {
                   if (active === 2) {
-                    console.log("validating")
+                    console.log("validatig", values.end_date)
                     if (value < values.start_date) {
                       return `Deadline must be after start date`
                     } else if (value > values.end_date) {
                         return `Deadline must be before the end date`
-                    } else if (value < new Date(Math.max.apply(null, values.topics.map((topic) => topic.lessons.map((less) => less.deadline.valueOf())).flat()))) {
-                      return "Deadline must be after all previous lessons' deadlines" 
                     } else {
                       return null
                     }
@@ -236,32 +234,36 @@ export default function CreateCourse() {
         <Draggable key={item.key} index={index} draggableId={item.key}>
           {(provided) => (
             <Group ref={provided.innerRef} mt="xs" {...provided.draggableProps}>
+              
               <Center {...provided.dragHandleProps}>
-                <IconGripVertical size={18} />
+              <Stack mt={22}>
+                 <IconGripVertical  size={18} />
+             </Stack>
               </Center>
               <TextInput
                 required
-                placeholder="Topic title"
+                label="Title"
                 key={form.key(`topics.${index}.title`)}
                 {...form.getInputProps(`topics.${index}.title`)}
               />
-              <Textarea
+              <NumberInput
                 required
-                autosize
-                placeholder="Description"
-                key={form.key(`topics.${index}.description`)}
-                {...form.getInputProps(`topics.${index}.description`)}
-              />
-               <NumberInput
-                required
-                placeholder="Number of estimated hours"
+                label="Number of estimated hours"
                 clampBehavior="strict"
                 min={1}
                 key={form.key(`topics.${index}.n_hours`)}
                 {...form.getInputProps(`topics.${index}.n_hours`)}
     />
-        <ActionIcon color="red" onClick={() => form.removeListItem('topics', index)}>
-            <IconTrash size={16} />
+              <Textarea
+                required
+                label="Description"
+                autosize
+                key={form.key(`topics.${index}.description`)}
+                {...form.getInputProps(`topics.${index}.description`)}
+              />
+               
+        <ActionIcon mt={24} size="lg" color="red" onClick={() => form.removeListItem('topics', index)}>
+            <IconTrash size={24} />
           </ActionIcon>
             </Group>
           )}
@@ -494,28 +496,28 @@ export default function CreateCourse() {
                         {...provided.dragHandleProps}
     
                       >
-                        {/* <Draggable key={item.key} index={index} draggableId={item.key}>
-                            {(provided, snapshot) => ( */}
                               <Group mt="xs" >
                                 <Center >
-                                  <IconGripVertical size={18} />
+                                  <Stack mt={20}>
+                                  <IconGripVertical  size={18} />
+                                  </Stack>
+                                 
                                 </Center>
                                 <TextInput
-                                  placeholder="Lesson title"
+                                  label="Title"
                                   key={form.key(`topics.${tp_index}.lessons.${index}.title`)}
                                   {...form.getInputProps(`topics.${tp_index}.lessons.${index}.title`)}
                                 />
                                 <DatePickerInput
-                                  placeholder="Deadline"
+                                  label="Deadline"
                                   key={form.key(`topics.${tp_index}.lessons.${index}.deadline`)}
                                   {...form.getInputProps(`topics.${tp_index}.lessons.${index}.deadline`)}
                                 />
-                                <ActionIcon color="red" onClick={() => form.removeListItem(`topics.${tp_index}.lessons`, index)}>
-                                    <IconTrash size={16} />
+                                <ActionIcon mt={24} size="lg" color="red" onClick={() => form.removeListItem(`topics.${tp_index}.lessons`, index)}>
+                                    <IconTrash size={24} />
                                   </ActionIcon>
                               </Group>
                             {/* )} */}
-                          {/* </Draggable> */}
                        </div>
                     )}
                   </Draggable>
@@ -557,24 +559,3 @@ export default function CreateCourse() {
       </>
   );
 }
-
-
-
-{/* <Group ref={provided.innerRef} mt="xs" {...provided.draggableProps}>
-                                <Center {...provided.dragHandleProps}>
-                                  <IconGripVertical size={18} />
-                                </Center>
-                                <TextInput
-                                  placeholder="Lesson title"
-                                  key={form.key(`topics.${tp_index}.lessons.${index}.title`)}
-                                  {...form.getInputProps(`topics.${tp_index}.lessons.${index}.title`)}
-                                />
-                                <DatePickerInput
-                                  placeholder="Deadline"
-                                  key={form.key(`topics.${tp_index}.lessons.${index}.deadline`)}
-                                  {...form.getInputProps(`topics.${tp_index}.lessons.${index}.deadline`)}
-                                />
-                                <ActionIcon color="red" onClick={() => form.removeListItem(`topics.${tp_index}.lessons`, index)}>
-                                    <IconTrash size={16} />
-                                  </ActionIcon>
-                              </Group> */}

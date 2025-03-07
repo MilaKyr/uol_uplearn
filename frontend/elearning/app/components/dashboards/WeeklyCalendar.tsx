@@ -34,6 +34,7 @@ export default function WeeklyCalendar(props: { userId: string, onClick: (data: 
     const router = useRouter();
     const [hovered, setHovered] = React.useState<Date | null>(null);
     const [value, setValue] = React.useState<Date | null>(new Date());
+    const calendar = React.useRef<HTMLDivElement>(undefined);
 
     const getUrl = (date: Date | null) => {
         const onejan = new Date(date!.getFullYear(), 0, 1);
@@ -88,6 +89,7 @@ export default function WeeklyCalendar(props: { userId: string, onClick: (data: 
 
 
     const onClick = async (date: Date | null) => {
+        console.log("onClick")
         setValue(date);
         getTodo(date);
     }
@@ -96,6 +98,7 @@ export default function WeeklyCalendar(props: { userId: string, onClick: (data: 
         <Calendar
             size="lg"
             withCellSpacing={false}
+            onDateChange={() => console.log("here")}
             getDayProps={(date) => {
                 const isHovered = isInWeekRange(date, hovered);
                 const isSelected = isInWeekRange(date, value);
@@ -111,9 +114,6 @@ export default function WeeklyCalendar(props: { userId: string, onClick: (data: 
                 };
             }}
         />
-        <Button onClick={()=>onClick(new Date())}>
-            Go to current week
-        </Button>
         </Suspense>
     )
 }

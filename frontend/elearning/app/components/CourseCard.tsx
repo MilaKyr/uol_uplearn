@@ -20,7 +20,6 @@ export default function CourseCard(props: {
   }
 
   const enroll = async (course: CourseListData, index: number) => {
-    console.log("Im here")
     // Validate the token by making an API call
     try {
       const token = window.sessionStorage.getItem("jwt");
@@ -75,7 +74,7 @@ export default function CourseCard(props: {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Card.Section>
-        <Image h={200} alt="Course image" src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${props.course.photo}`} />
+        <Image h={200} alt="Course image" src={`${props.course.photo}`} />
       </Card.Section>
 
       <Group gap={5}>
@@ -87,7 +86,7 @@ export default function CourseCard(props: {
 
       <UnstyledButton py={12} onClick={() => props.showUser(props.course.teacher.id)}>
         <Group gap={7}>
-          <Avatar src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${props.course.teacher.photo}`}
+          <Avatar src={`${props.course.teacher.photo}`}
             alt={props.course.teacher.name}
             radius="xl" size={42} />
           <Text size="sm">Created by <Text component={'span'} fw={700}>

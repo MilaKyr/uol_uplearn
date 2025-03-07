@@ -9,7 +9,7 @@ from .serializers import NotificationSerializer, NotificationSeenSerializer
 from .permissions import IsSeenByRecipient
 
 class InboxView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
         return self.retrieve(request, format)

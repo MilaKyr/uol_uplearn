@@ -45,11 +45,13 @@ def enrollment_created(sender, instance, created, **kwargs):
         Notification.objects.create(recipient=instance.course.teacher, person=instance.user, course=instance.course,
                                 text="enrolled in a course")
     else:
-        action_name = "un-blocked" if instance.status == "started" else instance.status
-        Notification.objects.create(recipient=instance.user,
-                                    person=instance.course.teacher,
-                                    course=instance.course,
-                                    text=f"{action_name} you in the course")
+        if instance.status != instance.cached_status:
+            if instance.status != "finished":
+                action_name = "un-blocked" if instance.status == "started" else instance.status
+                Notification.objects.create(recipient=instance.user,
+                                            person=instance.course.teacher,
+                                            course=instance.course,
+                                            text=f"{action_name} you in the course")
 
 @receiver(post_save, sender=Lesson)
 def lesson_updated(sender, instance, created, **kwargs):
@@ -58,7 +60,7 @@ def lesson_updated(sender, instance, created, **kwargs):
         with transaction.atomic():
             for enrolled in enrollments:
                 Notification.objects.create(recipient=enrolled.user, person=instance.course.teacher, course=instance.course,
-                                    text=f"updated material in {instance.title} lesson in the course")
+                                        text=f"updated material in {instance.title} lesson in the course")
 
 @receiver(post_delete, sender=Topic)
 def topic_deleted(sender, instance, created, **kwargs):

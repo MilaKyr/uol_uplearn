@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Stack, Group, Title, Avatar, FileButton, Button } from "@mantine/core";
 import { api } from "@/app/actions/api";
 import { notifications } from "@mantine/notifications";
-import { IconExclamationCircle } from '@tabler/icons-react';
+import { IconExclamationCircle, IconCircleCheck } from '@tabler/icons-react';
 
 export const SettingsBanner = (props: {
     userId: string,
@@ -56,6 +56,13 @@ export const SettingsBanner = (props: {
                 });
                 router.push('/')
             }
+            notifications.show({
+                title: "Your data has been changed",
+                message: "Please login again",
+                color: "teal",
+                icon: <IconCircleCheck />,
+                autoClose: 7000,
+            })
         }
     }
 

@@ -85,7 +85,7 @@ const UserNavbarSearch = (props: {
   const [user, setUser] = React.useState<HomeData>();
 
   const getInbox = async () => {
-    const {data, status} = await api.get(`/api/notifications/inbox`)
+    const {data, status} = await api.get(`/api/notifications/inbox/`)
     if (status === 401 || status === 403) {
       const check_if_exists = notificationsStore.notifications.find((notif) => notif.title==="Session expired")
       if (check_if_exists === undefined) {
@@ -118,7 +118,6 @@ const UserNavbarSearch = (props: {
         router.push('/')
       }     
     }
-    console.log(data)
     const inbox = await getInbox();
     const appLinks = data.role === "student" ? studentlinks : teacherlinks;
     appLinks[0]["unseen"] = inbox.new_notifications

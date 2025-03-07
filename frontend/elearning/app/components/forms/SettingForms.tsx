@@ -16,7 +16,6 @@ export const BioForm = (props: { userId: string, form: UseFormReturnType<{ bio: 
 
     const sendBio = async () => {
         const jsonData = JSON.stringify(props.form.getValues())
-        console.log(jsonData)
         const { status } = await api.patch(`/api/home/settings/${props.userId}`, jsonData)
         if (status === 401 || status === 403) {
             notifications.show({

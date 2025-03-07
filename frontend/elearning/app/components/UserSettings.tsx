@@ -67,7 +67,6 @@ export default function UserSettings(props: UserSettingsProps) {
             });
             router.push('/')
         }
-        console.log("data", data)
         setUser(data);
         setLoading(false);
         formPersonal.setValues({ first_name: data.first_name, last_name: data.last_name });
