@@ -64,7 +64,7 @@ export default function StudyDetail() {
         notifications.show({
           title: "Session expired",
           message: "Please log in to continue",
-          autoClose: false,
+          autoClose: 5000,
           icon: <IconExclamationCircle />,
           color: 'red',
         });
@@ -116,7 +116,7 @@ export default function StudyDetail() {
         notifications.show({
           title: "Session expired",
           message: "Please log in to continue",
-          autoClose: false,
+          autoClose: 5000,
           icon: <IconExclamationCircle />,
           color: 'red',
         });
@@ -134,7 +134,7 @@ export default function StudyDetail() {
         notifications.show({
           title: "Session expired",
           message: "Please log in to continue",
-          autoClose: false,
+          autoClose: 5000,
           icon: <IconExclamationCircle />,
           color: 'red',
         });
@@ -149,7 +149,7 @@ export default function StudyDetail() {
     notifications.show({
       title: "You have new message!",
       message: messageBody,
-      autoClose: false,
+      autoClose: 5000,
       icon: <Avatar src={`${avatar.photo}`} />,
       color: 'blue',
       onClose: () => {
@@ -174,7 +174,7 @@ export default function StudyDetail() {
     notifications.show({
       title: `${senderName} ${notificationBody} ${courseTitle}`,
       message: "",
-      autoClose: false,
+      autoClose: 5000,
       onClose: () => {
         sendJsonMessage({
           event: `public_room_${user.id}`,

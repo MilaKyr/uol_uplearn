@@ -40,7 +40,7 @@ export default function Courses() {
           notifications.show({
             title: "Session expired",
             message: "Please log in to continue",
-            autoClose: false,
+            autoClose: 5000,
             icon: <IconExclamationCircle />,
             color: 'red',
           });

@@ -104,7 +104,7 @@ export default function LessonMain(props: {
             notifications.show({
               title: "Session expired",
               message: "Please log in to continue",
-              autoClose: false,
+              autoClose: 50000,
               icon: <IconExclamationCircle />,
               color: 'red',
             });
@@ -154,7 +154,7 @@ export default function LessonMain(props: {
             notifications.show({
               title: "Session expired",
               message: "Please log in to continue",
-              autoClose: false,
+              autoClose: 50000,
               icon: <IconExclamationCircle />,
               color: 'red',
             });
@@ -212,7 +212,7 @@ export default function LessonMain(props: {
               notifications.show({
                 title: "Session expired",
                 message: "Please log in to continue",
-                autoClose: false,
+                autoClose: 5000,
                 icon: <IconExclamationCircle />,
                 color: 'red',
               });

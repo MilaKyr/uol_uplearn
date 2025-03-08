@@ -21,7 +21,7 @@ export const BioForm = (props: { userId: string, form: UseFormReturnType<{ bio: 
             notifications.show({
                 title: "Session expired",
                 message: "Please log in to continue",
-                autoClose: false,
+                autoClose: 5000,
                 icon: <IconExclamationCircle />,
                 color: 'red',
             });
@@ -56,7 +56,7 @@ export const EmailForm = (props: { userId: string, form: UseFormReturnType<{ ema
             notifications.show({
                 title: "Session expired",
                 message: "Please log in to continue",
-                autoClose: false,
+                autoClose: 5000,
                 icon: <IconExclamationCircle />,
                 color: 'red',
             });
@@ -89,7 +89,7 @@ export const StatusForm = (props: { userId: string, form: UseFormReturnType<{ st
             notifications.show({
                 title: "Session expired",
                 message: "Please log in to continue",
-                autoClose: false,
+                autoClose: 5000,
                 icon: <IconExclamationCircle />,
                 color: 'red',
             });

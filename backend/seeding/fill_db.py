@@ -71,7 +71,7 @@ def fill_database() -> None:
 
     logging.info("saving KeyHolders...")
     objs = (KeyHolder(name=holder["name"],
-                 token=uuid.uuid5(uuid.NAMESPACE_DNS, holder["name"])) for holder in data["key_holders"])
+                      token=holder["token"]) for holder in data["key_holders"])
     KeyHolder.objects.bulk_create(objs, BATCH_SIZE)
 
     logging.info("saving User...")

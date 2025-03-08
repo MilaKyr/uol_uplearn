@@ -29,7 +29,7 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
                 notifications.show({
                     title: "Session expired",
                     message: "Please log in to continue",
-                    autoClose: false,
+                    autoClose: 5000,
                     icon: <IconExclamationCircle />,
                     color: 'red',
                 });
@@ -71,7 +71,7 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
                     notifications.show({
                         title: "Session expired",
                         message: "Please log in to continue",
-                        autoClose: false,
+                        autoClose: 5000,
                         icon: <IconExclamationCircle />,
                         color: 'red',
                     });
@@ -109,32 +109,34 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
                                 const buttonColor = selected === `${conversation.id}` ? '#dbe4ff' : 'transparent';
                                 return user.id != props.chatOwnerId && (
                                     <UnstyledButton
+                                        py={12}
                                         onClick={() => handleClick(conversation.id)}
                                         key={conversation.id}
                                         style={{
                                             alignItems: 'center',
                                             borderRadius: 10,
-                                            width: '100%', padding: 10, height: '100%',
+                                            width: '100%', height: '100%',
                                             backgroundColor: buttonColor,
                                             display: 'flex', borderBottom: 10
                                         }}>
-                                        <Group className={classes.mainLinkInner} justify='flex-start'>
+                                        <Group className={classes.mainLinkInner} gap={3} justify='flex-start'>
                                             <Indicator offset={6} position="bottom-end" size={16} color={user.is_online ? "violet.5" : "gray.5"} withBorder >
                                                 <Avatar src={`${user.photo}`}
                                                     radius="xl" />
                                             </Indicator>
-                                            <Stack gap={3} justify='flex-end' align='flex-start'>
+                                            <Stack  gap={3} justify='flex-end' align='flex-start'>
                                                 <Text c="gray.8" fw={600} size="xs" >{user.name} </Text>
                                                 {conversation.last_message.text !== "" && <Text w={200} truncate="end" c="dimmed" size="xs" > {conversation.last_message.sender.id === props.chatOwnerId ?
                                                     `You: ${conversation.last_message.text}` : `${conversation.last_message.sender.name}: ${conversation.last_message.text}`} </Text>}
                                             </Stack>
-                                        
-                                        {conversation.unread_messages > 0 &&  (
-                                            <Badge size="sm" variant="filled" className={classes.mainLinkBadge}>
-                                                {conversation.unread_messages}
-                                            </Badge>
-                                        )}
+                                            {conversation.unread_messages > 0 &&  (
+                                            <Badge className={classes.mainLinkBadge} size="xs" variant="filled" >
+                                                    {conversation.unread_messages}
+                                                </Badge>
+                                                )}
                                         </Group>
+
+                                        
 
 
 

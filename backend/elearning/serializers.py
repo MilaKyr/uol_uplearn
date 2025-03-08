@@ -289,6 +289,11 @@ class CourseShortSerializer(CourseBasicSerializer):
     n_students = serializers.SerializerMethodField(read_only=True)
     created = serializers.DateTimeField(format="%d/%m/%Y",read_only=True)
     start_date = serializers.DateTimeField(format="%d %B, %Y")
+    duration = serializers.SerializerMethodField()
+
+    @extend_schema_field(OpenApiTypes.INT)
+    def get_duration(self, instance):
+        return instance.duration.days
 
     @extend_schema_field(OpenApiTypes.FLOAT)
     def get_average_rating(self, instance):

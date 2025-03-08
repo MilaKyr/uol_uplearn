@@ -65,7 +65,7 @@ function UserDashboard() {
         notifications.show({
           title: "Session expired",
           message: "Please log in to continue",
-          autoClose: false,
+          autoClose: 5000,
           icon: <IconExclamationCircle />,
           color: 'red',
         });
@@ -81,7 +81,7 @@ function UserDashboard() {
       notifications.show({
         title: "Session expired",
         message: "Please log in to continue",
-        autoClose: false,
+        autoClose: 5000,
         icon: <IconExclamationCircle />,
         color: 'red',
       });
@@ -96,7 +96,7 @@ function UserDashboard() {
     notifications.show({
       title: "You have new message!",
       message: messageBody,
-      autoClose: false,
+      autoClose: 5000,
       icon: <Avatar src={`${avatar.photo}`} />,
       color: 'blue',
       onClose: () => {
@@ -121,7 +121,7 @@ function UserDashboard() {
     notifications.show({
       title: `${senderName} ${notificationBody} ${courseTitle}`,
       message: "",
-      autoClose: false,
+      autoClose: 5000,
       onClose: () => {
         sendJsonMessage({
           event: `public_room_${userId}`,

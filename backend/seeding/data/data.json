@@ -1,10 +1,12 @@
 {
   "key_holders": [
     {
-      "name": "Your tutors Company"
+      "name": "Your tutors Company",
+      "token": "88218dde-926a-48f6-b71f-0697737cb466"
     },
     {
-      "name": "Institution"
+      "name": "Institution",
+      "token": "812eaae5-52f8-4717-b5e7-76442c183e78"
     }
   ],
   "users": [

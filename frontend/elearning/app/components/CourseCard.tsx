@@ -12,6 +12,7 @@ export default function CourseCard(props: {
   course: CourseListData, index: number, showUser: (id: number) => void,
   removeCourse: (index: number) => void
 }) {
+  console.log(props.course)
   const router = useRouter();
 
   const learnMore = (id: string) => {
@@ -52,7 +53,7 @@ export default function CourseCard(props: {
         notifications.show({
           title: "Session expired",
           message: "Please log in to continue",
-          autoClose: false,
+          autoClose: 5000,
           icon: <IconExclamationCircle />,
           color: 'red',
         });
@@ -99,7 +100,7 @@ export default function CourseCard(props: {
         <Text size="sm" >Starts: {props.course.start_date}</Text>
         <Group gap={4} justify="space-between" mb="xs">
           <IconClockHour3 color='#888a85' strokeWidth={1} />
-          <Text c="dimmed" size="sm" fw={600}>{props.course.duration}</Text>
+          <Text c="dimmed" size="sm" fw={600}>{props.course.duration} days</Text>
         </Group>
       </Group>
 

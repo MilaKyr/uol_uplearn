@@ -93,7 +93,7 @@ export default function CreateCourse() {
           withCloseButton: true,
           color: 'red',
           icon: <IconX />,
-          autoClose: false,
+          autoClose: 5000,
         });
         setLoading(false);
       }

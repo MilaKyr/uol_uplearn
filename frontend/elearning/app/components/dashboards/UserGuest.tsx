@@ -29,7 +29,7 @@ export default function UserGuest(props: { id: string }) {
             notifications.show({
                 title: "Session expired",
                 message: "Please log in to continue",
-                autoClose: false,
+                autoClose: 5000,
                 icon: <IconExclamationCircle />,
                 color: 'red',
             });
@@ -50,12 +50,12 @@ export default function UserGuest(props: { id: string }) {
 
      const createConversation = async (recipientId: string) => {
         const jsonData = JSON.stringify({ "recipient_id": recipientId })
-        const { data, status } = await api.post(`/api/chat/`, jsonData)
+        const { data, status } = await api.post(`/api/chat/conversations/new`, jsonData)
         if (status === 401 || status === 403) {
           notifications.show({
             title: "Session expired",
             message: "Please log in to continue",
-            autoClose: false,
+            autoClose: 5000,
             icon: <IconExclamationCircle />,
             color: 'red',
           });
