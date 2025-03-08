@@ -57,6 +57,16 @@ class CourseListCreateView(generics.ListCreateAPIView):
 
 
 class CourseSearch(generics.ListAPIView):
+    queryset = (Course.objects
+                .filter(is_active=True)
+                .prefetch_related("registered_students")
+                .prefetch_related("registered_students__feedback")
+                .annotate(
+        average_rating=Avg('registered_students__feedback__rating', default=0, output_field=FloatField()))
+                .annotate(
+        n_students=Count('registered_students__feedback__id', output_field=IntegerField(), distinct=True))
+                )
+    serializer_class = CourseShortSerializer
     permission_classes = [permissions.IsAuthenticated, IsStudent]
     """
         Search courses by title and/or tag
@@ -161,7 +171,7 @@ class EnrolledStudentsView(generics.ListAPIView):
         course_id = self.request.GET.get("course_id")
         if course_id is not None:
             return self.queryset.filter(course__id=course_id)
-        return self.queryset
+        return self.queryset.all()
 
 class EnrollmentCreateView(generics.ListCreateAPIView):
     """

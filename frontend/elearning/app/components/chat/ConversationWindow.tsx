@@ -139,12 +139,12 @@ export default function ConversationWindow(props: ConversationWindowProps) {
                                 <Group key={index} my={10} pr={15} py={4} style={{ width: "fit-content", backgroundColor: 'var(--mantine-color-blue-light)', borderRadius: 20 }} justify={'flex-start'}>
                                     <Avatar src={`${message.sender.photo}`}
                                         radius="xl" />
-                                    <Text size="md">{message.text}</Text>
+                                    <Text style={{overflowWrap: 'break-word', wordBreak: 'break-all'}} size="md">{message.text}</Text>
                                 </Group>
                             ) : (
                                 <Group key={index} my={10} py={4} justify={'flex-end'}>
                                     <Group pl={15} style={{ width: 'fit-content', backgroundColor: 'var(--mantine-color-blue-light)', borderRadius: 20 }}>
-                                        <Text>{message.text}</Text>
+                                        <Text style={{wordBreak: 'break-all',overflowWrap: 'break-word'}}>{message.text}</Text>
                                         <Avatar src={`${message.sender.photo}`}
                                             radius="xl" />
                                     </Group>

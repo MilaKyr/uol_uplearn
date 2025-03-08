@@ -9,7 +9,9 @@ from tests.utils import get_role
 
 @pytest.mark.django_db
 def test_conversation_serializer(conversation, message, student, teacher):
-    serialized = ConversationSerializer(conversation)
+    request = HttpRequest()
+    request.user = message.recipient
+    serialized = ConversationSerializer(conversation, context={"request": request})
     expected = {
         "id": f"{conversation.id}",
         'unread_messages': 1,
@@ -19,7 +21,7 @@ def test_conversation_serializer(conversation, message, student, teacher):
             "recipient": {
                 "id": f"{message.recipient.id}",
                 "name": f"{message.recipient.full_name}",
-                "photo": "",
+                "photo": None,
                 "is_online": message.recipient.is_online,
                 "role": get_role(message.recipient),
 
@@ -27,7 +29,7 @@ def test_conversation_serializer(conversation, message, student, teacher):
             'sender':{
                 "id": f"{message.sender.id}",
                 "name": f"{message.sender.full_name}",
-                "photo": "",
+                "photo": None,
                 "is_online": message.sender.is_online,
                 "role": get_role(message.sender),
 
@@ -43,14 +45,14 @@ def test_conversation_serializer(conversation, message, student, teacher):
         {
             "id": f"{teacher.id}",
             "name": f"{teacher.full_name}",
-            "photo": "",
+            "photo": None,
             "is_online": teacher.is_online,
             "role": get_role(teacher),
         },
         {
             "id": f"{student.id}",
             "name": f"{student.full_name}",
-            "photo": "",
+            "photo": None,
             "is_online": student.is_online,
             "role": get_role(student),
         }
@@ -70,7 +72,7 @@ def test_conversation_detail_serializer(conversation, message, student, teacher)
             "recipient": {
                 "id": f"{message.recipient.id}",
                 "name": f"{message.recipient.full_name}",
-                "photo": "",
+                "photo": None,
                 "is_online": message.recipient.is_online,
                 "role": get_role(message.recipient),
 
@@ -78,7 +80,7 @@ def test_conversation_detail_serializer(conversation, message, student, teacher)
             'sender':{
                 "id": f"{message.sender.id}",
                 "name": f"{message.sender.full_name}",
-                "photo": "",
+                "photo": None,
                 "is_online": message.sender.is_online,
                 "role": get_role(message.sender),
 

@@ -13,6 +13,7 @@ import CourseStudentList from "../CourseStudentList";
 import { HomeData } from "@/app/types";
 import { TeacherProfile } from "./DashboardProfile";
 import { TeacherCourseTable } from "./CourseTable";
+import { getUser } from "@/app/actions/getAuth";
 
 
 const StudentModal = (props: { opened: boolean, courseId: string, onClose: () => void }) => (
@@ -26,6 +27,7 @@ const StudentModal = (props: { opened: boolean, courseId: string, onClose: () =>
 export default function TeacherOwner(props: { user: HomeData }) {
     const [opened, { open, close }] = useDisclosure(false);
     const [courseId, setCourseId] = React.useState<string | undefined>();
+    const user = getUser();
 
     const onCourseClick = (id: string) => {
         setCourseId(id);
@@ -43,7 +45,7 @@ export default function TeacherOwner(props: { user: HomeData }) {
                     <TeacherCourseTable onCourseClick={onCourseClick} courses={props.user.courses} />
                 ) : (
                     <Group justify="center">
-                        <Button component={Link} href={{ pathname: '/home', query: { selected: 'addCourse' } }} w={'50%'} variant="outline" color="teal" >
+                        <Button component={Link} href={{ pathname: `/home/${user.id}`, query: { selected: 'addCourse' } }} w={'50%'} variant="outline" color="teal" >
                             <Group align="flex-start" gap={10}>
                                 <IconPlus />
                                 <Text>Create your first course!</Text>

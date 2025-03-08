@@ -54,6 +54,7 @@ def register_student(password = None, email=None):
         "password1": password,
         "password2": password,
         "role": "student",
+        "token": None
     }
     response = client.post("/api/register/", payload, format="json")
     return response.data
@@ -72,7 +73,7 @@ def register_teacher(password = None, email=None):
         "password1": password,
         "password2": password,
         "role": "teacher",
-        "key_holder": token,
+        "token": token,
     }
     response = client.post("/api/register/", payload, format="json")
     return response.data

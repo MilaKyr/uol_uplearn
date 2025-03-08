@@ -22,15 +22,15 @@ def test_get_create_notifications_works(teacher_group, student_group):
     assert response.status_code == status.HTTP_200_OK
     result = json.loads(response.content)
     assert len(result) == 1
-    response = client.post(f"/api/notifications/",
-                           data={'ids': [str(result[0]['id'])]}, format="json",
+    response = client.patch(f"/api/notifications/{result[0]['id']}",
+                           data={'seen': True}, format="json",
                            headers={'AUTHORIZATION': f" Bearer {teacher['access']}"})
-    assert response.status_code == status.HTTP_201_CREATED
+    assert response.status_code == status.HTTP_200_OK
 
 @pytest.mark.django_db
 def test_inbox(teacher_group):
     teacher = register_teacher()
-    response = client.get(f"/api/notifications/inbox",
+    response = client.get(f"/api/notifications/inbox/",
                  headers={'AUTHORIZATION': f" Bearer {teacher['access']}"})
     result = json.loads(response.content)
     assert result['new_notifications'] == 0 and result['new_messages'] == 0

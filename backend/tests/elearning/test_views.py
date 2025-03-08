@@ -28,7 +28,8 @@ def test_register(student_group):
         "email": "email@email.com",
         "password1": "test_password",
         "password2": "test_password",
-        "role": "student"
+        "role": "student",
+        "token": None,
     }
     response = client.post("/api/register/", payload, format="json")
     assert response.status_code == status.HTTP_201_CREATED
@@ -392,7 +393,7 @@ def test_get_study_course_student_done_works(student_group, course, topic, lesso
 @pytest.mark.django_db
 def test_enrolled_students(teacher_group, active_course):
     teacher = register_teacher()
-    response = client.get(f"/api/courses/{active_course.id}/students",
+    response = client.get(f"/api/enrollments/students?course_id{active_course.id}",
                           headers={'AUTHORIZATION': f" Bearer {teacher['access']}"})
     assert response.status_code == status.HTTP_200_OK
 

@@ -17,6 +17,7 @@ export const StudentOwner = (props: { user: HomeData, setTodo: (todos: TodoData[
                 photo={props.user?.photo}
                 name={props.user?.name}
                 role={props.user?.role}
+                user_id=""
                 status={props.user?.status || ""} />
             <Divider />
 

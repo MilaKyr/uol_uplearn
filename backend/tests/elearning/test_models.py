@@ -10,8 +10,9 @@ COURSE_IMG_PATH = 'seeding/data/photos/courses/rubaitul-azad-ZIPFteu-R8k-unsplas
 
 @pytest.mark.django_db
 def test_course_topic_directory_path(course):
+    today = datetime.datetime.today()
     expected = course_topic_directory_path(course, "file.pdf")
-    assert expected == f"files/{course.id}_file.pdf"
+    assert expected == f"files/{today.strftime('%Y-%m-%d')}/file.pdf"
 
 @pytest.mark.django_db
 def test_courses_not_unique(teacher, course):

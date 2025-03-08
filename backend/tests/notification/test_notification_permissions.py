@@ -16,7 +16,7 @@ client = APIClient()
 @pytest.mark.django_db
 def test_update_notifications_forbidden(teacher_group, notification):
     teacher = register_teacher()
-    response = client.post(f"/api/notifications/",
-                           data={'ids': [str(notification.id)]}, format="json",
+    response = client.patch(f"/api/notifications/{notification.id}",
+                           data={'seen': True}, format="json",
                           headers={'AUTHORIZATION': f" Bearer {teacher['access']}"})
     assert response.status_code == status.HTTP_403_FORBIDDEN

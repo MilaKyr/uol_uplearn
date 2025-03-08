@@ -274,7 +274,6 @@ export default function CreateCourse() {
     
     const nextStep = async () =>
         setActive((current) => {
-          console.log(form.validate().hasErrors)
           if (active === 0) {
             setCourseId();
           } 
@@ -432,7 +431,7 @@ export default function CreateCourse() {
             </DragDropContext>
 
             <Group pl={34} justify="flex-start" mt="md">
-                <Button onClick={() => form.insertListItem('topics', { title: '', description: '', n_hours: 1 , key: randomId(), lessons: [
+                <Button variant="outline" onClick={() => form.insertListItem('topics', { title: '', description: '', n_hours: 1 , key: randomId(), lessons: [
               {title: '', deadline: '', key: randomId()}] })}>
                 <IconPlus/> Add topic
                 </Button>
@@ -467,6 +466,7 @@ export default function CreateCourse() {
                 return ;
               }
             }
+            return ;
             
           }
         }>
@@ -483,47 +483,55 @@ export default function CreateCourse() {
                   <Group key={topic.key} justify="flex-start" mt="md">
               <Title>{topic.title}</Title>
             </Group>
-                {topic.lessons.map((item, index) => (
-                  <Draggable
-                    key={item.key}
-                    draggableId={item.key}
-                    index={index}
-                  >
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-    
+                {topic.lessons.map((item, index) => {
+                  if (item !== undefined) {
+                    return (
+                      <Draggable
+                        key={item.key}
+                        draggableId={item.key}
+                        index={index}
                       >
-                              <Group mt="xs" >
-                                <Center >
-                                  <Stack mt={20}>
-                                  <IconGripVertical  size={18} />
-                                  </Stack>
-                                 
-                                </Center>
-                                <TextInput
-                                  label="Title"
-                                  key={form.key(`topics.${tp_index}.lessons.${index}.title`)}
-                                  {...form.getInputProps(`topics.${tp_index}.lessons.${index}.title`)}
-                                />
-                                <DatePickerInput
-                                  label="Deadline"
-                                  key={form.key(`topics.${tp_index}.lessons.${index}.deadline`)}
-                                  {...form.getInputProps(`topics.${tp_index}.lessons.${index}.deadline`)}
-                                />
-                                <ActionIcon mt={24} size="lg" color="red" onClick={() => form.removeListItem(`topics.${tp_index}.lessons`, index)}>
-                                    <IconTrash size={24} />
-                                  </ActionIcon>
-                              </Group>
-                            {/* )} */}
-                       </div>
-                    )}
-                  </Draggable>
-                ))}
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+        
+                          >
+                                  <Group mt="xs" >
+                                    <Center >
+                                      <Stack mt={20}>
+                                      <IconGripVertical  size={18} />
+                                      </Stack>
+                                     
+                                    </Center>
+                                    <TextInput
+                                      label="Title"
+                                      key={form.key(`topics.${tp_index}.lessons.${index}.title`)}
+                                      {...form.getInputProps(`topics.${tp_index}.lessons.${index}.title`)}
+                                    />
+                                    <DatePickerInput
+                                      label="Deadline"
+                                      key={form.key(`topics.${tp_index}.lessons.${index}.deadline`)}
+                                      {...form.getInputProps(`topics.${tp_index}.lessons.${index}.deadline`)}
+                                    />
+                                    <ActionIcon mt={24} size="lg" color="red" onClick={() => form.removeListItem(`topics.${tp_index}.lessons`, index)}>
+                                        <IconTrash size={24} />
+                                      </ActionIcon>
+                                  </Group>
+                                {/* )} */}
+                           </div>
+                        )}
+                      </Draggable>
+                    )
+                  }
+                  })}
               {provided.placeholder}
-              <Button ml={34}  my={24} onClick={() => form.insertListItem(`topics.${tp_index}.lessons`, { title: '', deadline: '', key: randomId() })}>
+              <Button 
+              variant="outline"   
+              ml={34}  
+              my={24} 
+              onClick={() => form.insertListItem(`topics.${tp_index}.lessons`, { title: '', deadline: '', key: randomId() })}>
               <IconPlus/> Add lesson
               </Button>
               <Divider />

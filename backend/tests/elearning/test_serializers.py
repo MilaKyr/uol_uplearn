@@ -18,18 +18,16 @@ from rest_framework.exceptions import ValidationError, NotFound, PermissionDenie
 
 COURSE_IMG_PATH = 'seeding/data/photos/courses/rubaitul-azad-ZIPFteu-R8k-unsplash_JRGhzsf.jpg'
 
-def encode_image(img_path):
-    with open(img_path, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read())
-        return encoded_string
+def compare_images(result):
+    return "_".join(result.split("_")[:-1]) + ".jpg" == "/media/" + COURSE_IMG_PATH
 
 @pytest.mark.django_db
-def test_reistered_student_serializer(registered_student):
+def test_registered_student_serializer(registered_student):
 
     expected = {
         "id": str(registered_student.id),
         'name': f"{registered_student.user.first_name} {registered_student.user.last_name}",
-        'photo': "",
+        'photo': None,
         'status': 'started'
     }
     serialized = RegisteredStudentSerializer(registered_student)
@@ -90,11 +88,11 @@ def test_course_short_serializer(course, teacher):
         'teacher': {
             'id': str(teacher.id),
             'name': teacher.full_name,
-            'photo': ""
+            'photo': None,
         },
         'tags': []
     }
-    assert serializer.data["photo"] == encode_image(COURSE_IMG_PATH)
+    assert compare_images(serializer.data["photo"])
     result = serializer.data
     result.pop("photo")
     assert json.dumps(result, sort_keys=True) == json.dumps(expected, sort_keys=True)
@@ -119,12 +117,12 @@ def test_course_owner_short_serializer(registered_student, course):
             {
                 "id": str(registered_student.id),
                 'name': f"{registered_student.user.first_name} {registered_student.user.last_name}",
-                'photo': "",
+                'photo': None,
                 'status': "started"
             }
         ]
     }
-    assert serializer.data["photo"] == encode_image(COURSE_IMG_PATH)
+    assert compare_images(serializer.data["photo"])
     result = serializer.data
     result.pop("photo")
     assert json.dumps(result, sort_keys=True) == json.dumps(expected, sort_keys=True)
@@ -135,7 +133,7 @@ def test_teacher_serializer(teacher):
     expected = {
         "id": str(teacher.id),
         'name': f"{teacher.first_name} {teacher.last_name}",
-        'photo': "",
+        'photo': None,
         'is_online': teacher.is_online,
         'role': get_role(teacher),
         'bio': teacher.bio,
@@ -167,7 +165,7 @@ def test_course_serializer(course, feedback, lesson, student, enrolled_student):
         "teacher": {
             "id": str(course.teacher.id),
             'name': f"{course.teacher.first_name} {course.teacher.last_name}",
-            'photo': "",
+            'photo': None,
         },
         "topics": [
             {
@@ -192,7 +190,7 @@ def test_course_serializer(course, feedback, lesson, student, enrolled_student):
                 "user": {
                     "id": str(feedback.enrollment.user.id),
                     "name": f"{feedback.enrollment.user.first_name} {feedback.enrollment.user.last_name}",
-                    "photo": "",
+                    "photo": None,
                 },
                 "text": feedback.text,
                 "rating": feedback.rating,
@@ -203,7 +201,7 @@ def test_course_serializer(course, feedback, lesson, student, enrolled_student):
         'enrolled': False,
     }
     serializer = CourseSerializer(course_instance)
-    assert serializer.data["photo"] == encode_image(COURSE_IMG_PATH)
+    assert compare_images(serializer.data["photo"])
     result = serializer.data
     result.pop("photo")
     print(json.dumps(result, sort_keys=True))
@@ -232,7 +230,7 @@ def test_course_w_progress_short_serializer(course, student, enrolled_student):
     done = [(enrolled_student.course.id, enrolled_student.user.id,
              enrolled_student.created.strftime("%d %B, %Y"), 0)]
     serializer = CourseWithProgressSerializer(course_instances, many=True, context={"done": done})
-    assert serializer.data[0]["photo"] == encode_image(COURSE_IMG_PATH)
+    assert compare_images(serializer.data[0]["photo"])
     result = serializer.data
     result[0].pop("photo")
     assert json.dumps(result, sort_keys=True) == json.dumps([expected], sort_keys=True)
@@ -257,7 +255,7 @@ def test_course_w_progress_short_serializer_no_tasks(course, student, enrolled_s
     }
     done = [(enrolled_student.course.id, enrolled_student.user.id, enrolled_student.created.strftime("%d %B, %Y"), 0)]
     serializer = CourseWithProgressSerializer(course_instances, many=True, context={"done": done})
-    assert serializer.data[0]["photo"] == encode_image(COURSE_IMG_PATH)
+    assert compare_images(serializer.data[0]["photo"])
     result = serializer.data
     result[0].pop("photo")
     assert json.dumps(result, sort_keys=True) == json.dumps([expected], sort_keys=True)
@@ -457,12 +455,15 @@ def test_prefetch_enrollment_serializer(enrolled_student):
     serializier = PrefetchEnrollmentSerializer(enrollment)
     expected = {
         'id': str(enrolled_student.id),
+        "user_id": str(enrolled_student.user.id),
         'name': enrolled_student.user.full_name,
         'role': get_role(enrolled_student.user),
-        'photo': "",
+        'photo': None,
         'status': enrolled_student.status
     }
-    assert json.dumps(serializier.data, sort_keys=True) == json.dumps(expected, sort_keys=True)
+    result = serializier.data
+    result["user_id"] = str(result["user_id"])
+    assert json.dumps(result, sort_keys=True) == json.dumps(expected, sort_keys=True)
 
 @pytest.mark.django_db
 def test_custom_registration(student_group):
@@ -474,6 +475,7 @@ def test_custom_registration(student_group):
         'first_name': "First",
         'last_name': "Last",
         'role': "student",
+        'token': None,
     }
     serializer = CustomRegisterSerializer(data=payload)
     serializer.is_valid(raise_exception=True)
@@ -490,6 +492,7 @@ def test_custom_login(student_group):
         'first_name': "First",
         'last_name': "Last",
         'role': "student",
+        'token': None,
     }
     serializer = CustomRegisterSerializer(data=payload)
     serializer.is_valid(raise_exception=True)

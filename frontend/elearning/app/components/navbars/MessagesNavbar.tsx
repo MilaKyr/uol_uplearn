@@ -118,22 +118,23 @@ export function MessagesNavBar(props: MessagesNavBarProps) {
                                             backgroundColor: buttonColor,
                                             display: 'flex', borderBottom: 10
                                         }}>
-                                        <Group className={classes.mainLinkInner}>
+                                        <Group className={classes.mainLinkInner} justify='flex-start'>
                                             <Indicator offset={6} position="bottom-end" size={16} color={user.is_online ? "violet.5" : "gray.5"} withBorder >
                                                 <Avatar src={`${user.photo}`}
                                                     radius="xl" />
                                             </Indicator>
-                                            <Stack w={'100%'} gap={3} justify='flex-end' align='flex-start'>
+                                            <Stack gap={3} justify='flex-end' align='flex-start'>
                                                 <Text c="gray.8" fw={600} size="xs" >{user.name} </Text>
                                                 {conversation.last_message.text !== "" && <Text w={200} truncate="end" c="dimmed" size="xs" > {conversation.last_message.sender.id === props.chatOwnerId ?
                                                     `You: ${conversation.last_message.text}` : `${conversation.last_message.sender.name}: ${conversation.last_message.text}`} </Text>}
                                             </Stack>
-                                        </Group>
+                                        
                                         {conversation.unread_messages > 0 &&  (
                                             <Badge size="sm" variant="filled" className={classes.mainLinkBadge}>
                                                 {conversation.unread_messages}
                                             </Badge>
                                         )}
+                                        </Group>
 
 
 

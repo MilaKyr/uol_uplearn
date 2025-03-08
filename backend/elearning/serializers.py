@@ -135,7 +135,7 @@ class RegisteredStudentSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(OpenApiTypes.URI)
     def get_photo(self, instance):
-        return instance.user.photo.url
+        return instance.user.photo.url if instance.user.photo else None
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_name(self, instance):
@@ -566,6 +566,7 @@ class CreateProgressSerializer(serializers.Serializer):
 
 class PrefetchEnrollmentSerializer(serializers.ModelSerializer):
     """ Get enrollment information on the prefetched instance """
+    user_id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
     photo = serializers.SerializerMethodField()
@@ -575,17 +576,21 @@ class PrefetchEnrollmentSerializer(serializers.ModelSerializer):
         return instance.user.full_name
 
     @extend_schema_field(OpenApiTypes.STR)
+    def get_user_id(self, instance):
+        return instance.user.id
+
+    @extend_schema_field(OpenApiTypes.STR)
     def get_role(self, instance):
         return "student" if instance.user.is_student() else "teacher"
 
     @extend_schema_field(OpenApiTypes.URI)
     def get_photo(self, instance):
-        return instance.user.photo.url
+        return instance.user.photo.url if instance.user.photo else None
 
 
     class Meta:
         model = CourseEnrollment
-        fields = ['id', 'name', 'role', 'photo', 'status']
+        fields = ['id', 'name', 'role', 'photo', 'status', 'user_id']
 
 class EnrollmentUpdateSerializer(serializers.ModelSerializer):
     """ Updates enrollment status to `removed` """
@@ -617,11 +622,11 @@ class CustomRegisterSerializer(RegisterSerializer):
     last_name = serializers.CharField(required=True)
     photo = serializers.ImageField(required=False)
     role = serializers.ChoiceField(ROLE_CHOICES)
-    key_holder = serializers.UUIDField(required=False)
+    token = serializers.UUIDField(allow_null=True)
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'first_name', 'key_holder',
+        fields = ['email', 'username', 'first_name', 'token',
                   'last_name', 'password1', 'password2', 'photo']
 
     def get_cleaned_data(self):
@@ -634,10 +639,10 @@ class CustomRegisterSerializer(RegisterSerializer):
             'last_name': self.validated_data.get('last_name'),
             'photo': self.validated_data.get('photo'),
             'role': self.validated_data.get('role'),
-            'key_holder': self.validated_data.get('key_holder'),
+            'token': self.validated_data.get('token'),
         }
 
-    def _save(self, request, token_holder=None):
+    def _save(self, request, token=None):
         adapter = get_adapter()
         user = adapter.new_user(request)
         role = self.cleaned_data.get('role')
@@ -645,7 +650,8 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.first_name = self.cleaned_data.get('first_name')
         user.last_name = self.cleaned_data.get('last_name')
         user.photo = self.cleaned_data.get('photo')
-        user.token_holder = token_holder
+        if token:
+            user.token = token
         user.is_online = True
         user.save()
         adapter.save_user(request, user, self)
@@ -656,7 +662,7 @@ class CustomRegisterSerializer(RegisterSerializer):
     def save(self, request):
         self.cleaned_data = self.get_cleaned_data()
         role = self.cleaned_data.get('role')
-        token = self.validated_data.get('key_holder')
+        token = self.validated_data.get('token')
         if role == "teacher":
             if not token:
                 raise PermissionDenied

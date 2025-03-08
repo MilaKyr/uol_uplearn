@@ -11,6 +11,7 @@ export interface CourseStudentHomeData {
 }
 
 export interface StudentProfileData extends BasicUserData {
+  user_id: string;
   status: string;
 }
 

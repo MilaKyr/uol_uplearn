@@ -91,7 +91,7 @@ export default function CourseStudentList(props: { courseId: string }) {
                                             src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${enrolledStudent.photo}`}
 
                                         />
-                                        <UnstyledButton component="a" href={"/users/" + enrolledStudent.id} color="black">{enrolledStudent.name}</UnstyledButton>
+                                        <UnstyledButton component="a" href={"/users/" + enrolledStudent.user_id} color="black">{enrolledStudent.name}</UnstyledButton>
                                     </Group>
                                 </Table.Td>
                                 <Table.Td>

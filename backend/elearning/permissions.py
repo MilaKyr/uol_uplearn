@@ -73,6 +73,8 @@ class TeacherWriter(permissions.BasePermission):
 
 class HasAccess(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
+        if request.user.is_teacher():
+            return True
         course = find_course(obj)
         enrolled = CourseEnrollment.objects.filter(course=course, user=request.user)
         if enrolled.exists():
