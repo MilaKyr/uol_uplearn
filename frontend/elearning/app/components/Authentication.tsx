@@ -56,6 +56,7 @@ export function Authentication(props: {setAuth: (token: string) => void}) {
       last_name: values.last_name,
       password1: values.password1,
       password2: values.password2,
+      token: values.token,
     }),
   });
 
