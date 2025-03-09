@@ -109,10 +109,13 @@ export interface CourseTitle {
 }
 
 export interface UserProfile {
-  id: string;
-  photo: string | undefined,
-  name: string;
-  role: string;
+  user: {
+    id: string;
+    photo: string | undefined,
+    name: string;
+    role: string;
+  },
+ 
   status: string | undefined;
   bio: string | undefined;
 }
