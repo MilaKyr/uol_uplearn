@@ -37,10 +37,9 @@ function UserDashboard() {
   const notificationsStore = useNotifications();
   const [opened, { toggle }] = useDisclosure();
   const [componentName, setComponentName] = React.useState(searchParams.get("selected") || "dashboard");
-  
-  const [socketUrl, setSocketUrl] = React.useState(`${process.env.NEXT_PUBLIC_WS_ADDRESS}/ws/notify?token=${token}`);
 
-  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(socketUrl,
+
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(`${process.env.NEXT_PUBLIC_WS_ADDRESS}/ws/notify?token=${token}`,
     {
       share: true,
       shouldReconnect: () => true,
