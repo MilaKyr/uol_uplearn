@@ -5,13 +5,6 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('chat', '0002_initial'),
-    ]
+    dependencies = [("chat", "0002_initial")]
 
-    operations = [
-        migrations.RemoveField(
-            model_name='conversation',
-            name='modified',
-        ),
-    ]
+    operations = [migrations.RemoveField(model_name="conversation", name="modified")]

@@ -1,5 +1,3 @@
-import base64
-
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import Group
 from django.db import transaction, IntegrityError
@@ -11,13 +9,23 @@ from rest_framework import exceptions, serializers
 from django.conf import settings
 from drf_spectacular.utils import extend_schema_field
 from drf_spectacular.types import OpenApiTypes
-from .models import Course, User, Feedback, Lesson, Topic, CourseEnrollment, \
-    Tag, Files, KeyHolder
-from .validators import feedback_between_1_5, validate_start_date, greater_than_zero
+from .models import (
+    Course,
+    User,
+    Feedback,
+    Lesson,
+    Topic,
+    CourseEnrollment,
+    Tag,
+    Files,
+    KeyHolder,
+)
+from .validators import validate_start_date
 
 
 class TagSerializer(serializers.ModelSerializer):
     """ Serializes Tag model """
+
     class Meta:
         model = Tag
         fields = "__all__"
@@ -25,24 +33,26 @@ class TagSerializer(serializers.ModelSerializer):
 
 class UserPhotoSerializer(serializers.ModelSerializer):
     """ Serializes photo as image from User model. Used for update and create methods """
+
     photo = serializers.ImageField()
 
     class Meta:
         model = User
-        fields = ['photo']
+        fields = ["photo"]
+
 
 class CoursePhotoSerializer(serializers.ModelSerializer):
     """ Serializes photo as image from User model. Used for update and create methods """
+
     photo = serializers.ImageField()
 
     class Meta:
         model = Course
-        fields = ['photo']
+        fields = ["photo"]
 
 
 class FullNameSerializer(serializers.ModelSerializer):
     """ Serializes user's full name """
-
 
     name = serializers.SerializerMethodField()
 
@@ -55,8 +65,10 @@ class FullNameSerializer(serializers.ModelSerializer):
         model = User
         fields = ["name"]
 
+
 class UserShortSerializer(serializers.ModelSerializer):
     """ Serializes teacher's data for course serializer """
+
     name = serializers.SerializerMethodField()
     photo = serializers.ImageField()
 
@@ -66,10 +78,12 @@ class UserShortSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'name', 'photo']
+        fields = ["id", "name", "photo"]
+
 
 class UserAuthSerializer(UserShortSerializer):
     """ Basic user serializer """
+
     role = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
 
@@ -83,14 +97,15 @@ class UserAuthSerializer(UserShortSerializer):
 
     class Meta(UserShortSerializer.Meta):
         model = User
-        fields = UserShortSerializer.Meta.fields + ['role', 'is_online']
+        fields = UserShortSerializer.Meta.fields + ["role", "is_online"]
+
 
 class TeacherSerializer(UserAuthSerializer):
     """ Serializes teacher. Extends UserAuthSerializer with `bio` field """
 
     class Meta(UserAuthSerializer.Meta):
         model = User
-        fields = UserAuthSerializer.Meta.fields + ['bio', ]
+        fields = UserAuthSerializer.Meta.fields + ["bio"]
 
 
 class StudentSerializer(UserAuthSerializer):
@@ -98,10 +113,12 @@ class StudentSerializer(UserAuthSerializer):
 
     class Meta(UserAuthSerializer.Meta):
         model = User
-        fields = UserAuthSerializer.Meta.fields + ['status', ]
+        fields = UserAuthSerializer.Meta.fields + ["status"]
+
 
 class SettingsSerializer(serializers.ModelSerializer):
     """ Serializes settings options. """
+
     role = serializers.SerializerMethodField(read_only=True)
 
     @extend_schema_field(OpenApiTypes.STR)
@@ -110,14 +127,15 @@ class SettingsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'role' ]
+        fields = ["id", "first_name", "last_name", "email", "role"]
+
 
 class StudentSettingsSerializer(SettingsSerializer):
     """ Serializes student settings. Extends SettingsSerializer with `status` field """
 
     class Meta(SettingsSerializer.Meta):
         model = User
-        fields = SettingsSerializer.Meta.fields + ['status', ]
+        fields = SettingsSerializer.Meta.fields + ["status"]
 
 
 class TeacherSettingsSerializer(SettingsSerializer):
@@ -125,11 +143,12 @@ class TeacherSettingsSerializer(SettingsSerializer):
 
     class Meta(SettingsSerializer.Meta):
         model = User
-        fields = SettingsSerializer.Meta.fields + ['bio', ]
+        fields = SettingsSerializer.Meta.fields + ["bio"]
 
 
 class RegisteredStudentSerializer(serializers.ModelSerializer):
     """ Serializes student from CourseEnrollment model """
+
     photo = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
 
@@ -144,13 +163,15 @@ class RegisteredStudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CourseEnrollment
-        fields = ['id', 'name', 'photo', 'status']
+        fields = ["id", "name", "photo", "status"]
+
 
 class StudentFeedbackSerializer(serializers.ModelSerializer):
     """ Serializes feedback and author of feedback from Feedback model. Used for update method """
+
     user = serializers.SerializerMethodField(read_only=True)
     created = serializers.DateTimeField(format="%d %B, %Y", read_only=True)
-    rating = serializers.IntegerField(validators=[feedback_between_1_5])
+    rating = serializers.IntegerField(min_value=1, max_value=5)
 
     @extend_schema_field(OpenApiTypes.OBJECT)
     def get_user(self, instance):
@@ -158,10 +179,12 @@ class StudentFeedbackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Feedback
-        fields = ['id', 'text', 'rating', 'user', 'created']
+        fields = ["id", "text", "rating", "user", "created"]
+
 
 class LessonBasicSerializer(serializers.ModelSerializer):
     """ Serializes lesson. Returns additional field `done` that checks if user did this lesson """
+
     deadline = serializers.DateTimeField(format="%d %B, %Y")
     done = serializers.SerializerMethodField()
 
@@ -172,14 +195,16 @@ class LessonBasicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lesson
-        fields = ['id', 'title', 'deadline', 'done']
+        fields = ["id", "title", "deadline", "done"]
+
 
 class LessonWithFilesCheckSerializer(LessonBasicSerializer):
     """ Extends LessonBasicSerializer. Returns additional field `has_files`, `html` and `created` """
-    title = serializers.CharField(allow_blank=False)
-    has_files = serializers.SerializerMethodField()
-    created = serializers.DateTimeField(format="%d %B, %Y")
-    topic_id = serializers.SerializerMethodField()
+
+    title = serializers.CharField()
+    has_files = serializers.SerializerMethodField(read_only=True)
+    created = serializers.DateTimeField(format="%d %B, %Y", read_only=True)
+    topic_id = serializers.SerializerMethodField(read_only=True)
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_topic_id(self, instance):
@@ -191,10 +216,17 @@ class LessonWithFilesCheckSerializer(LessonBasicSerializer):
 
     class Meta(LessonBasicSerializer.Meta):
         model = Lesson
-        fields = LessonBasicSerializer.Meta.fields + ['html', "created", "has_files", "topic_id"]
+        fields = LessonBasicSerializer.Meta.fields + [
+            "html",
+            "created",
+            "has_files",
+            "topic_id",
+        ]
+
 
 class LessonCreateSerializer(serializers.ModelSerializer):
     """ Creates new lesson """
+
     title = serializers.CharField()
     deadline = serializers.DateTimeField(format="%d %B, %Y")
 
@@ -202,8 +234,10 @@ class LessonCreateSerializer(serializers.ModelSerializer):
         model = Lesson
         fields = ["title", "deadline"]
 
+
 class LessonEditFilesSerializer(serializers.Serializer):
     """ Updates lesson's files """
+
     files = serializers.FileField()
 
     def update(self, instance, validated_data):
@@ -216,47 +250,58 @@ class LessonEditFilesSerializer(serializers.Serializer):
             instance.files.add(model_file)
         return instance
 
+
 class TopicSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(allow_blank=False)
-    n_hours = serializers.IntegerField(validators=[greater_than_zero])
+    title = serializers.CharField()
+    n_hours = serializers.IntegerField(min_value=1)
 
     """ Serializes topic """
+
     class Meta:
         model = Topic
-        fields = ['id', 'title', 'description', 'n_hours',]
+        fields = ["id", "title", "description", "n_hours"]
+
 
 class TopicWithLessonsSerializer(serializers.ModelSerializer):
-    """ Extends TopicSerializer. Adds lessons """
+    """ Extends TopicWithLessonsSerializer. Adds lessons """
+
     lessons = LessonBasicSerializer(many=True)
 
     class Meta:
         model = Topic
-        fields = ['id','title', 'description', 'n_hours', 'lessons']
+        fields = ["id", "title", "description", "n_hours", "lessons"]
+
 
 class TopicCreateSerializer(serializers.Serializer):
     """ Creates new topic """
+
     title = serializers.CharField()
     description = serializers.CharField()
-    n_hours = serializers.IntegerField()
+    n_hours = serializers.IntegerField(min_value=1)
     lessons = LessonCreateSerializer(many=True)
+
 
 class CourseTitleSerializer(serializers.ModelSerializer):
     """ Serializes only course title """
+
     class Meta:
         model = Course
-        fields = ['id', 'title']
+        fields = ["id", "title"]
+
 
 class CourseBasicSerializer(CourseTitleSerializer):
     """ Serializes only essential info about the course: id, title and image """
-    photo = serializers.ImageField()
 
+    photo = serializers.ImageField()
 
     class Meta(CourseTitleSerializer.Meta):
         model = Course
-        fields = CourseTitleSerializer.Meta.fields + ['photo',]
+        fields = CourseTitleSerializer.Meta.fields + ["photo"]
+
 
 class CourseOwnerSerializer(CourseBasicSerializer):
     """ Serializes course for the course owner """
+
     average_rating = serializers.SerializerMethodField()
     n_students = serializers.SerializerMethodField()
     registered_students = serializers.SerializerMethodField()
@@ -264,7 +309,9 @@ class CourseOwnerSerializer(CourseBasicSerializer):
     start_date = serializers.DateTimeField(format="%d %B, %Y")
 
     def get_registered_students(self, instance):
-        students = instance.registered_students.filter(status__in=["started", "removed", "blocked"])
+        students = instance.registered_students.filter(
+            status__in=["started", "removed", "blocked"]
+        )
         serialized = RegisteredStudentSerializer(students, many=True)
         return serialized.data
 
@@ -279,15 +326,23 @@ class CourseOwnerSerializer(CourseBasicSerializer):
     class Meta(CourseBasicSerializer.Meta):
         model = Course
         fields = CourseBasicSerializer.Meta.fields + [
-            'is_active', 'start_date', 'registered_students', 'average_rating', 'n_students', 'created']
+            "is_active",
+            "start_date",
+            "registered_students",
+            "average_rating",
+            "n_students",
+            "created",
+        ]
+
 
 class CourseShortSerializer(CourseBasicSerializer):
     """ Serializes course information"""
+
     teacher = UserShortSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     average_rating = serializers.SerializerMethodField(read_only=True)
     n_students = serializers.SerializerMethodField(read_only=True)
-    created = serializers.DateTimeField(format="%d/%m/%Y",read_only=True)
+    created = serializers.DateTimeField(format="%d/%m/%Y", read_only=True)
     start_date = serializers.DateTimeField(format="%d %B, %Y")
     duration = serializers.SerializerMethodField()
 
@@ -306,12 +361,19 @@ class CourseShortSerializer(CourseBasicSerializer):
     class Meta(CourseBasicSerializer.Meta):
         model = Course
         fields = CourseBasicSerializer.Meta.fields + [
-            'teacher', 'start_date', 'duration', 'average_rating', 'n_students', 'created', 'tags']
-
+            "teacher",
+            "start_date",
+            "duration",
+            "average_rating",
+            "n_students",
+            "created",
+            "tags",
+        ]
 
 
 class CourseSerializer(CourseShortSerializer):
     """ Serializes course with topics and feedback. """
+
     topics = TopicWithLessonsSerializer(many=True, read_only=True)
     feedback = serializers.SerializerMethodField()
     enrolled = serializers.SerializerMethodField()
@@ -330,11 +392,18 @@ class CourseSerializer(CourseShortSerializer):
     class Meta(CourseShortSerializer.Meta):
         model = Course
         fields = CourseShortSerializer.Meta.fields + [
-            'is_active', 'description', 'topics', 'feedback', 'enrolled' ]
-        ordering = ['-created']
+            "is_active",
+            "description",
+            "topics",
+            "feedback",
+            "enrolled",
+        ]
+        ordering = ["-created"]
+
 
 class CourseRetireveUpdateSerializer(CourseBasicSerializer):
     """ Serializes course for edit page """
+
     topics = TopicWithLessonsSerializer(many=True, read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     duration = serializers.SerializerMethodField()
@@ -346,23 +415,31 @@ class CourseRetireveUpdateSerializer(CourseBasicSerializer):
 
     class Meta(CourseBasicSerializer.Meta):
         model = Course
-        fields = CourseBasicSerializer.Meta.fields + ['start_date', 'duration', 'topics', 'is_active', 'description',
-                'created', 'tags']
+        fields = CourseBasicSerializer.Meta.fields + [
+            "start_date",
+            "duration",
+            "topics",
+            "is_active",
+            "description",
+            "created",
+            "tags",
+        ]
 
 
 class CourseCreateSerializer(serializers.Serializer):
 
     """ Creates new course """
+
     id = serializers.UUIDField()
-    title = serializers.CharField(allow_blank=False)
-    description = serializers.CharField(allow_blank=False)
+    title = serializers.CharField()
+    description = serializers.CharField()
     start_date = serializers.DateTimeField(validators=[validate_start_date])
     end_date = serializers.DateTimeField(write_only=True)
-    tags = serializers.ListSerializer(child=serializers.CharField())
+    tags = serializers.ListSerializer(child=serializers.CharField(), min_length=1)
     topics = TopicCreateSerializer(many=True)
 
     def _save_tags(self, validated_data):
-        course_tags = validated_data.pop('tags')
+        course_tags = validated_data.pop("tags")
         model_tags = []
         for tag in course_tags:
             model_tag, _ = Tag.objects.get_or_create(name=tag)
@@ -371,39 +448,41 @@ class CourseCreateSerializer(serializers.Serializer):
 
     def _save_course(self, validated_data):
         teacher = self.context["request"].user
-        start_date = validated_data.pop('start_date')
-        duration = validated_data.pop('end_date') - start_date
+        start_date = validated_data.pop("start_date")
+        duration = validated_data.pop("end_date") - start_date
 
-        return  Course(
+        return Course(
             id=validated_data.pop("id"),
             teacher=teacher,
-            title=validated_data.pop('title'),
-            description=validated_data.pop('description'),
+            title=validated_data.pop("title"),
+            description=validated_data.pop("description"),
             start_date=start_date,
             duration=duration,
         )
 
     def _save_topics(self, course_instance, validated_data):
-        topics = validated_data.pop('topics')
+        topics = validated_data.pop("topics")
         for topic in topics:
             topic_instance = self._save_topic(course_instance, topic)
             for lesson in topic["lessons"]:
                 self._save_lesson(topic_instance, course_instance, lesson)
 
     def _save_topic(self, course_instance, topic):
-        return Topic.objects.create(course=course_instance,
-                                           title=topic["title"],
-                                           description=topic["description"],
-                                           n_hours=topic["n_hours"]
-                                           )
+        return Topic.objects.create(
+            course=course_instance,
+            title=topic["title"],
+            description=topic["description"],
+            n_hours=topic["n_hours"],
+        )
 
     def _save_lesson(self, topic, course, lesson):
         Lesson.objects.create(
             topic=topic,
             course=course,
             title=lesson["title"],
-            deadline=lesson["deadline"]
+            deadline=lesson["deadline"],
         )
+
     def create(self, validated_data):
         try:
             with transaction.atomic():
@@ -416,10 +495,12 @@ class CourseCreateSerializer(serializers.Serializer):
         except (IntegrityError) as error:
             raise ValidationError(error)
 
+
 class CourseWithProgressSerializer(CourseBasicSerializer):
     """ Serializes course by adding information about progress, enrollment status and enrollment date
     used on Student's Dashboard
     """
+
     progress = serializers.SerializerMethodField()
     enrolled = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
@@ -429,8 +510,9 @@ class CourseWithProgressSerializer(CourseBasicSerializer):
         # get done data from context
         done = self.context.get("done")
         # select user ids for the course
-        user_ids = [user_id for (course_id, user_id, _, _,) in done
-                    if course_id == instance.id]
+        user_ids = [
+            user_id for (course_id, user_id, _, _) in done if course_id == instance.id
+        ]
         # if user ids is not empty
         if len(user_ids) == 1:
             # return the status of the first user enrollment.
@@ -443,8 +525,9 @@ class CourseWithProgressSerializer(CourseBasicSerializer):
         done = self.context.get("done")
         # select enrollment date for the course
         # This context is already pre-filtered with user's id from request
-        enrolled = [enrolled for (course_id, _, enrolled, _,) in done
-                          if course_id == instance.id]
+        enrolled = [
+            enrolled for (course_id, _, enrolled, _) in done if course_id == instance.id
+        ]
         # return date if list is not empty
         if len(enrolled) > 0:
             return enrolled.pop()
@@ -455,53 +538,61 @@ class CourseWithProgressSerializer(CourseBasicSerializer):
             return 0.0
 
         done = self.context.get("done")
-        done_in_course = [done for (course_id, _, _, done) in done
-                          if course_id == instance.id]
+        done_in_course = [
+            done for (course_id, _, _, done) in done if course_id == instance.id
+        ]
         return done_in_course[0] / instance.overall if len(done_in_course) == 1 else 0.0
 
     class Meta(CourseBasicSerializer.Meta):
         model = Course
-        fields = CourseBasicSerializer.Meta.fields + ['enrolled', 'progress', 'status']
+        fields = CourseBasicSerializer.Meta.fields + ["enrolled", "progress", "status"]
+
 
 class FeedbackSerializer(serializers.ModelSerializer):
     """ Serializes Feedback model """
 
     class Meta:
         model = Feedback
-        fields = ['id', 'text', 'rating', 'created']
+        fields = ["id", "text", "rating", "created"]
+
 
 class CourseFeedbackSerializer(serializers.Serializer):
     """ Serializes feedback and course from CourseEnrollment model """
+
     course = CourseBasicSerializer(read_only=True)
     feedback = FeedbackSerializer()
 
     class Meta:
         model = CourseEnrollment
-        fields = ['course', 'feedback' ]
+        fields = ["course", "feedback"]
+
 
 class CourseCreateFeedback(serializers.Serializer):
     """ Creates new feedback for the course """
+
     course_id = serializers.UUIDField(write_only=True)
     text = serializers.CharField()
     created = serializers.ReadOnlyField()
-    rating = serializers.IntegerField(validators=[feedback_between_1_5])
+    rating = serializers.IntegerField(min_value=1, max_value=5)
 
     class Meta:
         model = Feedback
-        fields = ['text', 'created', 'rating', 'course_id']
+        fields = ["text", "created", "rating", "course_id"]
 
     def create(self, validated_data):
         """ Creates new feedback """
         try:
-            course_id = validated_data.pop('course_id')
+            course_id = validated_data.pop("course_id")
             student = self.context["request"].user
             # get course
             course = Course.objects.get(id=course_id)
             # get enrollment
-            course_enrollment = CourseEnrollment.objects.get(user=student, course=course)
-            if course_enrollment.status != "finished":
-                raise PermissionDenied()
-            feedback = Feedback.objects.create(enrollment=course_enrollment, **validated_data)
+            course_enrollment = CourseEnrollment.objects.get(
+                user=student, course=course
+            )
+            feedback = Feedback.objects.create(
+                enrollment=course_enrollment, **validated_data
+            )
             return feedback
         except Course.DoesNotExist as error:
             raise NotFound(error)
@@ -509,8 +600,10 @@ class CourseCreateFeedback(serializers.Serializer):
             # return no information other that it's denied for security concerns
             raise PermissionDenied()
 
+
 class TodoListSerializer(serializers.Serializer):
     """ Serializes a to-do task for student """
+
     course_id = serializers.SerializerMethodField()
     course_title = serializers.SerializerMethodField()
     topic_title = serializers.SerializerMethodField()
@@ -548,10 +641,16 @@ class TodoListSerializer(serializers.Serializer):
         return instance["deadline"].strftime("%d/%m/%Y")
 
     class Meta:
-        fields = ["course_id", "course_title",
-                  "topic_id", "topic_title",
-                  "id", "title",
-                  "deadline"]
+        fields = [
+            "course_id",
+            "course_title",
+            "topic_id",
+            "topic_title",
+            "id",
+            "title",
+            "deadline",
+        ]
+
 
 class CreateProgressSerializer(serializers.Serializer):
     """ Updates course progress """
@@ -559,9 +658,13 @@ class CreateProgressSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         try:
             student = self.context["request"].user
-            enrollment = CourseEnrollment.objects.get(user=student, course=instance.course)
+            enrollment = CourseEnrollment.objects.get(
+                user=student, course=instance.course
+            )
             enrollment.done_lessons.add(instance)
-            last_lesson = Lesson.objects.filter(course=instance.course).latest('created')
+            last_lesson = Lesson.objects.filter(course=instance.course).latest(
+                "created"
+            )
             if last_lesson.id == instance.id:
                 enrollment.status = "finished"
             enrollment.save()
@@ -569,8 +672,10 @@ class CreateProgressSerializer(serializers.Serializer):
         except CourseEnrollment.DoesNotExist as error:
             raise NotFound(error)
 
+
 class PrefetchEnrollmentSerializer(serializers.ModelSerializer):
     """ Get enrollment information on the prefetched instance """
+
     user_id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
@@ -592,17 +697,26 @@ class PrefetchEnrollmentSerializer(serializers.ModelSerializer):
     def get_photo(self, instance):
         return instance.user.photo.url if instance.user.photo else None
 
-
     class Meta:
         model = CourseEnrollment
-        fields = ['id', 'name', 'role', 'photo', 'status', 'user_id']
+        fields = ["id", "name", "role", "photo", "status", "user_id"]
+
 
 class EnrollmentUpdateSerializer(serializers.ModelSerializer):
     """ Updates enrollment status to `removed` """
 
+    STATUS_CHOICES = (
+        ("started", "In Progress"),
+        ("finished", "Done"),
+        ("blocked", "Blocked"),
+        ("removed", "Removed"),
+    )
+    status = serializers.ChoiceField(choices=STATUS_CHOICES)
+
     class Meta:
         model = CourseEnrollment
-        fields = ['status',]
+        fields = ["status"]
+
 
 class EnrollmentCreateSerializer(serializers.Serializer):
     course_id = serializers.UUIDField()
@@ -612,49 +726,58 @@ class EnrollmentCreateSerializer(serializers.Serializer):
             user = self.context["request"].user
             course_id = self.validated_data.get("course_id")
             course = Course.objects.get(id=course_id)
-            enrollment = CourseEnrollment.objects.create(user=user, course=course, status="started")
+            enrollment = CourseEnrollment.objects.create(
+                user=user, course=course, status="started"
+            )
             return enrollment
         except Course.DoesNotExist as error:
             raise NotFound(error)
 
+
 class CustomRegisterSerializer(RegisterSerializer):
     """ Custom registration. Adds role and group to the user """
-    ROLE_CHOICES = (
-        ('teacher', 'Teacher'),
-        ('student', 'Student'),
-    )
-    first_name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=True)
+
+    ROLE_CHOICES = (("teacher", "Teacher"), ("student", "Student"))
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
     photo = serializers.ImageField(required=False)
     role = serializers.ChoiceField(ROLE_CHOICES)
     token = serializers.UUIDField(allow_null=True)
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'first_name', 'token',
-                  'last_name', 'password1', 'password2', 'photo']
+        fields = [
+            "email",
+            "username",
+            "first_name",
+            "token",
+            "last_name",
+            "password1",
+            "password2",
+            "photo",
+        ]
 
     def get_cleaned_data(self):
         return {
-            'username': self.validated_data.get('username', ''),
-            'password1': self.validated_data.get('password1', ''),
-            'password2': self.validated_data.get('password2', ''),
-            'email': self.validated_data.get('email', ''),
-            'first_name': self.validated_data.get('first_name'),
-            'last_name': self.validated_data.get('last_name'),
-            'photo': self.validated_data.get('photo'),
-            'role': self.validated_data.get('role'),
-            'token': self.validated_data.get('token'),
+            "username": self.validated_data.get("username", ""),
+            "password1": self.validated_data.get("password1", ""),
+            "password2": self.validated_data.get("password2", ""),
+            "email": self.validated_data.get("email", ""),
+            "first_name": self.validated_data.get("first_name"),
+            "last_name": self.validated_data.get("last_name"),
+            "photo": self.validated_data.get("photo"),
+            "role": self.validated_data.get("role"),
+            "token": self.validated_data.get("token"),
         }
 
     def _save(self, request, token=None):
         adapter = get_adapter()
         user = adapter.new_user(request)
-        role = self.cleaned_data.get('role')
-        user.username = self.cleaned_data.get('username')
-        user.first_name = self.cleaned_data.get('first_name')
-        user.last_name = self.cleaned_data.get('last_name')
-        user.photo = self.cleaned_data.get('photo')
+        role = self.cleaned_data.get("role")
+        user.username = self.cleaned_data.get("username")
+        user.first_name = self.cleaned_data.get("first_name")
+        user.last_name = self.cleaned_data.get("last_name")
+        user.photo = self.cleaned_data.get("photo")
         if token:
             user.token = token
         user.is_online = True
@@ -666,8 +789,8 @@ class CustomRegisterSerializer(RegisterSerializer):
 
     def save(self, request):
         self.cleaned_data = self.get_cleaned_data()
-        role = self.cleaned_data.get('role')
-        token = self.validated_data.get('token')
+        role = self.cleaned_data.get("role")
+        token = self.validated_data.get("token")
         if role == "teacher":
             if not token:
                 raise PermissionDenied
@@ -677,28 +800,30 @@ class CustomRegisterSerializer(RegisterSerializer):
             return self._save(request, token_holder)
         return self._save(request)
 
+
 class CustomLoginSerializer(LoginSerializer):
     """ Custom Login. Sets user as online once they logged in """
+
     def validate(self, attrs):
-        username = attrs.get('username')
-        email = attrs.get('email')
-        password = attrs.get('password')
+        username = attrs.get("username")
+        email = attrs.get("email")
+        password = attrs.get("password")
         user = self.get_auth_user(username, email, password)
 
         if not user:
-            msg = _('Unable to log in with provided credentials.')
+            msg = _("Unable to log in with provided credentials.")
             raise exceptions.ValidationError(msg)
 
         # Did we get back an active user?
         self.validate_auth_user_status(user)
 
         # If required, is the email verified?
-        if 'dj_rest_auth.registration' in settings.INSTALLED_APPS:
+        if "dj_rest_auth.registration" in settings.INSTALLED_APPS:
             self.validate_email_verification_status(user, email=email)
         ######################
         # This is a custom change. On login set user's field `is_online` to True
         user.is_online = True
         user.save()
         ######################
-        attrs['user'] = user
+        attrs["user"] = user
         return attrs

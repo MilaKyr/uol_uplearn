@@ -30,6 +30,7 @@ export default function UserDashboardSuspensed() {
 
 function UserDashboard() {
   const router = useRouter();
+  const token = getToken();
   const searchParams = useSearchParams();
   const params = useParams<{ id: string }>();
   const userId = params.id;
@@ -37,7 +38,7 @@ function UserDashboard() {
   const [opened, { toggle }] = useDisclosure();
   const [componentName, setComponentName] = React.useState(searchParams.get("selected") || "dashboard");
   
-  const [socketUrl, setSocketUrl] = React.useState(`${process.env.NEXT_PUBLIC_WS_ADDRESS}/ws`);
+  const [socketUrl, setSocketUrl] = React.useState(`${process.env.NEXT_PUBLIC_WS_ADDRESS}/ws/notify?token=${token}`);
 
   const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(socketUrl,
     {
@@ -46,11 +47,6 @@ function UserDashboard() {
     }
   );
 
-
-  React.useEffect(() => {
-    const token = getToken();
-    setSocketUrl(`${process.env.NEXT_PUBLIC_WS_ADDRESS}/ws/notify/${userId}/?token=${token}`)
-  }, [])
 
   React.useEffect(() => {
     setComponentName(searchParams.get("selected") || "dashboard");
@@ -87,7 +83,6 @@ function UserDashboard() {
       });
       router.push('/')
     }
-    console.log(data)
     return data
   }
 
@@ -168,9 +163,7 @@ function UserDashboard() {
   }, [lastJsonMessage])
 
 
-  React.useEffect(() => {
-    console.log("readyState", readyState);
-  }, [readyState])
+  React.useEffect(() => {}, [readyState])
 
   const onClick = (label: string) => {
     setComponentName(label);

@@ -10,4 +10,3 @@ admin.site.register(Lesson)
 admin.site.register(Feedback)
 admin.site.register(CourseEnrollment)
 admin.site.register(KeyHolder)
-

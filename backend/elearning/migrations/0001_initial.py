@@ -14,145 +14,370 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('auth', '0012_alter_user_first_name_max_length'),
-    ]
+    dependencies = [("auth", "0012_alter_user_first_name_max_length")]
 
     operations = [
         migrations.CreateModel(
-            name='Files',
+            name="Files",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to=elearning.models.course_topic_directory_path)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "file",
+                    models.FileField(
+                        upload_to=elearning.models.course_topic_directory_path
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='KeyHolder',
+            name="KeyHolder",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=150, unique=True)),
-                ('token', models.UUIDField(editable=False)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("name", models.CharField(max_length=150, unique=True)),
+                ("token", models.UUIDField(editable=False)),
             ],
         ),
         migrations.CreateModel(
-            name='Tag',
+            name="Tag",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=256, unique=True)),
-                ('color', models.CharField(default=elearning.models.generate_random_color, max_length=24)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=256, unique=True)),
+                (
+                    "color",
+                    models.CharField(
+                        default=elearning.models.generate_random_color, max_length=24
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='User',
+            name="User",
             fields=[
-                ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
-                ('username', models.CharField(error_messages={'unique': 'A user with that username already exists.'}, help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', max_length=150, unique=True, validators=[django.contrib.auth.validators.UnicodeUsernameValidator()], verbose_name='username')),
-                ('is_staff', models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')),
-                ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),
-                ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('first_name', models.CharField(max_length=150)),
-                ('last_name', models.CharField(max_length=150)),
-                ('email', models.EmailField(max_length=254)),
-                ('status', models.CharField(blank=True, max_length=256, null=True)),
-                ('photo', models.ImageField(null=True, upload_to='')),
-                ('bio', models.TextField(null=True)),
-                ('is_online', models.BooleanField(default=False)),
-                ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
-                ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
-                ('key_holder', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='elearning.keyholder')),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "last_login",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="last login"
+                    ),
+                ),
+                (
+                    "is_superuser",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates that this user has all permissions without explicitly assigning them.",
+                        verbose_name="superuser status",
+                    ),
+                ),
+                (
+                    "username",
+                    models.CharField(
+                        error_messages={
+                            "unique": "A user with that username already exists."
+                        },
+                        help_text="Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
+                        max_length=150,
+                        unique=True,
+                        validators=[
+                            django.contrib.auth.validators.UnicodeUsernameValidator()
+                        ],
+                        verbose_name="username",
+                    ),
+                ),
+                (
+                    "is_staff",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates whether the user can log into this admin site.",
+                        verbose_name="staff status",
+                    ),
+                ),
+                (
+                    "is_active",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Designates whether this user should be treated as active. Unselect this instead of deleting accounts.",
+                        verbose_name="active",
+                    ),
+                ),
+                (
+                    "date_joined",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now, verbose_name="date joined"
+                    ),
+                ),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("first_name", models.CharField(max_length=150)),
+                ("last_name", models.CharField(max_length=150)),
+                ("email", models.EmailField(max_length=254)),
+                ("status", models.CharField(blank=True, max_length=256, null=True)),
+                ("photo", models.ImageField(null=True, upload_to="")),
+                ("bio", models.TextField(null=True)),
+                ("is_online", models.BooleanField(default=False)),
+                (
+                    "groups",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.group",
+                        verbose_name="groups",
+                    ),
+                ),
+                (
+                    "user_permissions",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="Specific permissions for this user.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.permission",
+                        verbose_name="user permissions",
+                    ),
+                ),
+                (
+                    "key_holder",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="elearning.keyholder",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'user',
-                'verbose_name_plural': 'users',
-                'abstract': False,
+                "verbose_name": "user",
+                "verbose_name_plural": "users",
+                "abstract": False,
             },
-            managers=[
-                ('objects', django.contrib.auth.models.UserManager()),
+            managers=[("objects", django.contrib.auth.models.UserManager())],
+        ),
+        migrations.CreateModel(
+            name="Course",
+            fields=[
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=False)),
+                ("photo", models.ImageField(null=True, upload_to="")),
+                ("title", models.CharField(max_length=256)),
+                ("description", models.TextField()),
+                ("start_date", models.DateTimeField()),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("duration", models.DurationField()),
+                (
+                    "teacher",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="courses",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                ("tags", models.ManyToManyField(to="elearning.tag")),
+            ],
+            options={"unique_together": {("teacher", "title")}},
+        ),
+        migrations.CreateModel(
+            name="CourseEnrollment",
+            fields=[
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("started", "In Progress"),
+                            ("finished", "Done"),
+                            ("blocked", "Blocked"),
+                            ("removed", "Removed"),
+                        ],
+                        max_length=25,
+                    ),
+                ),
+                (
+                    "course",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="registered_students",
+                        to="elearning.course",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="enrollment",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+            ],
+            options={"unique_together": {("user", "course")}},
+        ),
+        migrations.CreateModel(
+            name="Feedback",
+            fields=[
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("text", models.CharField(max_length=256)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("rating", models.IntegerField()),
+                (
+                    "enrollment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="feedback",
+                        to="elearning.courseenrollment",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Course',
+            name="Topic",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('is_active', models.BooleanField(default=False)),
-                ('photo', models.ImageField(null=True, upload_to='')),
-                ('title', models.CharField(max_length=256)),
-                ('description', models.TextField()),
-                ('start_date', models.DateTimeField()),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('duration', models.DurationField()),
-                ('teacher', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='courses', to=settings.AUTH_USER_MODEL)),
-                ('tags', models.ManyToManyField(to='elearning.tag')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("title", models.CharField(max_length=256)),
+                ("description", models.TextField()),
+                ("n_hours", models.IntegerField()),
+                (
+                    "course",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="topics",
+                        to="elearning.course",
+                    ),
+                ),
             ],
-            options={
-                'unique_together': {('teacher', 'title')},
-            },
+            options={"unique_together": {("course", "title")}},
         ),
         migrations.CreateModel(
-            name='CourseEnrollment',
+            name="Lesson",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('status', models.CharField(choices=[('started', 'In Progress'), ('finished', 'Done'), ('blocked', 'Blocked'), ('removed', 'Removed')], max_length=25)),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='registered_students', to='elearning.course')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='enrollment', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("title", models.CharField(max_length=256)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("modified", models.DateTimeField(auto_now=True)),
+                ("deadline", models.DateTimeField(null=True)),
+                ("html", models.TextField(null=True)),
+                (
+                    "course",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="lessons",
+                        to="elearning.course",
+                    ),
+                ),
+                (
+                    "files",
+                    models.ManyToManyField(related_name="lesson", to="elearning.files"),
+                ),
+                (
+                    "topic",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="lessons",
+                        to="elearning.topic",
+                    ),
+                ),
             ],
-            options={
-                'unique_together': {('user', 'course')},
-            },
+            options={"unique_together": {("topic", "title")}},
         ),
         migrations.CreateModel(
-            name='Feedback',
+            name="CourseProgress",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('text', models.CharField(max_length=256)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('rating', models.IntegerField()),
-                ('enrollment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='feedback', to='elearning.courseenrollment')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "enrollment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="progress",
+                        to="elearning.courseenrollment",
+                    ),
+                ),
+                (
+                    "item",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="lesson_status",
+                        to="elearning.lesson",
+                    ),
+                ),
             ],
-        ),
-        migrations.CreateModel(
-            name='Topic',
-            fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=256)),
-                ('description', models.TextField()),
-                ('n_hours', models.IntegerField()),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='topics', to='elearning.course')),
-            ],
-            options={
-                'unique_together': {('course', 'title')},
-            },
-        ),
-        migrations.CreateModel(
-            name='Lesson',
-            fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=256)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('modified', models.DateTimeField(auto_now=True)),
-                ('deadline', models.DateTimeField(null=True)),
-                ('html', models.TextField(null=True)),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='lessons', to='elearning.course')),
-                ('files', models.ManyToManyField(related_name='lesson', to='elearning.files')),
-                ('topic', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='lessons', to='elearning.topic')),
-            ],
-            options={
-                'unique_together': {('topic', 'title')},
-            },
-        ),
-        migrations.CreateModel(
-            name='CourseProgress',
-            fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('enrollment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='progress', to='elearning.courseenrollment')),
-                ('item', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='lesson_status', to='elearning.lesson')),
-            ],
-            options={
-                'unique_together': {('enrollment', 'item')},
-            },
+            options={"unique_together": {("enrollment", "item")}},
         ),
     ]

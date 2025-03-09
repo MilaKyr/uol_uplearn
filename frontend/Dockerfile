@@ -6,9 +6,9 @@ COPY . .
 
 WORKDIR /usr/src/frontend/elearning
 
-RUN npm install -g npm@11.1.0
+RUN npm install -g npm@11.2.0
 
-RUN npm install
+RUN npm install --force
 
 RUN npm run build
 

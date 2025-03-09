@@ -11,21 +11,51 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('elearning', '0001_initial'),
+        ("elearning", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Notification',
+            name="Notification",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('text', models.CharField(max_length=250)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('seen', models.BooleanField(default=False)),
-                ('course', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='elearning.course')),
-                ('person', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='person', to=settings.AUTH_USER_MODEL)),
-                ('recipient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='recipient', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("text", models.CharField(max_length=250)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("seen", models.BooleanField(default=False)),
+                (
+                    "course",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="elearning.course",
+                    ),
+                ),
+                (
+                    "person",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="person",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "recipient",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="recipient",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
-        ),
+        )
     ]

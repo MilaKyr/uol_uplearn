@@ -24,7 +24,6 @@ import chat.routing
 import notifications.routing
 from chat.token_auth import TokenAuthMiddleware
 
-# pragma: no cover
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,

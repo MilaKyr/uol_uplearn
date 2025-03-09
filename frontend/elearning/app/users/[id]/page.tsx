@@ -27,7 +27,7 @@ export default function UserPage() {
     }, [])
 
 
-    const { sendJsonMessage, lastJsonMessage } = useWebSocket(`${process.env.NEXT_PUBLIC_WS_ADDRESS}/ws/notify/${currentUser.id}/?token=${token}`,
+    const { sendJsonMessage, lastJsonMessage } = useWebSocket(`${process.env.NEXT_PUBLIC_WS_ADDRESS}/ws/notify?token=${token}`,
         {
             share: true,
             shouldReconnect: () => true,

@@ -5,10 +5,12 @@ import os
 
 logging.basicConfig(level=logging.INFO)
 
+
 def prepare_env():
-    sys.path.append('../backend')
+    sys.path.append("../backend")
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
     django.setup()
+
 
 prepare_env()
 

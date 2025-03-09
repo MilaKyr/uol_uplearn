@@ -24,8 +24,6 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from backend import settings
 
 
-
-
 urlpatterns = [
     path('api/', include('elearning.urls')),
     path('admin/', admin.site.urls),

@@ -32,9 +32,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True #bool(os.environ.get("DEBUG", default=0))
+DEBUG = bool(os.environ.get("DEBUG", default=1))
 
-ALLOWED_HOSTS = ["127.0.0.1"] #os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1").split(",")
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(",")
 
 AUTH_USER_MODEL = "elearning.User"
 
@@ -55,22 +55,19 @@ CORS_ALLOW_HEADERS = (
 
 
 CORS_ALLOWED_ORIGINS = [
-    'http://35.230.156.144',
-    'http://35.230.156.144:1337',
+    'http://34.105.254.244',
     "http://127.0.0.1:8000",
     "http://127.0.0.1:3000",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://35.230.156.144',
-    'http://35.230.156.144:1337',
+    'http://34.105.254.244',
     "http://127.0.0.1:8000",
     "http://127.0.0.1:3000",
 ]
 
 CORS_ORIGIN_WHITELIST = [
-    'http://35.230.156.144',
-    'http://35.230.156.144:1337',
+    'http://34.105.254.244',
     "http://127.0.0.1:8000",
     "http://127.0.0.1:3000",
 ]
@@ -226,7 +223,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=180),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
@@ -240,7 +237,7 @@ SITE_ID = 1
 if DEBUG:
     WEBSITE_URL = "http://127.0.0.1:8000"
 else:
-    WEBSITE_URL = 'http://35.230.156.144:1337'
+    WEBSITE_URL = 'http://34.105.254.244'
 
 REST_AUTH = {
     "USE_JWT": True,
@@ -258,11 +255,12 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
+redis_host = "127.0.0.1" if DEBUG else "redis"
 CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [('127.0.0.1', 6379)],
-            },
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+         "CONFIG": {
+            "hosts": [(redis_host, 6379)],
         },
-    }
+    },
+}

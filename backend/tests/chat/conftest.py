@@ -8,6 +8,7 @@ from django.contrib.auth.models import Group
 from chat.models import Conversation, Message
 from django.db.models import signals
 
+
 @pytest.fixture
 def conversation(teacher, student):
     convo = Conversation.objects.create()
@@ -16,6 +17,9 @@ def conversation(teacher, student):
     convo.save()
     return convo
 
+
 @pytest.fixture
 def message(conversation, teacher, student):
-    return Message.objects.create(conversation=conversation, text="test", recipient=teacher, sender=student)
+    return Message.objects.create(
+        conversation=conversation, text="test", recipient=teacher, sender=student
+    )

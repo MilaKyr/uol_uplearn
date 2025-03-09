@@ -16,11 +16,12 @@ def message_created(sender, instance, created, **kwargs):
             f'public_room_{f"{instance.recipient.id}"}',
             {
                 "type": "new_message",
-                'id': f"{instance.id}",
+                "id": f"{instance.id}",
                 "sender_id": f"{instance.sender.id}",
-                "message": instance.text
-            }
+                "message": instance.text,
+            },
         )
+
 
 @receiver(post_save, sender=Notification)
 def notification_created(sender, instance, created, **kwargs):
@@ -35,47 +36,76 @@ def notification_created(sender, instance, created, **kwargs):
                 "sender_name": instance.person.full_name,
                 "course_id": f"{instance.course.id}",
                 "course_title": instance.course.title,
-                "message": instance.text
-            }
+                "message": instance.text,
+            },
         )
+
 
 @receiver(post_save, sender=CourseEnrollment)
 def enrollment_created(sender, instance, created, **kwargs):
     if created:
-        Notification.objects.create(recipient=instance.course.teacher, person=instance.user, course=instance.course,
-                                text="enrolled in a course")
+        Notification.objects.create(
+            recipient=instance.course.teacher,
+            person=instance.user,
+            course=instance.course,
+            text="enrolled in a course",
+        )
     else:
         if instance.status != instance.cached_status:
             if instance.status != "finished":
-                action_name = "un-blocked" if instance.status == "started" else instance.status
-                Notification.objects.create(recipient=instance.user,
-                                            person=instance.course.teacher,
-                                            course=instance.course,
-                                            text=f"{action_name} you in the course")
+                action_name = (
+                    "un-blocked" if instance.status == "started" else instance.status
+                )
+                Notification.objects.create(
+                    recipient=instance.user,
+                    person=instance.course.teacher,
+                    course=instance.course,
+                    text=f"{action_name} you in the course",
+                )
+
 
 @receiver(post_save, sender=Lesson)
 def lesson_updated(sender, instance, created, **kwargs):
     if not created:
-        enrollments = CourseEnrollment.objects.filter(status="started", course=instance.course).all()
+        enrollments = CourseEnrollment.objects.filter(
+            status="started", course=instance.course
+        ).all()
         with transaction.atomic():
             for enrolled in enrollments:
-                Notification.objects.create(recipient=enrolled.user, person=instance.course.teacher, course=instance.course,
-                                        text=f"updated material in {instance.title} lesson in the course")
+                Notification.objects.create(
+                    recipient=enrolled.user,
+                    person=instance.course.teacher,
+                    course=instance.course,
+                    text=f"updated material in {instance.title} lesson in the course",
+                )
+
 
 @receiver(post_delete, sender=Topic)
 def topic_deleted(sender, instance, created, **kwargs):
     if not created:
-        enrollments = CourseEnrollment.objects.filter(status="started", course=instance.course).all()
+        enrollments = CourseEnrollment.objects.filter(
+            status="started", course=instance.course
+        ).all()
         with transaction.atomic():
             for enrolled in enrollments:
-                Notification.objects.create(recipient=enrolled.user, person=instance.course.teacher, course=instance.course,
-                                    text=f"deleted {instance.title} topic in the course")
+                Notification.objects.create(
+                    recipient=enrolled.user,
+                    person=instance.course.teacher,
+                    course=instance.course,
+                    text=f"deleted {instance.title} topic in the course",
+                )
+
 
 @receiver(post_delete, sender=Lesson)
 def lesson_deleted(sender, instance, created, **kwargs):
-    enrollments = CourseEnrollment.objects.filter(status="started", course=instance.course).all()
+    enrollments = CourseEnrollment.objects.filter(
+        status="started", course=instance.course
+    ).all()
     with transaction.atomic():
         for enrolled in enrollments:
-            Notification.objects.create(recipient=enrolled.user, person=instance.course.teacher, course=instance.course,
-                                text=f"deleted {instance.title} lesson in the course")
-
+            Notification.objects.create(
+                recipient=enrolled.user,
+                person=instance.course.teacher,
+                course=instance.course,
+                text=f"deleted {instance.title} lesson in the course",
+            )

@@ -126,15 +126,18 @@
           "lessons": [
             {
               "title": "Why UX is a valuable business investment",
-              "deadline": "04/04/2025"
+              "deadline": "04/04/2025",
+              "html": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam a faucibus ipsum. Quisque neque felis, dignissim quis aliquet id, fermentum ac tellus. Donec bibendum nunc a orci porta, ut tristique arcu facilisis. Nunc non neque non enim lacinia faucibus. Nulla sit amet lorem lectus. Maecenas augue augue, sodales id congue et, posuere ut diam. Aliquam eleifend ipsum velit, eget euismod arcu tincidunt eu.\n\nAenean id diam felis. Nam pharetra mattis arcu, id sollicitudin nisl dapibus eu. Ut tempus arcu sagittis sagittis mattis. Nullam laoreet tincidunt quam eu gravida. Mauris egestas sit amet eros id pharetra. Aliquam ut aliquam enim. Morbi vehicula neque auctor purus vulputate aliquet. Quisque nisi nisi, venenatis ut sodales sit amet, volutpat et nulla. "
             },
             {
               "title": "The differences between key related concepts (for example, UX, UI, usability, user-centered design)",
-              "deadline": "08/04/2025"
+              "deadline": "08/04/2025",
+              "html": "Suspendisse urna tellus, cursus eu tristique at, lacinia vitae lacus. Proin viverra tristique tellus vel tristique. Quisque eget nulla mauris. Donec sagittis elementum lectus ac imperdiet. Maecenas massa leo, fermentum nec placerat et, tempus eu velit. Nam tincidunt ullamcorper sem laoreet vulputate. Vestibulum cursus risus quis fermentum fringilla. Nulla eu sodales eros. Proin viverra tincidunt magna et efficitur. Duis vehicula scelerisque luctus. Quisque consequat sollicitudin orci, ac porttitor est pretium feugiat. Maecenas maximus consectetur semper. "
             },
             {
               "title": "The importance of studying your users and what they need",
-              "deadline": "12/04/2025"
+              "deadline": "12/04/2025",
+              "html": "Etiam libero nulla, ornare non finibus in, malesuada sit amet augue. Pellentesque eget pulvinar sapien. Integer malesuada sit amet massa at ultricies. Ut ut purus rhoncus massa elementum consectetur. Pellentesque efficitur vulputate maximus. Cras consequat hendrerit nisi, ut dapibus justo hendrerit vitae. Nullam leo ipsum, iaculis ut malesuada vel, lacinia sed erat. Cras feugiat fringilla semper. Mauris eros ex, vehicula id quam eu, fermentum facilisis lacus. Phasellus ac venenatis urna. Duis dolor sem, porttitor quis mauris id, tincidunt tristique sapien. Phasellus commodo lorem eu lorem imperdiet vestibulum in volutpat elit. "
             }
           ]
         },
@@ -145,27 +148,33 @@
           "lessons": [
             {
               "title": "UX research methods (interviews, usability testing, analytics, and more)",
-              "deadline": "16/04/2025"
+              "deadline": "16/04/2025",
+              "html": "Aliquam nulla felis, gravida mollis odio sit amet, mattis tincidunt orci. Morbi eleifend iaculis metus eu dictum. Cras cursus orci id nulla malesuada fermentum. Ut viverra quam eget sollicitudin luctus. Proin quis auctor lacus. Cras tellus nisi, consequat nec convallis in, maximus ac quam. Aenean dictum lacus lacus, id eleifend turpis aliquet malesuada. Pellentesque vitae nulla mauris. Donec gravida tellus vel rutrum vehicula. "
             },
             {
               "title": "Attitudinal vs. behavioral methods",
-              "deadline": "19/04/2025"
+              "deadline": "19/04/2025",
+              "html": "In vel massa non nulla sollicitudin lobortis. Morbi cursus sagittis felis non maximus. Nullam rhoncus mi sapien, ac vulputate dolor varius nec. Suspendisse dui nulla, ornare id lacus nec, euismod eleifend nulla. Nulla non metus cursus, ornare erat sit amet, rutrum leo. Ut posuere libero sed sem lacinia bibendum. Ut quis hendrerit quam. Nullam tincidunt mauris eu massa lobortis, et ultrices augue eleifend. Sed vel lacus at leo egestas volutpat vel at justo. Mauris quis tincidunt lorem. Morbi maximus nec tellus et laoreet. Nunc dignissim dapibus ligula quis elementum. Suspendisse consequat libero justo, tincidunt interdum ante rhoncus vel. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Proin eu ante vel justo maximus iaculis non eu ipsum."
             },
             {
               "title": "When to use different types of research throughout the project lifecycle",
-              "deadline": "21/04/2025"
+              "deadline": "21/04/2025",
+              "html": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus finibus, tortor a egestas lacinia, magna ipsum aliquam elit, et molestie turpis elit ac orci. Donec malesuada vitae lectus sed suscipit. Nullam non aliquam dui. Nulla euismod porttitor nisl sit amet eleifend. Nullam sed felis at lectus interdum tristique. Etiam venenatis viverra orci, congue ultrices eros finibus at. Vestibulum vitae venenatis nulla. Aenean pellentesque lacus eu aliquet tempus. Phasellus vulputate laoreet erat vel facilisis. "
             },
             {
               "title": "How to conduct heuristic evaluations to quickly assess usability",
-              "deadline": "24/04/2025"
+              "deadline": "24/04/2025",
+              "html": "Sed ut risus eu mauris ornare auctor non vel nibh. Nam ut mattis lacus. Quisque et odio nulla. Sed molestie at libero eu tempus. Nam lobortis pretium sapien, sit amet rhoncus dui iaculis non. Suspendisse potenti. Donec blandit augue nulla, nec accumsan orci dictum et. Suspendisse malesuada dui ac egestas tempus. "
             },
             {
               "title": "The UX work involved in each layer of an interface",
-              "deadline": "26/04/2025"
+              "deadline": "26/04/2025",
+              "html": "Nam consequat neque ligula, sit amet efficitur urna maximus vel. Pellentesque pellentesque turpis velit, et vulputate mauris rhoncus sed. Donec ultrices a magna quis suscipit. Curabitur luctus tincidunt ornare. In eu ante lectus. Pellentesque placerat odio sed orci finibus dignissim. Donec tristique, ex eget congue pellentesque, libero risus tincidunt diam, at tristique arcu arcu vitae lacus. Cras non augue varius, porta lectus viverra, iaculis metus. Sed id purus vestibulum justo vestibulum lacinia ac sed urna. Ut viverra laoreet ligula, id ullamcorper sapien pellentesque ut. Phasellus turpis nibh, imperdiet eget varius fermentum, gravida id nunc. Integer sagittis mollis lectus, ac faucibus arcu venenatis eget. Phasellus pellentesque blandit eleifend. Morbi convallis porttitor eros eget imperdiet. "
             },
             {
               "title": "UX deliverables (like personas and journey maps)",
-              "deadline": "04/05/2025"
+              "deadline": "04/05/2025",
+              "html": "Sed placerat velit sit amet quam hendrerit, quis pretium lorem venenatis. Integer eget dui nibh. Phasellus et lorem erat. Vivamus nec blandit lectus. Nunc venenatis, lectus eget scelerisque varius, eros erat eleifend magna, a faucibus turpis felis non ipsum. Sed non dui sed quam vestibulum dignissim quis id libero. Vivamus elementum iaculis arcu vel luctus. Aenean sit amet tempor tortor, non pulvinar ante. Integer luctus tristique malesuada. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec rutrum ipsum ipsum. "
             }
           ]
         }
@@ -188,15 +197,13 @@
           "lessons": [
             {
               "title": "Overview of programming concepts",
-              "deadline": "03/05/2025"
+              "deadline": "03/05/2025",
+              "html": "Pellentesque vel fermentum felis. Quisque finibus enim sit amet sapien viverra mattis. Nulla elementum vel felis eget vestibulum. Praesent interdum lectus et arcu rhoncus laoreet. Cras hendrerit id dui eget iaculis. Vestibulum mattis maximus velit. Aenean quis egestas nisi, condimentum finibus orci. Cras pulvinar orci dolor, id ornare nisi cursus at. Donec facilisis ipsum non faucibus imperdiet. Quisque vel hendrerit nisi, non interdum tortor. Morbi id arcu velit. Sed ut risus nunc. Integer vitae pretium tellus. Cras elementum leo tortor, eget ornare erat varius vitae. Vivamus finibus dui eu purus rutrum, vitae mattis orci accumsan. Praesent vulputate semper erat, in volutpat felis rhoncus in. "
             },
             {
               "title": "Setting up your Python environment",
-              "deadline": "06/05/2025"
-            },
-            {
-              "title": "Your first Python program: “Hello, World!”",
-              "deadline": "10/05/2025"
+              "deadline": "06/05/2025",
+              "html": " Aenean in aliquam orci. Nam eros nisi, maximus ut nisi quis, iaculis feugiat orci. Integer quis aliquet nisi. Cras sodales ac tellus ac porttitor. Maecenas id maximus sapien, a dapibus lacus. Cras nec efficitur ipsum. Curabitur vehicula neque ac porttitor finibus. Etiam at turpis ut enim molestie commodo hendrerit iaculis quam. Nullam ut pharetra velit, quis hendrerit purus.\n\nAliquam erat volutpat. Mauris elementum lobortis bibendum. Duis at laoreet mi. Praesent laoreet ex quis vehicula mattis. Etiam id purus fermentum, fringilla ligula non, euismod odio. Phasellus laoreet, lacus non aliquet blandit, tortor dui tincidunt mi, a facilisis ex lorem non orci. Ut consectetur lorem lectus, vel congue urna feugiat sagittis. Duis a enim vitae enim tristique tincidunt. Quisque feugiat nunc sit amet mollis porta. Aenean semper malesuada lacus. Nulla facilisi. "
             }
           ]
         },
@@ -207,7 +214,9 @@
           "lessons": [
             {
               "title": "Understanding different data types: strings, integers, floats, and booleans",
-              "deadline": "14/05/2025"
+              "deadline": "14/05/2025",
+              "html": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus finibus, tortor a egestas lacinia, magna ipsum aliquam elit, et molestie turpis elit ac orci. Donec malesuada vitae lectus sed suscipit. Nullam non aliquam dui. Nulla euismod porttitor nisl sit amet eleifend. Nullam sed felis at lectus interdum tristique. Etiam venenatis viverra orci, congue ultrices eros finibus at. Vestibulum vitae venenatis nulla. Aenean pellentesque lacus eu aliquet tempus. Phasellus vulputate laoreet erat vel facilisis. "
+
             },
             {
               "title": "Working with variables: naming and using them effectively",
@@ -222,11 +231,13 @@
           "lessons": [
             {
               "title": "Making decisions with if statements",
-              "deadline": "20/05/2025"
+              "deadline": "20/05/2025",
+              "html": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In nec felis mi. In mattis mattis elementum. Vestibulum eleifend leo vitae accumsan convallis. Morbi lacinia eget neque vel faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sit amet finibus neque. Vestibulum vel velit nec risus lacinia egestas et in enim. In lobortis posuere suscipit. Maecenas nec nisi dapibus tortor pretium porttitor. Morbi ac tincidunt lacus, in finibus eros. Nunc magna massa, sodales non blandit finibus, bibendum at urna. Vivamus nec cursus nunc. Nunc ullamcorper neque a varius iaculis. Fusce dictum, neque vitae mattis faucibus, nibh arcu cursus ligula, sit amet porttitor libero velit in sem."
             },
             {
               "title": "Loops: for and while loops explained",
-              "deadline": "24/05/2025"
+              "deadline": "24/05/2025",
+              "html": "Nam consequat neque ligula, sit amet efficitur urna maximus vel. Pellentesque pellentesque turpis velit, et vulputate mauris rhoncus sed. Donec ultrices a magna quis suscipit. Curabitur luctus tincidunt ornare. In eu ante lectus. Pellentesque placerat odio sed orci finibus dignissim. Donec tristique, ex eget congue pellentesque, libero risus tincidunt diam, at tristique arcu arcu vitae lacus. Cras non augue varius, porta lectus viverra, iaculis metus. Sed id purus vestibulum justo vestibulum lacinia ac sed urna. Ut viverra laoreet ligula, id ullamcorper sapien pellentesque ut. Phasellus turpis nibh, imperdiet eget varius fermentum, gravida id nunc. Integer sagittis mollis lectus, ac faucibus arcu venenatis eget. Phasellus pellentesque blandit eleifend. Morbi convallis porttitor eros eget imperdiet. "
             }
           ]
         },
@@ -237,11 +248,14 @@
           "lessons": [
             {
               "title": "Defining and calling functions",
-              "deadline": "28/05/2025"
+              "deadline": "28/05/2025",
+              "html": "Pellentesque vel fermentum felis. Quisque finibus enim sit amet sapien viverra mattis. Nulla elementum vel felis eget vestibulum. Praesent interdum lectus et arcu rhoncus laoreet. Cras hendrerit id dui eget iaculis. Vestibulum mattis maximus velit. Aenean quis egestas nisi, condimentum finibus orci. Cras pulvinar orci dolor, id ornare nisi cursus at. Donec facilisis ipsum non faucibus imperdiet. Quisque vel hendrerit nisi, non interdum tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus finibus, tortor a egestas lacinia, magna ipsum aliquam elit, et molestie turpis elit ac orci. Donec malesuada vitae lectus sed suscipit. Nullam non aliquam dui. Nulla euismod porttitor nisl sit amet eleifend. Nullam sed felis at lectus interdum tristique. Etiam venenatis viverra orci, congue ultrices eros finibus at. Vestibulum vitae venenatis nulla. Aenean pellentesque lacus eu aliquet tempus. Phasellus vulputate laoreet erat vel facilisis. "
+
             },
             {
               "title": "Parameters and return values",
-              "deadline": "31/05/2025"
+              "deadline": "31/05/2025",
+              "html": "In vitae mi sit amet nisi malesuada ullamcorper sed non nisl. Proin ut nisl convallis, cursus neque vitae, fermentum justo. Nunc placerat commodo consequat. Donec mi nisl, fringilla et varius ut, fermentum eu quam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce lobortis viverra dui, a interdum ante eleifend nec. Proin rutrum sem et lectus tincidunt, non bibendum risus dictum. "
             }
           ]
         }
@@ -264,11 +278,13 @@
           "lessons": [
             {
               "title": "Lists, tuples, and dictionaries: when to use each",
-              "deadline": "26/04/2025"
+              "deadline": "26/04/2025",
+              "html": " Etiam finibus id erat vel luctus. Ut vel feugiat sem. Nullam gravida pulvinar arcu, et aliquam arcu cursus vitae. In placerat interdum tempor. Sed bibendum consectetur nulla. Nulla facilisi. Cras ac nulla rutrum, feugiat risus ut, congue urna. Fusce sed odio est. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum non tincidunt mauris, sed convallis turpis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur mollis libero vel malesuada tempus. Aenean a maximus urna. Mauris mattis pellentesque malesuada. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.\n\nPhasellus mattis justo id felis rhoncus tincidunt. Maecenas vel nisl lacinia, accumsan purus ut, feugiat diam. Nullam scelerisque eleifend vehicula. In a mollis nibh, id consectetur turpis."
             },
             {
               "title": "Manipulating data structures",
-              "deadline": "29/04/2025"
+              "deadline": "29/04/2025",
+              "html": "Donec sit amet risus eu mi finibus placerat luctus quis nisi. Aenean ultricies tellus id neque tincidunt, eu feugiat elit aliquam. Etiam sagittis pretium nunc eget suscipit. Sed nec nunc mauris. Vivamus sodales in massa vel volutpat. Quisque ullamcorper ex ac nunc egestas, posuere dapibus turpis mattis.\n\nDonec euismod vel ante consequat pretium. Nulla nec eros porttitor, mattis mi non, convallis elit. In id auctor enim."
             }
           ]
         },
@@ -280,11 +296,13 @@
           "lessons": [
             {
               "title": "Importing and using Python libraries",
-              "deadline": "01/05/2025"
+              "deadline": "01/05/2025",
+              "html": "Nullam scelerisque sodales ipsum, ut posuere augue scelerisque ac. Nulla ac mauris vel leo gravida dictum eu et diam. Curabitur bibendum dictum ante. Maecenas rhoncus est eu arcu tempus, quis tempus lorem facilisis. Maecenas volutpat semper mi sit amet efficitur. Suspendisse lacinia orci mi, eu semper ligula egestas eu. Duis feugiat lorem non varius elementum. Proin pharetra lectus nec justo pretium, ac scelerisque enim hendrerit. "
             },
             {
               "title": "Popular libraries: NumPy, pandas, and more",
-              "deadline": "06/05/2025"
+              "deadline": "06/05/2025",
+              "html": "Nunc vel orci turpis. Pellentesque massa leo, semper volutpat molestie et, semper dapibus massa. Curabitur facilisis nulla dignissim ex luctus hendrerit. Donec vehicula dapibus tristique. Suspendisse id luctus enim, non interdum tellus. Ut erat nulla, varius eu aliquet quis, egestas vel massa. Suspendisse potenti. Ut eu purus porta, pellentesque neque ac, aliquet nunc. Donec ac mauris eu lacus viverra sodales quis non ipsum. Suspendisse gravida pretium consectetur. Vestibulum ullamcorper magna et turpis congue, quis suscipit mi commodo. Sed vitae tortor vel justo posuere efficitur vitae quis elit. "
             }
           ]
         },
@@ -295,41 +313,13 @@
           "lessons": [
             {
               "title": "Reading from and writing to files",
-              "deadline": "08/05/2025"
+              "deadline": "08/05/2025",
+              "html": "Aenean lacinia ipsum risus, sed aliquam magna pharetra sit amet. Donec leo ex, gravida non sodales id, dignissim a neque. Curabitur dictum magna id lorem consectetur, id feugiat orci vehicula. Praesent semper est ac purus placerat efficitur egestas ut enim. Nullam tempor lacus nec libero lacinia, id efficitur lectus pharetra. Phasellus nec condimentum erat, at posuere diam. Quisque in scelerisque orci. Nunc neque dolor, finibus nec justo at, scelerisque rhoncus tortor. Curabitur eu augue tempor, accumsan arcu sit amet, dignissim sem. Phasellus finibus leo quis neque ullamcorper vulputate. "
             },
             {
               "title": "Working with CSV files",
-              "deadline": "13/05/2025"
-            }
-          ]
-        },
-        {
-          "title": "Error Handling and Debugging",
-          "description": "By the end of this topic, students will be able to:\n\n    Understand common types of errors in Python (syntax, runtime, and logic errors).\n\n    Apply error handling techniques using try, except, and finally.\n\n    Debug a small program by identifying and fixing errors.\n\n    Reflect on the debugging process and develop strategies for future coding challenges.\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "Common errors and how to fix them",
-              "deadline": "15/05/2025"
-            },
-            {
-              "title": "Using try/except blocks for error handling",
-              "deadline": "20/05/2025"
-            }
-          ]
-        },
-        {
-          "title": "Introduction to Object-Oriented Programming",
-          "description": "By the end of this topic, students will be able to:\n\n    Understand the fundamental concepts of Object-Oriented Programming (OOP) in Python.\n\n    Create simple classes and objects in Python.\n\n    Demonstrate the use of attributes and methods in their classes.\n\n    Apply OOP concepts to solve a basic programming problem.\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "Understanding classes and objects",
-              "deadline": "22/05/2025"
-            },
-            {
-              "title": "Creating your own classes",
-              "deadline": "27/05/2025"
+              "deadline": "13/05/2025",
+              "html": "Sed vel felis luctus, finibus ante nec, sodales diam. Donec lectus felis, luctus in nibh eu, varius tempus est. Maecenas eget augue dignissim, fermentum erat eu, elementum risus. Suspendisse quis vulputate orci, ac dignissim diam. Suspendisse vulputate venenatis rhoncus.\n\nMaecenas condimentum elit quam, at vestibulum elit convallis ac. Etiam mauris enim, fermentum quis imperdiet interdum, ultrices ut ipsum. Suspendisse mattis, eros in congue consequat, nunc eros gravida nulla, non dapibus odio dui pretium purus. Nam molestie nisi at facilisis gravida. Donec laoreet, ex a faucibus posuere, ex diam luctus dui, vel aliquam ante erat facilisis neque. Mauris eu lectus consequat, dictum velit eget, ornare orci. Maecenas porttitor cursus sagittis. "
             }
           ]
         },
@@ -340,151 +330,13 @@
           "lessons": [
             {
               "title": "Learn to handle data frames and series.",
-              "deadline": "29/05/2025"
+              "deadline": "29/05/2025",
+              "html": "Aliquam posuere enim id ex tempus, eu laoreet mauris dapibus. Vestibulum cursus est a ante egestas ultricies. In nec sem non nibh maximus aliquet at ac enim. Morbi et rutrum neque. Nullam vitae malesuada ligula, a tincidunt massa. Nam ac ultrices orci. "
             },
             {
               "title": "Real-world project: Analyze a dataset of your choice.",
-              "deadline": "03/06/2025"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "teacher": "sasha@long.com",
-      "is_active": true,
-      "photo": "bithinraj-mb-TcN2ucbpBQg-unsplash.jpg",
-      "title": "Rust - Basics",
-      "description": "Welcome to \"Rust - Basics,\" an introductory course designed to equip you with the foundational skills needed to navigate the world of Rust programming. Whether you’re a seasoned developer looking to expand your toolkit or a newcomer eager to dive into the realm of system programming, this course offers a supportive and engaging learning environment.\n\nIn this course, you will explore the core principles of Rust, a language celebrated for its performance and memory safety. Through a blend of interactive lessons and hands-on projects, you’ll learn about Rust’s unique features, such as ownership, borrowing, and lifetimes, which set it apart from other languages. These concepts may seem daunting at first, but fear not—our step-by-step approach will guide you through each topic, ensuring you gain confidence as you progress.\n\nImagine being able to write code that not only runs efficiently but also minimizes the risk of common bugs that can lead to crashes or unexpected behavior. That’s the power of Rust, and we’re here to help you harness it. You’ll engage in practical exercises, where you’ll build small projects that reinforce your learning and allow you to see the real-world applications of what you’ve studied.\n\nBy the end of this course, you will not only have a solid understanding of the Rust programming language but also the skills to tackle more complex projects with confidence. Join us on this exciting journey and discover how Rust can empower you to create robust, high-performance applications. Your adventure in programming awaits!",
-      "start_date": "17/02/2025",
-      "duration": 60,
-      "tags": ["Programming", "Beginner"],
-      "topics": [
-        {
-          "title": "Introduction to Rust",
-          "description": "By the end of this topic, students will be able to:\n\n    Identify the fundamental features and benefits of the Rust programming language.\n\n    Write a simple Rust program that demonstrates basic syntax and functionality.\n\n    Understand Rust's approach to memory safety and concurrency.\n\n    Discuss real-world applications of Rust in software development.\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "Overview of Rust: Why Rust?",
-              "deadline": "20/02/2025"
-            },
-            {
-              "title": "Setting up your environment (installing Rust and tools)",
-              "deadline": "22/02/2025"
-            },
-            {
-              "title": "Your first Rust program: “Hello, World!”",
-              "deadline": "01/03/2025"
-            }
-          ]
-        },
-        {
-          "title": "Variables and Data Types",
-          "description": "By the end of this topic, students will be able to:\n\n    Understand the concept of variables and data types in Rust.\n\n    Declare and initialize variables in Rust.\n\n    Differentiate between mutable and immutable variables.\n\n    Identify and use basic data types in Rust such as integers, floats, booleans, and strings.\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "Understanding variables, mutability, and data types",
-              "deadline": "04/03/2025"
-            },
-            {
-              "title": "Exploring scopes and shadowing",
-              "deadline": "08/03/2025"
-            }
-          ]
-        },
-        {
-          "title": "Control Flow",
-          "description": "By the end of this topic, students will be able to:\n\n    Understand and explain the different control flow constructs in Rust (if statements, loops, match).\n\n    Write simple Rust programs that utilize these control flow constructs effectively.\n\n    Analyze and debug control flow issues in provided Rust code snippets.\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "Conditional statements: if, else, and match",
-              "deadline": "11/03/2025"
-            },
-            {
-              "title": "Loops: for, while, and loop",
-              "deadline": "15/03/2025"
-            }
-          ]
-        },
-        {
-          "title": "Functions and Modules",
-          "description": "By the end of this topic, students will be able to:\n\n    Define and explain the purpose of functions and modules in Rust.\n\n    Create and call functions in Rust to perform specific tasks.\n\n    Organize code using modules to improve readability and maintainability.\n\n    Demonstrate the ability to leverage modules in a small Rust project.\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "Defining and calling functions",
-              "deadline": "18/03/2025"
-            },
-            {
-              "title": "Understanding ownership and borrowing",
-              "deadline": "20/03/2025"
-            },
-            {
-              "title": "Organizing code with modules",
-              "deadline": "23/03/2025"
-            }
-          ]
-        },
-        {
-          "title": "Collections and Error Handling",
-          "description": "By the end of this topic, students will be able to:\n\n    Identify and use various collection types in Rust, such as vectors, strings, and hash maps.\n\n    Understand and implement basic error handling in Rust using the Result and Option types.\n\n    Apply collections and error handling techniques in practical coding scenarios, demonstrating problem-solving skills.\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "Working with arrays, vectors, and hash maps",
-              "deadline": "25/03/2025"
-            },
-            {
-              "title": "Introduction to error handling with Result and Option types",
-              "deadline": "29/03/2025"
-            }
-          ]
-        },
-        {
-          "title": "Structs and Enums",
-          "description": "By the end of this topic, students will be able to:\n\n    Understand and explain the concepts of structs and enums in Rust.\n\n    Create and manipulate structs and enums to represent complex data types.\n\n    Apply their knowledge by developing a small project that utilizes both structs and enums.\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "Creating and using structs and enums",
-              "deadline": "01/04/2025"
-            },
-            {
-              "title": "Pattern matching with enums",
-              "deadline": "05/04/2025"
-            }
-          ]
-        },
-        {
-          "title": "Traits and Generics",
-          "description": "By the end of this topic, students will be able to:\n\n    Understand the concepts of traits and generics in Rust.\n\n    Implement traits to define shared behavior across different types.\n\n    Utilize generics to create flexible and reusable code.\n\n    Apply these concepts in a practical coding scenario.\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "Understanding traits and how they enable code reuse",
-              "deadline": "08/04/2025"
-            },
-            {
-              "title": "Exploring generics for more flexible functions and structs",
-              "deadline": "12/04/2025"
-            }
-          ]
-        },
-         {
-          "title": "Concurrency",
-          "description": "By the end of this topic, students will be able to:\n\n    Describe the fundamentals of concurrency in Rust programming.\n\n    Identify the advantages of using Rust for concurrent programming.\n\n    Implement basic concurrent tasks using Rust’s threading and ownership model.\n\n    Troubleshoot common issues related to concurrency in Rust.\n\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "Introduction to concurrency in Rust",
-              "deadline": "15/04/2025"
-            },
-            {
-              "title": "Exploring threads and message passing",
-              "deadline": "17/04/2025"
+              "deadline": "03/06/2025",
+              "html": "Aenean nec elit suscipit, pretium dolor scelerisque, luctus dolor. Maecenas quis dapibus mauris. Nam vehicula viverra consectetur. Curabitur gravida est a viverra euismod. Suspendisse aliquam ultricies massa, nec faucibus odio egestas in. Suspendisse hendrerit orci cursus semper blandit. Morbi tincidunt rhoncus lacus, sit amet tempus nunc. Fusce eu luctus dui, vel viverra orci. Quisque rhoncus magna mollis neque molestie dignissim. "
             }
           ]
         }
@@ -512,10 +364,6 @@
             {
               "title": "Installing Unity and setting up your first project",
               "deadline": "20/03/2025"
-            },
-            {
-              "title": "Familiarizing yourself with the Unity interface",
-              "deadline": "23/03/2025"
             }
           ]
         },
@@ -531,10 +379,6 @@
             {
               "title": "Exploring 2D art styles and inspirations",
               "deadline": "27/03/2025"
-            },
-            {
-              "title": "Basics of sprite creation and manipulation",
-              "deadline": "29/03/2025"
             }
           ]
         },
@@ -550,10 +394,6 @@
             {
               "title": "Importing and using sprites",
               "deadline": "03/04/2025"
-            },
-            {
-              "title": "Setting up the camera and game view",
-              "deadline": "05/04/2025"
             }
           ]
         },
@@ -571,93 +411,12 @@
               "deadline": "12/04/2025"
             }
           ]
-        },
-        {
-          "title": "Enhancing Your Game with Animation",
-          "description": "By the end of this topic, students will be able to:\n\n    Understand the basics of animation within Unity and its importance in game development.\n\n    Create and import animated assets into Unity.\n\n    Implement simple animations using Unity's Animator Controller.\n\n    Recognize how animation enhances player experience and game storytelling.\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "Introduction to Unity's animation tools",
-              "deadline": "15/04/2025"
-            },
-            {
-              "title": "Creating animations for characters and objects",
-              "deadline": "17/04/2025"
-            },
-            {
-              "title": "Using the Animator to trigger animations",
-              "deadline": "19/04/2025"
-            }
-          ]
-        },
-        {
-          "title": "Sound and Music in Games",
-          "description": "By the end of this topic, students will be able to:\n\n    Understand the role of sound and music in enhancing the gaming experience.\n\n    Learn how to implement sound effects and background music in Unity.\n\n    Analyze the impact of audio on player engagement and emotional response.\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "The role of sound in creating atmosphere",
-              "deadline": "22/04/2025"
-            },
-            {
-              "title": "Adding sound effects and background music",
-              "deadline": "24/04/2025"
-            },
-            {
-              "title": "Tips for sourcing and creating audio for your game",
-              "deadline": "26/04/2025"
-            }
-          ]
-        },
-        {
-          "title": "Building Levels and Game Design",
-          "description": "By the end of this topic, students will be able to:\n\n    Understand the fundamental concepts of level design in Unity.\n\n    Create a basic game level using Unity, implementing various design elements.\n\n    Analyze and critique level designs, identifying strengths and areas for improvement.\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "Level design principles and best practices",
-              "deadline": "29/05/2025"
-            },
-            {
-              "title": "Using tilemaps to create expansive environments",
-              "deadline": "01/05/2025"
-            },
-            {
-              "title": "Playtesting and refining your levels",
-              "deadline": "03/05/2025"
-            }
-          ]
-        },
-        {
-          "title": "Polish and Debugging",
-          "description": "By the end of this topic, students will be able to:\n\n    Identify common issues in Unity projects and apply debugging techniques to resolve them.\n\n    Implement best practices for polishing a game, including optimizing performance and enhancing user experience.\n\n    Collaborate effectively with peers to troubleshoot and improve their projects.\n\n",
-          "n_hours": 16,
-          "lessons": [
-            {
-              "title": "Techniques for debugging common issues",
-              "deadline": "08/05/2025"
-            },
-            {
-              "title": "Optimizing your game for performance",
-              "deadline": "13/05/2025"
-            },
-            {
-              "title": "Getting feedback and iterating on your designs",
-              "deadline": "17/05/2025"
-            }
-          ]
         }
       ]
     }
   ],
   "enrollments": [
     {
-      "user": "sunil@barratt.com",
-      "course": "Building 2D world in Unity",
-      "status": "finished"
-    },
-    {
       "user": "roland@watkins.com",
       "course": "Building 2D world in Unity",
       "status": "started"
@@ -676,68 +435,6 @@
       "user": "anne@cross.com",
       "course": "Building 2D world in Unity",
       "status": "started"
-    },
-
-    {
-      "user": "anne@cross.com",
-      "course": "Rust - Basics",
-      "status": "started"
-    },
-    {
-      "user": "patrick@chaplin.com",
-      "course": "Rust - Basics",
-      "status": "started"
-    },
-    {
-      "user": "susannah@rhodes.com",
-      "course": "Rust - Basics",
-      "status": "started"
-    },
-    {
-      "user": "candice@skinner.com",
-      "course": "Rust - Basics",
-      "status": "started"
-    },
-    {
-      "user": "roland@watkins.com",
-      "course": "Rust - Basics",
-      "status": "started"
-    },
-    {
-      "user": "holly@richards.com",
-      "course": "Rust - Basics",
-      "status": "started"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Rust - Basics",
-      "status": "started"
-    },
-    {
-      "user":"oliver@fish.com",
-      "course": "Rust - Basics",
-      "status": "started"
-    },
-
-    {
-      "user": "sunil@barratt.com",
-      "course": "Beginner's guide to UX/UI",
-      "status": "finished"
-    },
-    {
-      "user": "anne@cross.com",
-      "course": "Beginner's guide to UX/UI",
-      "status": "finished"
-    },
-    {
-      "user": "patrick@chaplin.com",
-      "course": "Beginner's guide to UX/UI",
-      "status": "finished"
-    },
-    {
-      "user": "susannah@rhodes.com",
-      "course": "Beginner's guide to UX/UI",
-      "status": "finished"
     },
     {
       "user": "candice@skinner.com",
@@ -745,74 +442,206 @@
       "status": "started"
     },
     {
-      "user": "roland@watkins.com",
-      "course": "Beginner's guide to UX/UI",
+      "user": "sunil@barratt.com",
+      "course": "Introduction to Python",
       "status": "started"
     },
     {
-      "user": "holly@richards.com",
-      "course": "Beginner's guide to UX/UI",
+      "user": "susannah@rhodes.com",
+      "course": "Introduction to Python",
       "status": "started"
+    },
+        {
+          "user": "roland@watkins.com",
+          "course": "Introduction to Python",
+          "status": "finished"
+        },
+            {
+      "user": "sunil@barratt.com",
+      "course": "Building 2D world in Unity",
+      "status": "finished"
     },
     {
-      "user": "lee@heath.com",
+      "user": "susannah@rhodes.com",
       "course": "Beginner's guide to UX/UI",
-      "status": "started"
+      "status": "finished"
     },
-    {
-      "user":"oliver@fish.com",
-      "course": "Beginner's guide to UX/UI",
-      "status": "started"
-    },
-
-
     {
       "user": "pearl@woolley.com",
       "course": "Introduction to Python",
       "status": "finished"
+    }
+  ],
+  "course_progress": [
+    {
+      "user": "susannah@rhodes.com",
+      "course": "Beginner's guide to UX/UI",
+       "item": "Why UX is a valuable business investment"
+    },
+    {
+      "user": "susannah@rhodes.com",
+      "course": "Beginner's guide to UX/UI",
+       "item": "The differences between key related concepts (for example, UX, UI, usability, user-centered design)"
+    },
+    {
+      "user": "susannah@rhodes.com",
+      "course": "Beginner's guide to UX/UI",
+       "item": "The importance of studying your users and what they need"
+    },
+    {
+      "user": "susannah@rhodes.com",
+      "course": "Beginner's guide to UX/UI",
+       "item": "UX research methods (interviews, usability testing, analytics, and more)"
+    },
+    {
+      "user": "susannah@rhodes.com",
+      "course": "Beginner's guide to UX/UI",
+       "item": "Attitudinal vs. behavioral methods"
+    },
+    {
+      "user": "susannah@rhodes.com",
+      "course": "Beginner's guide to UX/UI",
+       "item": "When to use different types of research throughout the project lifecycle"
+    },
+    {
+      "user": "susannah@rhodes.com",
+      "course": "Beginner's guide to UX/UI",
+       "item": "How to conduct heuristic evaluations to quickly assess usability"
+    },
+    {
+      "user": "susannah@rhodes.com",
+      "course": "Beginner's guide to UX/UI",
+       "item": "The UX work involved in each layer of an interface"
+    },
+    {
+      "user": "susannah@rhodes.com",
+      "course": "Beginner's guide to UX/UI",
+       "item": "UX deliverables (like personas and journey maps)"
+    },
+
+    {
+      "user": "sunil@barratt.com",
+      "course": "Building 2D world in Unity",
+      "item": "Overview of Unity and its capabilities"
+    },
+     {
+      "user": "sunil@barratt.com",
+      "course": "Building 2D world in Unity",
+      "item": "Installing Unity and setting up your first project"
+    },
+     {
+      "user": "sunil@barratt.com",
+      "course": "Building 2D world in Unity",
+      "item": "What makes a great 2D game?"
+    },
+     {
+      "user": "sunil@barratt.com",
+      "course": "Building 2D world in Unity",
+      "item": "Exploring 2D art styles and inspirations"
+    },
+     {
+      "user": "sunil@barratt.com",
+      "course": "Building 2D world in Unity",
+      "item": "Building a basic game level"
+    },
+     {
+      "user": "sunil@barratt.com",
+      "course": "Building 2D world in Unity",
+      "item": "Importing and using sprites"
+    },
+     {
+      "user": "sunil@barratt.com",
+      "course": "Building 2D world in Unity",
+      "item": "Understanding game physics and colliders"
+    },
+     {
+      "user": "sunil@barratt.com",
+      "course": "Building 2D world in Unity",
+      "item": "Implementing player controls and movements"
+    },
+
+    {
+      "user": "pearl@woolley.com",
+      "course": "Introduction to Python",
+      "item": "Overview of programming concepts"
+    },
+    {
+      "user": "pearl@woolley.com",
+      "course": "Introduction to Python",
+      "item": "Setting up your Python environment"
+    },
+    {
+      "user": "pearl@woolley.com",
+      "course": "Introduction to Python",
+      "item": "Understanding different data types: strings, integers, floats, and booleans"
+    },
+    {
+      "user": "pearl@woolley.com",
+      "course": "Introduction to Python",
+      "item":  "Working with variables: naming and using them effectively"
+    },
+    {
+      "user": "pearl@woolley.com",
+      "course": "Introduction to Python",
+      "item":  "Making decisions with if statements"
+    },
+    {
+      "user": "pearl@woolley.com",
+      "course": "Introduction to Python",
+      "item":  "Loops: for and while loops explained"
+    },
+    {
+      "user": "pearl@woolley.com",
+      "course": "Introduction to Python",
+      "item":  "Defining and calling functions"
+    },
+    {
+      "user": "pearl@woolley.com",
+      "course": "Introduction to Python",
+      "item":  "Parameters and return values"
+    },
+
+    {
+      "user": "roland@watkins.com",
+      "course": "Introduction to Python",
+      "item": "Overview of programming concepts"
     },
     {
       "user": "roland@watkins.com",
       "course": "Introduction to Python",
-      "status": "finished"
+      "item": "Setting up your Python environment"
     },
     {
-      "user": "holly@richards.com",
+      "user": "roland@watkins.com",
       "course": "Introduction to Python",
-      "status": "finished"
+      "item": "Understanding different data types: strings, integers, floats, and booleans"
     },
     {
-      "user": "lee@heath.com",
+      "user": "roland@watkins.com",
       "course": "Introduction to Python",
-      "status": "finished"
+      "item":  "Working with variables: naming and using them effectively"
     },
     {
-      "user":"oliver@fish.com",
+      "user": "roland@watkins.com",
       "course": "Introduction to Python",
-      "status": "finished"
+      "item":  "Making decisions with if statements"
     },
     {
-      "user": "sunil@barratt.com",
+      "user": "roland@watkins.com",
       "course": "Introduction to Python",
-      "status": "started"
+      "item":  "Loops: for and while loops explained"
     },
     {
-      "user": "anne@cross.com",
+      "user": "roland@watkins.com",
       "course": "Introduction to Python",
-      "status": "started"
+      "item":  "Defining and calling functions"
     },
     {
-      "user": "patrick@chaplin.com",
+      "user": "roland@watkins.com",
       "course": "Introduction to Python",
-      "status": "started"
+      "item":  "Parameters and return values"
     },
-    {
-      "user": "susannah@rhodes.com",
-      "course": "Introduction to Python",
-      "status": "started"
-    }
-  ],
-  "course_progress": [
+
     {
       "user": "sunil@barratt.com",
       "course": "Introduction to Python",
@@ -822,11 +651,6 @@
       "user": "sunil@barratt.com",
       "course": "Introduction to Python",
       "item": "Setting up your Python environment"
-    },
-    {
-      "user": "sunil@barratt.com",
-      "course": "Introduction to Python",
-      "item": "Your first Python program: “Hello, World!”"
     },
     {
       "user": "sunil@barratt.com",
@@ -834,26 +658,6 @@
       "item":  "Understanding different data types: strings, integers, floats, and booleans"
     },
     {
-      "user": "anne@cross.com",
-      "course": "Introduction to Python",
-      "item": "Overview of programming concepts"
-    },
-    {
-      "user": "patrick@chaplin.com",
-      "course": "Introduction to Python",
-      "item": "Overview of programming concepts"
-    },
-    {
-      "user": "patrick@chaplin.com",
-      "course": "Introduction to Python",
-      "item": "Setting up your Python environment"
-    },
-    {
-      "user": "patrick@chaplin.com",
-      "course": "Introduction to Python",
-      "item": "Your first Python program: “Hello, World!”"
-    },
-    {
       "user": "susannah@rhodes.com",
       "course": "Introduction to Python",
       "item": "Overview of programming concepts"
@@ -862,11 +666,6 @@
       "user": "susannah@rhodes.com",
       "course": "Introduction to Python",
       "item": "Setting up your Python environment"
-    },
-    {
-      "user": "susannah@rhodes.com",
-      "course": "Introduction to Python",
-      "item": "Your first Python program: “Hello, World!”"
     },
     {
       "user": "susannah@rhodes.com",
@@ -895,87 +694,6 @@
     },
     {
       "user": "roland@watkins.com",
-      "course": "Beginner's guide to UX/UI",
-       "item": "Why UX is a valuable business investment"
-    },
-    {
-      "user": "roland@watkins.com",
-      "course": "Beginner's guide to UX/UI",
-      "item": "The differences between key related concepts (for example, UX, UI, usability, user-centered design)"
-    },
-    {
-      "user": "roland@watkins.com",
-      "course": "Beginner's guide to UX/UI",
-      "item": "The importance of studying your users and what they need"
-    },
-    {
-      "user": "roland@watkins.com",
-      "course": "Beginner's guide to UX/UI",
-      "item": "UX research methods (interviews, usability testing, analytics, and more)"
-    },
-
-    {
-      "user": "holly@richards.com",
-      "course": "Beginner's guide to UX/UI",
-       "item": "Why UX is a valuable business investment"
-    },
-    {
-      "user": "holly@richards.com",
-      "course": "Beginner's guide to UX/UI",
-      "item": "The differences between key related concepts (for example, UX, UI, usability, user-centered design)"
-    },
-    {
-      "user": "holly@richards.com",
-      "course": "Beginner's guide to UX/UI",
-      "item": "The importance of studying your users and what they need"
-    },
-    {
-      "user": "holly@richards.com",
-      "course": "Beginner's guide to UX/UI",
-      "item": "UX research methods (interviews, usability testing, analytics, and more)"
-    },
-    {
-      "user": "holly@richards.com",
-      "course": "Beginner's guide to UX/UI",
-      "item": "Attitudinal vs. behavioral methods"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Beginner's guide to UX/UI",
-       "item": "Why UX is a valuable business investment"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Beginner's guide to UX/UI",
-      "item": "The differences between key related concepts (for example, UX, UI, usability, user-centered design)"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Beginner's guide to UX/UI",
-      "item": "The importance of studying your users and what they need"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Beginner's guide to UX/UI",
-      "item": "UX research methods (interviews, usability testing, analytics, and more)"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Beginner's guide to UX/UI",
-      "item": "Attitudinal vs. behavioral methods"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Beginner's guide to UX/UI",
-      "item": "When to use different types of research throughout the project lifecycle"
-    },
-    {
-      "user":"oliver@fish.com",
-      "course": "Beginner's guide to UX/UI",
-      "item": "Why UX is a valuable business investment"
-    },
-    {
-      "user": "roland@watkins.com",
       "course": "Building 2D world in Unity",
        "item": "Overview of Unity and its capabilities"
     },
@@ -993,11 +711,6 @@
       "user": "holly@richards.com",
       "course": "Building 2D world in Unity",
        "item": "Installing Unity and setting up your first project"
-    },
-    {
-      "user": "holly@richards.com",
-      "course": "Building 2D world in Unity",
-      "item": "Familiarizing yourself with the Unity interface"
     },
     {
       "user": "holly@richards.com",
@@ -1005,11 +718,6 @@
       "item": "What makes a great 2D game?"
     },
     {
-      "user": "lee@heath.com",
-      "course": "Building 2D world in Unity",
-      "item": "Overview of Unity and its capabilities"
-    },
-    {
       "user": "anne@cross.com",
       "course": "Building 2D world in Unity",
        "item": "Overview of Unity and its capabilities"
@@ -1018,11 +726,6 @@
       "user": "anne@cross.com",
       "course": "Building 2D world in Unity",
        "item": "Installing Unity and setting up your first project"
-    },
-    {
-      "user": "anne@cross.com",
-      "course": "Building 2D world in Unity",
-      "item": "Familiarizing yourself with the Unity interface"
     },
     {
       "user": "anne@cross.com",
@@ -1033,122 +736,6 @@
       "user": "anne@cross.com",
       "course": "Building 2D world in Unity",
       "item": "Exploring 2D art styles and inspirations"
-    },
-    {
-      "user": "anne@cross.com",
-      "course": "Rust - Basics",
-      "item": "Overview of Rust: Why Rust?"
-    },
-    {
-      "user": "anne@cross.com",
-      "course": "Rust - Basics",
-      "item": "Setting up your environment (installing Rust and tools)"
-    },
-    {
-      "user": "anne@cross.com",
-      "course": "Rust - Basics",
-      "item": "Your first Rust program: “Hello, World!”"
-    },
-    {
-      "user": "anne@cross.com",
-      "course": "Rust - Basics",
-      "item": "Understanding variables, mutability, and data types"
-    },
-    {
-      "user": "anne@cross.com",
-      "course": "Rust - Basics",
-      "item": "Exploring scopes and shadowing"
-    },
-    {
-      "user": "patrick@chaplin.com",
-      "course": "Rust - Basics",
-      "item": "Overview of Rust: Why Rust?"
-    },
-    {
-      "user": "patrick@chaplin.com",
-      "course": "Rust - Basics",
-      "item": "Setting up your environment (installing Rust and tools)"
-    },
-{
-      "user": "susannah@rhodes.com",
-      "course": "Rust - Basics",
-      "item": "Overview of Rust: Why Rust?"
-    },
-    {
-      "user": "susannah@rhodes.com",
-      "course": "Rust - Basics",
-      "item": "Setting up your environment (installing Rust and tools)"
-    },
-    {
-      "user": "susannah@rhodes.com",
-      "course": "Rust - Basics",
-      "item": "Your first Rust program: “Hello, World!”"
-    },
-    {
-      "user": "susannah@rhodes.com",
-      "course": "Rust - Basics",
-      "item": "Understanding variables, mutability, and data types"
-    },
-
-    {
-      "user": "candice@skinner.com",
-      "course": "Rust - Basics",
-      "item": "Overview of Rust: Why Rust?"
-    },
-    {
-      "user": "candice@skinner.com",
-      "course": "Rust - Basics",
-      "item": "Setting up your environment (installing Rust and tools)"
-    },
-    {
-      "user": "candice@skinner.com",
-      "course": "Rust - Basics",
-      "item": "Your first Rust program: “Hello, World!”"
-    },
-    {
-      "user": "candice@skinner.com",
-      "course": "Rust - Basics",
-      "item": "Understanding variables, mutability, and data types"
-    },
-    {
-      "user": "candice@skinner.com",
-      "course": "Rust - Basics",
-      "item": "Exploring scopes and shadowing"
-    },
-    {
-      "user": "candice@skinner.com",
-      "course": "Rust - Basics",
-      "item": "Conditional statements: if, else, and match"
-    },
-    {
-      "user": "candice@skinner.com",
-      "course": "Rust - Basics",
-      "item":  "Loops: for, while, and loop"
-    },
-    {
-      "user": "candice@skinner.com",
-      "course": "Rust - Basics",
-      "item": "Defining and calling functions"
-    },
-    {
-      "user": "roland@watkins.com",
-      "course": "Rust - Basics",
-      "item": "Overview of Rust: Why Rust?"
-    },
-    {
-      "user": "holly@richards.com",
-      "course": "Rust - Basics",
-       "item": "Overview of Rust: Why Rust?"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Rust - Basics",
-      "item": "Overview of Rust: Why Rust?"
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Rust - Basics",
-      "item": "Setting up your environment (installing Rust and tools)"
     }
   ],
   "feedback": [
@@ -1163,42 +750,6 @@
       "course": "Introduction to Python",
       "text": "\"Introduction to Python\" is a comprehensive and user-friendly course that provides a solid foundation in one of the most popular programming languages today. The instructor does a great job of breaking down complex concepts into easy-to-understand explanations, making it perfect for beginners. ",
       "rating": 4
-    },
-    {
-      "user": "holly@richards.com",
-      "course": "Introduction to Python",
-      "text": "This course is a fantastic starting point for anyone looking to dive into the world of programming with Python. Highly recommended!",
-      "rating": 4
-    },
-    {
-      "user": "lee@heath.com",
-      "course": "Introduction to Python",
-      "text": "As someone who was always intimidated by the world of programming, I am thrilled to say that \"Introduction to Python\" has been a fantastic gateway into coding! From the moment I started this course, I felt welcomed and engaged—like I was sitting in a cozy coffee shop learning from a knowledgeable friend rather than hitting a wall of jargon.",
-      "rating": 5
-    },
-    {
-      "user":"oliver@fish.com",
-      "course": "Introduction to Python",
-      "text": "What I loved most were the real-world examples sprinkled throughout the lessons. They made abstract concepts come alive and illustrated how Python can solve everyday challenges. Whether it was data analysis for a small business, automating tedious tasks, or even dabbling in web development, everything felt relevant and applicable.",
-      "rating": 5
-    },
-    {
-      "user": "sunil@barratt.com",
-      "course": "Beginner's guide to UX/UI",
-      "text": "Having recently delved into the world of UX/UI design, I found this beginner's guide to be incredibly helpful in demystifying the complex world of user experience and user interface. The step-by-step approach taken in this guide made it easy for me to grasp key concepts and techniques.",
-      "rating": 3
-    },
-    {
-      "user": "anne@cross.com",
-      "course": "Beginner's guide to UX/UI",
-      "text": "In this course, the explanations were clear and concise, making it easy for a newbie like myself to follow along and apply what I learned to real-life projects. The practical examples and case studies provided further solidified my understanding of how UX/UI design works and its importance in creating user-friendly digital experiences.",
-      "rating": 5
-    },
-    {
-      "user": "patrick@chaplin.com",
-      "course": "Beginner's guide to UX/UI",
-      "text": " I highly recommend this guide to anyone looking to break into the field of UX/UI design. It's a great starting point for beginners like me and has equipped me with the knowledge and skills needed to start creating engaging and intuitive designs.",
-      "rating": 5
     },
     {
       "user": "susannah@rhodes.com",

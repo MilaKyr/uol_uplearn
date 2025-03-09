@@ -6,14 +6,16 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('elearning', '0001_initial'),
-    ]
+    dependencies = [("elearning", "0001_initial")]
 
     operations = [
         migrations.AlterField(
-            model_name='feedback',
-            name='enrollment',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='feedback', to='elearning.courseenrollment'),
-        ),
+            model_name="feedback",
+            name="enrollment",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="feedback",
+                to="elearning.courseenrollment",
+            ),
+        )
     ]

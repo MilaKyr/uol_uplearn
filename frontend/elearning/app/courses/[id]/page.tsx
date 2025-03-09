@@ -29,7 +29,7 @@ export default function Course() {
   const user = getUser();
   const token = getToken();
 
-  const { sendJsonMessage, lastJsonMessage } = useWebSocket(`${process.env.NEXT_PUBLIC_WS_ADDRESS}/ws/notify/${user.id}/?token=${token}`,
+  const { sendJsonMessage, lastJsonMessage } = useWebSocket(`${process.env.NEXT_PUBLIC_WS_ADDRESS}/ws/notify?token=${token}`,
     {
       share: true,
       shouldReconnect: () => true,

@@ -1,3 +1,6 @@
+""" Code inspired by the series of Youtube video 'Code with Stein'
+ Link: https://www.youtube.com/watch?v=AnhKSBTWCWc&list=PLpyspNLjzwBnP-906FBRP5qzB4YXjMvnT
+ """
 from django.contrib.auth.models import AnonymousUser
 from channels.db import database_sync_to_async
 from channels.middleware import BaseMiddleware
@@ -6,28 +9,24 @@ from django.db import close_old_connections
 from rest_framework_simplejwt.tokens import AccessToken
 from elearning.models import User
 
+
 @database_sync_to_async
 def get_user(token_key):
     try:
         token = AccessToken(token_key)
-        user_id = token.payload['user_id']
+        user_id = token.payload["user_id"]
         return User.objects.get(id=user_id)
     except Exception as e:
         return AnonymousUser
 
 
 class TokenAuthMiddleware(BaseMiddleware):
-
     def __init__(self, inner):
         self.inner = inner
 
     async def __call__(self, scope, receive, send):
         close_old_connections()
-        if 'query_string' in scope:
-            query = dict((x.split('=') for x in scope['query_string'].decode().split('&')))
-            token_key = query.get('token')
-            scope['user'] = await get_user(token_key)
-            return await super().__call__(scope, receive, send)
+        query = dict((x.split("=") for x in scope["query_string"].decode().split("&")))
+        token_key = query.get("token")
+        scope["user"] = await get_user(token_key)
         return await super().__call__(scope, receive, send)
-
-

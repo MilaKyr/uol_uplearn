@@ -5,17 +5,15 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('elearning', '0002_alter_feedback_enrollment'),
-    ]
+    dependencies = [("elearning", "0002_alter_feedback_enrollment")]
 
     operations = [
         migrations.AddField(
-            model_name='courseenrollment',
-            name='done_lessons',
-            field=models.ManyToManyField(related_name='students', to='elearning.lesson'),
+            model_name="courseenrollment",
+            name="done_lessons",
+            field=models.ManyToManyField(
+                related_name="students", to="elearning.lesson"
+            ),
         ),
-        migrations.DeleteModel(
-            name='CourseProgress',
-        ),
+        migrations.DeleteModel(name="CourseProgress"),
     ]

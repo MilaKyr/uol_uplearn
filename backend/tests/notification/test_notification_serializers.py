@@ -3,6 +3,7 @@ import pytest
 from notifications.models import Notification
 from notifications.serializers import NotificationSeenSerializer
 
+
 @pytest.mark.django_db
 def test_notifications_seen_serializer(notification):
     assert Notification.objects.count() == 1

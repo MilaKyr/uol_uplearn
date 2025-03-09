@@ -21,6 +21,10 @@ create-super-user:
 load:
 	python ./scripts/import_data.py
 
+locust-ui:
+	locust -f locustfile.py
+
+
 run:
 	python manage.py runserver --insecure
 

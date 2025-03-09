@@ -6,13 +6,11 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('elearning', '0003_courseenrollment_done_lessons_delete_courseprogress'),
+        ("elearning", "0003_courseenrollment_done_lessons_delete_courseprogress")
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='keyholder',
-            name='token',
-            field=models.UUIDField(),
-        ),
+            model_name="keyholder", name="token", field=models.UUIDField()
+        )
     ]
