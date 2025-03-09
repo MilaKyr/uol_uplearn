@@ -45,7 +45,7 @@ export default function TeacherOwner(props: { user: HomeData }) {
                     <TeacherCourseTable onCourseClick={onCourseClick} courses={props.user.courses} />
                 ) : (
                     <Group justify="center">
-                        <Button component={Link} href={{ pathname: `/home/${user.user.id}`, query: { selected: 'addCourse' } }} w={'50%'} variant="outline" color="teal" >
+                        <Button component={Link} href={{ pathname: `/home/${user.id}`, query: { selected: 'addCourse' } }} w={'50%'} variant="outline" color="teal" >
                             <Group align="flex-start" gap={10}>
                                 <IconPlus />
                                 <Text>Create your first course!</Text>

@@ -17,8 +17,8 @@ prepare_env()
 from seeding.fill_db import fill_database
 
 if __name__ == "__main__":
-    # try:
+    try:
         fill_database()
-    # except BaseException as e:
-    #     logging.error(f"Unexpected error: {e}")
-    #     exit(1)
+    except BaseException as e:
+        logging.error(f"Unexpected error: {e}")
+        exit(1)

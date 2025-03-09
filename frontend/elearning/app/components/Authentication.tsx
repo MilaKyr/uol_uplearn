@@ -80,7 +80,12 @@ export function Authentication(props: {setAuth: (token: string) => void}) {
       if (type === "register") {
         // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         Object.entries(response as { key: string; error: any }).forEach(([key, error]) => {
-          form.setFieldError(key, error.join(" "));
+          if (typeof error === "string") {
+            form.setFieldError(key, error);
+          } else {
+            form.setFieldError(key, error.join(" "));
+          }
+          
         });
       } else {
          // eslint-disable-next-line  @typescript-eslint/no-explicit-any
@@ -166,7 +171,7 @@ export function Authentication(props: {setAuth: (token: string) => void}) {
               label="Email"
               placeholder="hello@uplearn.com"
               {...form.getInputProps('email')}
-              error={form.errors.email && 'Invalid email'}
+              error={form.errors.email}
               radius="md"
             />
 

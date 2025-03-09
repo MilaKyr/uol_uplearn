@@ -359,8 +359,9 @@ export default function CourseEdit() {
 
             {
               current === "main" && course ? <CourseMain course={course} updateForm={updateForm} courseForm={courseForm} /> :
-                current === "topic" && topicId && course ? <TopicMain id={topicId} courseId={course?.id} /> :
+                current === "topic" && topicId && course ? <TopicMain onDelete={()=>setCurrent("main")} id={topicId} courseId={course?.id} /> :
                   (current === "lesson" && editor && lessonId && course) ? <LessonMain
+                    selecteTopic={clickTopic}
                     id={lessonId}
                     courseId={course?.id}
                     editor={editor} /> :

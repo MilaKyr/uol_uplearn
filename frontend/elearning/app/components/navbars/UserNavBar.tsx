@@ -119,7 +119,7 @@ const UserNavbarSearch = (props: {
       }     
     }
     const inbox = await getInbox();
-    const appLinks = data.role === "student" ? studentlinks : teacherlinks;
+    const appLinks = data.user.role === "student" ? studentlinks : teacherlinks;
     appLinks[0]["unseen"] = inbox.new_notifications
     appLinks[1]["unseen"] = inbox.new_messages
     setLinks(appLinks);

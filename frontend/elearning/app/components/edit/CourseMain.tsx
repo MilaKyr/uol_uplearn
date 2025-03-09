@@ -12,6 +12,8 @@ import { useDisclosure } from '@mantine/hooks';
 import { CourseEditData, TagData } from "@/app/types";
 import { notifications } from "@mantine/notifications";
 import {  UseFormReturnType } from '@mantine/form';
+import { getUser } from "@/app/actions/getAuth";
+
 
 export default function CourseMain(props: { 
   course: CourseEditData , 
@@ -21,6 +23,7 @@ export default function CourseMain(props: {
   const [active, setActive] = React.useState(props.course?.is_active);
   const [opened, { open, close }] = useDisclosure(false);
   const router = useRouter();
+  const user = getUser()
 
   const toggleActive = async () => {
     const token = window.sessionStorage.getItem("jwt");
@@ -72,7 +75,7 @@ export default function CourseMain(props: {
     const parsedToken = JSON.parse(token);
     // Validate the token by making an API call
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/${props.course?.id}/`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}/api/courses/edit/${props.course?.id}/`, {
         headers: {
           Authorization: `Bearer ${parsedToken.access}`,
         },
@@ -100,7 +103,7 @@ export default function CourseMain(props: {
         icon: <IconCircleCheck />,
         autoClose: 5000,
       })
-      router.push('/home')
+      router.push(`/home/${user.id}`)
     } catch (error) {
       console.error(error)
     }

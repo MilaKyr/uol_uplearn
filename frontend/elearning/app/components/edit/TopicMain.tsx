@@ -8,7 +8,7 @@ import { notifications } from "@mantine/notifications";
 import { useForm, isNotEmpty } from '@mantine/form';
 import { api } from "@/app/actions/api";
 
-export default function TopicMain(props: { id: string, courseId: string }) {
+export default function TopicMain(props: { id: string, courseId: string, onDelete: () => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [topic, setTopic] = React.useState<TopicProps>();
@@ -128,6 +128,7 @@ export default function TopicMain(props: { id: string, courseId: string }) {
           throw new Error('Something went wrong')
         }
       };
+      props.onDelete();
       notifications.show({
         title: `Success`,
         message: `Topic ${topic?.title} has been deleted`,

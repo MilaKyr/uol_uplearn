@@ -86,7 +86,7 @@ export default function CourseCard(props: {
 
       <UnstyledButton py={12} onClick={() => props.showUser(props.course.teacher.id)}>
         <Group gap={7}>
-          <Avatar src={`${props.course.teacher.photo}`}
+          <Avatar src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${props.course.teacher.photo}`}
             alt={props.course.teacher.name}
             radius="xl" size={42} />
           <Text size="sm">Created by <Text component={'span'} fw={700}>

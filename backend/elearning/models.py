@@ -16,7 +16,7 @@ class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
     photo = models.ImageField(null=True)
     is_online = models.BooleanField(default=False)
 

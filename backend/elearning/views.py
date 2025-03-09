@@ -195,7 +195,7 @@ class CourseDetail(generics.RetrieveDestroyAPIView):
         return context
 
 
-class CourseEditView(generics.RetrieveUpdateAPIView):
+class CourseEditView(generics.RetrieveUpdateDestroyAPIView):
     """
         Retrieve and update course details to edit
     """
@@ -655,7 +655,7 @@ class TagsView(generics.ListAPIView):
 
 
 class TeacherRetrieveView(generics.RetrieveAPIView):
-    queryset = User.objects.all()
+    queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
     permission_classes = [permissions.IsAuthenticated]
 

@@ -9,7 +9,8 @@ import { DashboardBanner } from '../banners/Dashboard';
 export const StudentProfile = (props: StudentProfileData) => (
     <>
         <DashboardBanner name={props.name} actionName='learning' />
-        <Blockquote color="indigo" radius="md" iconSize={46} icon={<ActionIcon component={Link} href={`/home/${props.id}?selected=settings`} variant="transparent"><IconPencil /></ActionIcon>} mt={24}>
+        <Blockquote color="indigo" radius="md" iconSize={46} icon={<ActionIcon component={Link} href={`/home/${props.id}?selected=settings`} 
+        variant="transparent"><IconPencil /></ActionIcon>} mt={24}>
             {props.status ? props.status : "..."}
             <Group justify='flex-end'>
 

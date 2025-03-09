@@ -53,7 +53,7 @@ export default function UserCard(props: {id: number}) {
 
           </Card.Section>
           <Avatar
-            src={`${user?.photo}`}
+            src={`${user?.user.photo}`}
             size={80}
             radius={80}
             mx="auto"
@@ -61,11 +61,11 @@ export default function UserCard(props: {id: number}) {
             style={{borderWidth: 2, borderColor: 'var(--mantine-color-body)'}}
           />
           <Text ta="center" fz="lg" fw={500} mt="sm">
-            {user?.name}
+            {user?.user.name}
           </Text>
          <Divider py={12}/>
           <Text ta="center" fz="sm" c="dimmed">
-            {user?.role === "teacher" ? user?.bio : user?.status}
+            {user?.user.role === "teacher" ? user?.bio : user?.status}
           </Text>
         </Card>
   );

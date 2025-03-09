@@ -55,6 +55,7 @@ function InsertYoutubeControl() {
 
 
 export default function LessonMain(props: {
+  selecteTopic: (id: string) => void,
   id: string,
   courseId: string,
   editor: TipTapEditor
@@ -318,6 +319,7 @@ export default function LessonMain(props: {
           throw new Error('Something went wrong')
         }
       };
+      
       notifications.show({
         title: `Success`,
         message: `Lesson has been deleted`,
@@ -325,8 +327,11 @@ export default function LessonMain(props: {
         icon: <IconCircleCheck />,
         autoClose: 5000,
       })
-
       router.push(`/edit/${props.courseId}?selected=topic_${lesson?.topic_id}`)
+      if (lesson?.topic_id) {
+        props.selecteTopic(lesson?.topic_id)
+      }
+      
     } catch (error) {
       console.error(error)
     }

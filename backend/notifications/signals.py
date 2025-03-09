@@ -81,23 +81,22 @@ def lesson_updated(sender, instance, created, **kwargs):
 
 
 @receiver(post_delete, sender=Topic)
-def topic_deleted(sender, instance, created, **kwargs):
-    if not created:
-        enrollments = CourseEnrollment.objects.filter(
-            status="started", course=instance.course
-        ).all()
-        with transaction.atomic():
-            for enrolled in enrollments:
-                Notification.objects.create(
-                    recipient=enrolled.student.user,
-                    person=instance.course.teacher.user,
-                    course=instance.course,
-                    text=f"deleted {instance.title} topic in the course",
-                )
+def topic_deleted(sender, instance, **kwargs):
+    enrollments = CourseEnrollment.objects.filter(
+        status="started", course=instance.course
+    ).all()
+    with transaction.atomic():
+        for enrolled in enrollments:
+            Notification.objects.create(
+                recipient=enrolled.student.user,
+                person=instance.course.teacher.user,
+                course=instance.course,
+                text=f"deleted {instance.title} topic in the course",
+            )
 
 
 @receiver(post_delete, sender=Lesson)
-def lesson_deleted(sender, instance, created, **kwargs):
+def lesson_deleted(sender, instance, **kwargs):
     enrollments = CourseEnrollment.objects.filter(
         status="started", course=instance.course
     ).all()

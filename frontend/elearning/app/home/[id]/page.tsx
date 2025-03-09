@@ -17,7 +17,7 @@ import Notifications from "../../components/Notifications";
 import UserSettings from "../../components/UserSettings";
 import { notifications, useNotifications } from '@mantine/notifications';
 import useWebSocket from "react-use-websocket";
-import { getToken } from "@/app/actions/getAuth";
+import { getToken, getUser } from "@/app/actions/getAuth";
 import { api } from "@/app/actions/api";
 
 export default function UserDashboardSuspensed() {
@@ -34,6 +34,7 @@ function UserDashboard() {
   const searchParams = useSearchParams();
   const params = useParams<{ id: string }>();
   const userId = params.id;
+  const user = getUser()
   const notificationsStore = useNotifications();
   const [opened, { toggle }] = useDisclosure();
   const [componentName, setComponentName] = React.useState(searchParams.get("selected") || "dashboard");
@@ -184,12 +185,12 @@ function UserDashboard() {
       </AppShell.Header>
 
       <AppShell.Navbar>
-        <UserNavbarSearch userId={userId} onClick={onClick} selected={componentName} />
+        {user && <UserNavbarSearch userId={user.id} onClick={onClick} selected={componentName} />}
       </AppShell.Navbar>
       <AppShell.Main>
         {
-          componentName === "dashboard" ?
-            <Dashboard userId={userId} /> :
+          componentName === "dashboard" && user ?
+            <Dashboard userId={user.id} /> :
             componentName === "courses" ? <Courses /> :
               componentName === "feedbacks" ? <Feedbacks /> :
                 componentName === "settings" ? <UserSettings userId={userId} /> :

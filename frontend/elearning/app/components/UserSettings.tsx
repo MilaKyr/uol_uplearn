@@ -71,10 +71,11 @@ export default function UserSettings(props: UserSettingsProps) {
         setLoading(false);
         formPersonal.setValues({ first_name: data.first_name, last_name: data.last_name });
         emailForm.setValues({ email: data.email });
-        if (data.role === "student") {
-            formStatus.setValues({ status: data.status })
+        const profile = await getProfileSettings();
+        if (data?.role === "student") {
+            formStatus.setValues({ status: profile.status })
         } else {
-            formBio.setValues({ bio: data.bio })
+            formBio.setValues({ bio: profile.bio })
         }
     }
 
@@ -90,15 +91,12 @@ export default function UserSettings(props: UserSettingsProps) {
             });
             router.push('/')
         }
-        if (user?.role === "student") {
-            formStatus.setValues({ status: data.status })
-        } else {
-            formBio.setValues({ bio: data.bio })
-        }
+        return data
     }
 
 
     React.useEffect(() => {
+        console.log(props, "settings")
         getSettings();
         getProfileSettings();
     }, [])

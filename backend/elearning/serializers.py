@@ -797,17 +797,20 @@ class CustomRegisterSerializer(RegisterSerializer):
         return user
 
     def save(self, request):
-        self.cleaned_data = self.get_cleaned_data()
-        role = self.cleaned_data.get("role")
-        token = self.validated_data.get("token")
-        if role == "teacher":
-            if not token:
-                raise PermissionDenied
-            token_holder = KeyHolder.objects.filter(token=token)
-            if not token_holder.exists():
-                raise PermissionDenied
-            return self._save(request, token_holder)
-        return self._save(request)
+        try:
+            self.cleaned_data = self.get_cleaned_data()
+            role = self.cleaned_data.get("role")
+            token = self.validated_data.get("token")
+            if role == "teacher":
+                if not token:
+                    raise PermissionDenied
+                token_holder = KeyHolder.objects.filter(token=token)
+                if not token_holder.exists():
+                    raise PermissionDenied
+                return self._save(request, token_holder)
+            return self._save(request)
+        except IntegrityError as e:
+            raise ValidationError(detail={"email": "Not unique"})
 
 
 class CustomLoginSerializer(LoginSerializer):
