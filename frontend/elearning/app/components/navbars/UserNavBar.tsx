@@ -167,7 +167,7 @@ const UserNavbarSearch = (props: {
     <Suspense>
       <nav className={classes.navbar}>
         <div className={classes.section}>
-          {user && <UserButton name={user?.name} photo={user?.photo} onClick={handleUserBtn} />}
+          {user && <UserButton name={user.user?.name} photo={user.user?.photo} onClick={handleUserBtn} />}
         </div>
 
         <div className={classes.section}>

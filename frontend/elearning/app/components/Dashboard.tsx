@@ -38,7 +38,7 @@ export default function Dashboard(props: { userId: string }) {
     }, [])
 
     const setTodo = (todo: TodoData[]) => {
-        if (user?.role == "student") {
+        if (user?.user.role == "student") {
             const updateUser = { ...user }
             updateUser.todo = todo;
             setUser(updateUser)
@@ -46,6 +46,6 @@ export default function Dashboard(props: { userId: string }) {
     }
 
     if (isLoading) return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
-    if (user) return user.role === "student" ? <StudentOwner setTodo={setTodo} user={user} /> : <TeacherOwner user={user} />
+    if (user) return user.user.role === "student" ? <StudentOwner setTodo={setTodo} user={user} /> : <TeacherOwner user={user} />
 
 }

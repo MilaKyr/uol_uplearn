@@ -1,6 +1,7 @@
 import uuid
 
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import GenericAPIView
 from rest_framework.status import HTTP_201_CREATED
 from dj_rest_auth.views import LogoutView
@@ -39,7 +40,7 @@ from .permissions import (
     HasAccess,
     FinishedCourse,
 )
-from .models import Course, User, Topic, Lesson, Feedback, CourseEnrollment, Tag
+from .models import Course, User, Topic, Lesson, Feedback, CourseEnrollment, Tag, Student, Teacher
 from .serializers import (
     CourseSerializer,
     TopicSerializer,
@@ -68,7 +69,7 @@ from .serializers import (
     StudentSettingsSerializer,
     EnrollmentCreateSerializer,
     EnrollmentUpdateSerializer,
-    CoursePhotoSerializer,
+    CoursePhotoSerializer, SettingsSerializer,
 )
 
 
@@ -100,7 +101,7 @@ class CourseListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, TeacherWriter]
 
     def get_queryset(self):
-        return self.queryset.exclude(registered_students__user=self.request.user)
+        return self.queryset.exclude(registered_students__student__user=self.request.user)
 
     def get_serializer_class(self):
         if self.request and self.request.method == "POST":
@@ -188,7 +189,7 @@ class CourseDetail(generics.RetrieveDestroyAPIView):
 
         if self.request and self.request.user.is_student():
             enrolled = CourseEnrollment.objects.filter(
-                user=self.request.user, course__id=self.kwargs["pk"]
+                student__user=self.request.user, course__id=self.kwargs["pk"]
             )
             context["enrolled"] = enrolled.exists()
         return context
@@ -319,12 +320,12 @@ class TodoListView(generics.ListAPIView):
         first_date, last_date = self._get_dates()
         done = (
             CourseEnrollment.objects.prefetch_related("done_lessons")
-            .filter(user=self.request.user, done_lessons__id__isnull=False)
+            .filter(student__user=self.request.user, done_lessons__id__isnull=False)
             .values_list("done_lessons__id")
             .distinct()
         )
         queryset = (
-            self.queryset.filter(course__registered_students__user=self.request.user)
+            self.queryset.filter(course__registered_students__student__user=self.request.user)
             .filter(course__title="Introduction to Python")
             .filter(deadline__range=(first_date, last_date))
             .filter(course__registered_students__status__exact="started")
@@ -445,7 +446,7 @@ class FeedbackListCreateView(generics.ListCreateAPIView):
     ]  # checks if user finished the course in serializer
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        return self.queryset.filter(student__user=self.request.user)
 
     def get_serializer_class(self):
         if self.request and self.request.method == "POST":
@@ -473,7 +474,7 @@ class CourseTitlesView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated, IsTeacher]
 
     def get_queryset(self):
-        return self.queryset.filter(teacher=self.request.user)
+        return self.queryset.filter(teacher__user=self.request.user)
 
 
 class UserRetrieveView(generics.RetrieveAPIView):
@@ -504,10 +505,10 @@ class UserRetrieveView(generics.RetrieveAPIView):
             )
         )
         if is_owner:
-            return queryset.filter(registered_students__user=user, is_active=True).all()
+            return queryset.filter(registered_students__student__user=user, is_active=True).all()
         return queryset.filter(
             registered_students__status="started",
-            registered_students__user=user,
+            registered_students__student__user=user,
             is_active=True,
         ).all()
 
@@ -515,7 +516,7 @@ class UserRetrieveView(generics.RetrieveAPIView):
         return (
             self._get_course_queryset()
             .prefetch_related("registered_students__feedback")
-            .filter(teacher=user)
+            .filter(teacher__user=user)
             .annotate(
                 average_rating=Avg(
                     "registered_students__feedback__rating",
@@ -540,13 +541,13 @@ class UserRetrieveView(generics.RetrieveAPIView):
                 return CourseBasicSerializer(courses, many=True).data
             done = (
                 CourseEnrollment.objects.select_related("done_lessons")
-                .filter(user=self.request.user)
+                .filter(student__user=self.request.user)
                 .annotate(
                     done=Count(
                         "done_lessons__id", distinct=True, output_field=IntegerField()
                     )
                 )
-                .values_list("course__id", "user__id", "created", "done")
+                .values_list("course__id", "student__user__id", "created", "done")
                 .all()
             )
             courses_serializer = CourseWithProgressSerializer(
@@ -567,12 +568,12 @@ class UserRetrieveView(generics.RetrieveAPIView):
             Lesson.objects.select_related("topic")
             .select_related("topic__course")
             .prefetch_related("students")
-            .filter(students__user=self.request.user)
+            .filter(students__student__user=self.request.user)
             .annotate(n_done=Count("students__id", distinct=True))
             .filter(
                 deadline__range=(first_date, last_date),
                 n_done=0,
-                topic__course__registered_students__user=self.request.user,
+                topic__course__registered_students__student__user=self.request.user,
                 topic__course__registered_students__status__exact="started",
             )
             .values(
@@ -588,15 +589,24 @@ class UserRetrieveView(generics.RetrieveAPIView):
         serializer = TodoListSerializer(todo, many=True)
         return serializer.data
 
+    def get_profile(self, user):
+        if user.is_student():
+            return Student.objects.get(user=user)
+        return Teacher.objects.get(user=user)
+
+    def get_base_data(self, user):
+        profile = self.get_profile(user)
+        serializer = self.get_serializer_class()
+        serializer = serializer(profile)
+        return serializer.data
+
     def retrieve(self, request, *args, **kwargs):
         user = self.get_object()
-        serializer = self.get_serializer_class()
-        serializer = serializer(user)
-        response = serializer.data
+        response = self.get_base_data(user)
         is_owner = user == request.user
         if is_owner:
             response["n_notifications"] = self._get_notifications()
-            if user.is_student():
+            if request.user.is_student():
                 now = timezone.now()
                 response["todo"] = self._get_todo_for(now.month, now.year, now.tzinfo)
         response["courses"] = self._get_courses_info(user=user, is_owner=is_owner)
@@ -605,11 +615,21 @@ class UserRetrieveView(generics.RetrieveAPIView):
 
 class SettingsRetrieveUpdateSerializer(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
+    serializer_class = SettingsSerializer
+    permission_classes = [permissions.IsAuthenticated, UpdateDeleteIfOwner]
+
+class SettingsProfileSerializer(generics.RetrieveUpdateAPIView):
+    queryset = Teacher.objects.all()
     serializer_class = TeacherSettingsSerializer
     permission_classes = [permissions.IsAuthenticated, UpdateDeleteIfOwner]
 
+    def get_queryset(self):
+        if self.request.user.is_student():
+            return Student.objects.all()
+        return self.queryset
+
     def get_serializer_class(self):
-        if self.request and self.request.user.is_student():
+        if self.request.user.is_student():
             return StudentSettingsSerializer
         return self.serializer_class
 
@@ -675,14 +695,14 @@ class UserSearchListView(generics.ListAPIView):
         if status_exists:
             status_list = [stat.lower() for stat in status.strip().split(",")]
             status_regex = r"({})".format("|".join(status_list))
-            queryset = queryset.prefetch_related("enrollment").filter(
-                enrollment__status__iregex=status_regex,
-                enrollment__course__teacher=self.request.user,
+            queryset = queryset.prefetch_related("student_profile__enrollment").filter(
+                student_profile__enrollment__status__iregex=status_regex,
+                student_profile__enrollment__course__teacher__user=self.request.user,
             )
         if course_exists:
-            queryset = queryset.prefetch_related("enrollment").filter(
-                enrollment__course__id=course_id,
-                enrollment__course__teacher=self.request.user,
+            queryset = queryset.prefetch_related("student_profile__enrollment").filter(
+                student_profile__enrollment__course__id=course_id,
+                student_profile__enrollment__course__teacher__user=self.request.user,
             )
         return queryset.distinct()
 

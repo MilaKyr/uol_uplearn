@@ -38,9 +38,10 @@ def add_users_to_groups(users_data) -> None:
 
 
 def delete_all_objects() -> None:
-
     User = get_user_model()
+    Student.objects.all().delete()
     KeyHolder.objects.all().delete()
+    Teacher.objects.all().delete()
     Group.objects.all().delete()
     User.objects.all().delete()
     Tag.objects.all().delete()
@@ -92,18 +93,25 @@ def fill_database() -> None:
             last_name=user["last_name"],
             email=user["email"],
             username=f'{user["first_name"]}_{user["last_name"]}',
-            status=user.get("status"),
-            bio=user.get("bio"),
             password="pbkdf2_sha256$870000$HNHM7k1iJjGoBgM8gEUZ4A$IKgMAdZNB5zLpPAn9q7QkTZsFZt/PAxVzxL03yqtYow=",
-            key_holder=KeyHolder.objects.get(name=user["company_name"])
-            if "company_name" in user
-            else None,
             photo=ImageFile(open(f'seeding/data/photos/users/{user["photo"]}', "rb")),
         )
         for user in data["users"]
     )
     User.objects.bulk_create(objs, BATCH_SIZE)
     add_users_to_groups(data["users"])
+    for user in data["users"]:
+        if user["role"] == "student":
+            Student.objects.create(
+                user=User.objects.get(email=user["email"]),
+                status=user.get("status"),
+            )
+        else:
+            Teacher.objects.create(
+                user=User.objects.get(email=user["email"]),
+                bio=user.get("bio"),
+                key_holder=KeyHolder.objects.get(name=user["company_name"])
+            )
 
     logging.info("saving Tags...")
     objs = (Tag(name=tag) for tag in data["tags"])
@@ -112,7 +120,7 @@ def fill_database() -> None:
     logging.info("saving Courses...")
     objs = (
         Course(
-            teacher=User.objects.get(email=course["teacher"]),
+            teacher=Teacher.objects.get(user__email=course["teacher"]),
             is_active=course["is_active"],
             photo=ImageFile(
                 open(f'seeding/data/photos/courses/{course["photo"]}', "rb")
@@ -178,7 +186,7 @@ def fill_database() -> None:
 
     objs = (
         CourseEnrollment(
-            user=User.objects.get(email=enrollment["user"]),
+            student=Student.objects.get(user__email=enrollment["user"]),
             course=Course.objects.get(title=enrollment["course"]),
             status=enrollment["status"],
         )
@@ -187,7 +195,7 @@ def fill_database() -> None:
     CourseEnrollment.objects.bulk_create(objs, BATCH_SIZE)
     for progress in data["course_progress"]:
         enrollment = CourseEnrollment.objects.get(
-            user__email=progress["user"], course__title=progress["course"]
+            student__user__email=progress["user"], course__title=progress["course"]
         )
         lesson = Lesson.objects.get(
             title=progress["item"], course__title=progress["course"]
@@ -198,7 +206,7 @@ def fill_database() -> None:
     objs = (
         Feedback(
             enrollment=CourseEnrollment.objects.get(
-                user__email=feedback["user"], course__title=feedback["course"]
+                student__user__email=feedback["user"], course__title=feedback["course"]
             ),
             text=feedback["text"],
             rating=feedback["rating"],

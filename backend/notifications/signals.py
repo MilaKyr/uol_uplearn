@@ -45,8 +45,8 @@ def notification_created(sender, instance, created, **kwargs):
 def enrollment_created(sender, instance, created, **kwargs):
     if created:
         Notification.objects.create(
-            recipient=instance.course.teacher,
-            person=instance.user,
+            recipient=instance.course.teacher.user,
+            person=instance.student.user,
             course=instance.course,
             text="enrolled in a course",
         )
@@ -57,8 +57,8 @@ def enrollment_created(sender, instance, created, **kwargs):
                     "un-blocked" if instance.status == "started" else instance.status
                 )
                 Notification.objects.create(
-                    recipient=instance.user,
-                    person=instance.course.teacher,
+                    recipient=instance.student.user,
+                    person=instance.course.teacher.user,
                     course=instance.course,
                     text=f"{action_name} you in the course",
                 )
@@ -73,8 +73,8 @@ def lesson_updated(sender, instance, created, **kwargs):
         with transaction.atomic():
             for enrolled in enrollments:
                 Notification.objects.create(
-                    recipient=enrolled.user,
-                    person=instance.course.teacher,
+                    recipient=enrolled.student.user,
+                    person=instance.course.teacher.user,
                     course=instance.course,
                     text=f"updated material in {instance.title} lesson in the course",
                 )
@@ -89,8 +89,8 @@ def topic_deleted(sender, instance, created, **kwargs):
         with transaction.atomic():
             for enrolled in enrollments:
                 Notification.objects.create(
-                    recipient=enrolled.user,
-                    person=instance.course.teacher,
+                    recipient=enrolled.student.user,
+                    person=instance.course.teacher.user,
                     course=instance.course,
                     text=f"deleted {instance.title} topic in the course",
                 )
@@ -104,8 +104,8 @@ def lesson_deleted(sender, instance, created, **kwargs):
     with transaction.atomic():
         for enrolled in enrollments:
             Notification.objects.create(
-                recipient=enrolled.user,
-                person=instance.course.teacher,
+                recipient=enrolled.student.user,
+                person=instance.course.teacher.user,
                 course=instance.course,
                 text=f"deleted {instance.title} lesson in the course",
             )

@@ -1,34 +1,19 @@
 'use client';
 
 import React from "react";
-import { useRouter } from 'next/navigation';
 import { Text, ScrollArea, Center, LoadingOverlay } from "@mantine/core";
 import { NotificationData } from "../types";
-import { notifications as mantineNotifications } from '@mantine/notifications';
-import { IconExclamationCircle } from "@tabler/icons-react";
 import { api } from "../actions/api";
 import NotificationList from "./lists/NotificationList";
 import NotificationBanner from "./banners/Notification";
 
 export default function Notifications() {
     const url = `/api/notifications/`;
-    const router = useRouter();
     const [notifications, setNotifications] = React.useState<NotificationData[]>([]);
     const [isLoading, setLoading] = React.useState<boolean>(true);
 
     const getNotifications = async () => {
-        const { data, status } = await api.get(url)
-        if (status === 401 || status === 403) {
-            mantineNotifications.show({
-                title: "Session expired",
-                message: "Please log in to continue",
-                autoClose: 50000,
-                icon: <IconExclamationCircle />,
-                color: 'red',
-            });
-            router.push('/')
-        }
-        console.log("data", data)
+        const { data } = await api.get(url)
         setNotifications(data);
         setLoading(false);
     }

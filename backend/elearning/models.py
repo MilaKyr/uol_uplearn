@@ -17,10 +17,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     email = models.EmailField()
-    status = models.CharField(max_length=256, blank=True, null=True)
     photo = models.ImageField(null=True)
-    bio = models.TextField(null=True)
-    key_holder = models.ForeignKey(to=KeyHolder, on_delete=models.CASCADE, null=True)
     is_online = models.BooleanField(default=False)
 
     @property
@@ -33,6 +30,15 @@ class User(AbstractUser):
 
     def is_teacher(self) -> bool:
         return self.groups.filter(name="teacher").exists()
+
+class Student(models.Model):
+    user = models.OneToOneField(to=User, on_delete=models.CASCADE, primary_key=True, related_name="student_profile")
+    status = models.CharField(max_length=256, blank=True, null=True)
+
+class Teacher(models.Model):
+    user = models.OneToOneField(to=User, on_delete=models.CASCADE, primary_key=True, related_name="teacher_profile")
+    key_holder = models.ForeignKey(to=KeyHolder, on_delete=models.CASCADE)
+    bio = models.CharField(max_length=256, blank=True, null=True)
 
 
 def generate_random_color():
@@ -48,7 +54,7 @@ class Tag(models.Model):
 class Course(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     teacher = models.ForeignKey(
-        to=User, on_delete=models.CASCADE, related_name="courses"
+        to=Teacher, on_delete=models.CASCADE, related_name="courses"
     )
     is_active = models.BooleanField(default=False)
     photo = models.ImageField(null=True)
@@ -115,8 +121,8 @@ class CourseEnrollment(models.Model):
         ("removed", "Removed"),
     )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(
-        to=User, on_delete=models.CASCADE, related_name="enrollment"
+    student = models.ForeignKey(
+        to=Student, on_delete=models.CASCADE, related_name="enrollment"
     )
     course = models.ForeignKey(
         to=Course, on_delete=models.CASCADE, related_name="registered_students"
@@ -131,7 +137,7 @@ class CourseEnrollment(models.Model):
         self.cached_status = self.status
 
     class Meta:
-        unique_together = ("user", "course")
+        unique_together = ("student", "course")
 
 
 class Feedback(models.Model):

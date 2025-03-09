@@ -118,11 +118,13 @@ export interface UserProfile {
 }
 
 export interface HomeData {
-  id: string;
-  photo: string,
-  name: string;
-  role: string;
-  email: string;
+  user: {
+    id: string;
+    photo: string,
+    name: string;
+    role: string;
+    email: string;
+  },
   status?: string;
   bio?: string;
   todo: TodoData[];
@@ -130,11 +132,13 @@ export interface HomeData {
 }
 
 export interface UserGuestData {
-  id: string;
-  photo: string | undefined,
-  name: string;
-  role: string;
-  is_online: boolean;
+  user: {
+    id: string;
+    photo: string | undefined,
+    name: string;
+    role: string;
+    is_online: boolean;
+  },
   status: string | undefined;
   bio: string | undefined;
   courses: Course[];
@@ -150,11 +154,13 @@ export interface NotificationData {
 
 }
 export interface StudentHomeData {
-  id: string;
-  photo: string | undefined,
-  name: string;
-  role: string;
-  email: string;
+  user: {
+    id: string;
+    photo: string | undefined,
+    name: string;
+    role: string;
+    email: string;
+  },  
   status: string;
   todo: TodoData[];
   courses: CourseStudentHomeData[];

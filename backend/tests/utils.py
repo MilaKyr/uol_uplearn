@@ -92,7 +92,6 @@ def create_course(token):
         format="json",
     )
     result = json.loads(response.content)
-    print(result)
     return response.status_code, result
 
 

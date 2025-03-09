@@ -179,13 +179,13 @@ def test_users_found(teacher_group, student):
 def test_get_student(teacher_group, student):
     teacher = register_teacher()
     response = client.get(
-        f"/api/dashboard/{student.id}",
+        f"/api/dashboard/{student.user.id}",
         headers={"AUTHORIZATION": f" Bearer {teacher['access']}"},
     )
     assert response.status_code == status.HTTP_200_OK
     result = json.loads(response.content)
-    assert result["id"] == str(student.id)
-    assert result["name"] == student.full_name
+    assert result['user']["id"] == str(student.user.id)
+    assert result['user']["name"] == student.user.full_name
     assert len(result["courses"]) == 0
     assert "todo" not in result
 
@@ -219,7 +219,7 @@ def test_get_users_home(student_group):
     )
     assert response.status_code == status.HTTP_200_OK
     result = json.loads(response.content)
-    assert result["id"] == student["user"]["id"]
+    assert result['user']["id"] == student["user"]["id"]
     assert len(result["courses"]) == 0
     assert len(result["todo"]) == 0
 
@@ -233,7 +233,7 @@ def test_get_teacher_by_owner(teacher_group):
     )
     assert response.status_code == status.HTTP_200_OK
     result = json.loads(response.content)
-    assert result["id"] == teacher["user"]["id"]
+    assert result['user']["id"] == teacher["user"]["id"]
     assert len(result["courses"]) == 0
 
 
@@ -265,7 +265,7 @@ def test_lesson_done(student_group, course, lesson):
     )
     assert response.status_code == status.HTTP_200_OK
     enrollment = CourseEnrollment.objects.prefetch_related("done_lessons").get(
-        user__id=student["user"]["id"]
+        student__user__id=student["user"]["id"]
     )
     assert enrollment.done_lessons.count() == 1
 
@@ -297,7 +297,7 @@ def test_create_update_feedback(student_group, course):
     enroll(student["access"], str(course.id))
     # changing status to finished, otherwise it's forbidden
     enrollment = CourseEnrollment.objects.get(
-        user=student["user"]["id"], course=course.id
+        student__user=student["user"]["id"], course=course.id
     )
     enrollment.status = "finished"
     enrollment.save()
@@ -331,7 +331,7 @@ def test_create_update_feedback_fails(student_group, course):
     enroll(student["access"], str(course.id))
     # changing status to finished, otherwise it's forbidden
     enrollment = CourseEnrollment.objects.get(
-        user=student["user"]["id"], course=course.id
+        student__user=student["user"]["id"], course=course.id
     )
     enrollment.status = "finished"
     enrollment.save()
@@ -359,7 +359,7 @@ def test_create_feedback_fails(student_group, course):
     student = register_student()
     enroll(student["access"], str(course.id))
     enrollment = CourseEnrollment.objects.get(
-        user=student["user"]["id"], course=course.id
+        student__user=student["user"]["id"], course=course.id
     )
     enrollment.status = "finished"
     enrollment.save()
@@ -503,7 +503,7 @@ def test_update_enrollment_status(teacher_group, student_group):
     _, course = create_course(teacher["access"])
     enroll(student["access"], course["id"])
     enrollment = CourseEnrollment.objects.get(
-        course__id=course["id"], user__id=student["user"]["id"]
+        course__id=course["id"], student__user__id=student["user"]["id"]
     )
     assert enrollment.status == "started"
     response = client.patch(
@@ -607,12 +607,12 @@ def test_student_update_settings(student_group):
     new_status = "new status"
     student = register_student()
     client.patch(
-        f"/api/home/settings/{student['user']['id']}",
+        f"/api/home/settings/profile/{student['user']['id']}",
         data={"status": new_status},
         format="json",
         headers={"AUTHORIZATION": f" Bearer {student['access']}"},
     )
-    assert User.objects.get(id=student["user"]["id"]).status == new_status
+    assert Student.objects.get(user__id=student["user"]["id"]).status == new_status
 
 
 @pytest.mark.django_db
@@ -620,12 +620,12 @@ def test_teacher_update_settings(teacher_group):
     new_bio = "new bio"
     teacher = register_teacher()
     client.patch(
-        f"/api/home/settings/{teacher['user']['id']}",
+        f"/api/home/settings/profile/{teacher['user']['id']}",
         data={"bio": new_bio},
         format="json",
         headers={"AUTHORIZATION": f" Bearer {teacher['access']}"},
     )
-    assert User.objects.get(id=teacher["user"]["id"]).bio == new_bio
+    assert Teacher.objects.get(user__id=teacher["user"]["id"]).bio == new_bio
 
 
 @pytest.mark.django_db

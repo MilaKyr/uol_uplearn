@@ -1,6 +1,6 @@
 import pytest
 
-from elearning.models import Course, User
+from elearning.models import Course, User, Student
 from seeding.fill_db import delete_all_objects, fill_database
 from django.contrib.auth.models import Group
 
@@ -21,6 +21,7 @@ def test_fill_db():
     fill_database()
     assert Course.objects.count() == 4
     assert Group.objects.count() == 2
+    assert Student.objects.count() == 10
 
 
 @pytest.mark.django_db

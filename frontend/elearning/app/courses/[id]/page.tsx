@@ -51,7 +51,6 @@ export default function Course() {
         router.push('/')
       }
     }
-
     data["is_owner"] = data.teacher.id === user.id;
     setLoading(false);
     setCourse(data);
@@ -223,7 +222,7 @@ export default function Course() {
                   <Group justify='space-between'>
                     <UnstyledButton component={Link} href={"/users/" + course?.teacher.id}>
                       <Group gap={7}>
-                        <Avatar style={{ backgroundColor: '#696969' }} src={`${course?.teacher?.photo}`}
+                        <Avatar style={{ backgroundColor: '#696969' }} src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${course?.teacher?.photo}`}
                           name={course?.teacher?.name}
                           radius="xl" size={42} />
                         <Text fw={500} size="lg" lh={1}>

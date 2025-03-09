@@ -35,7 +35,7 @@ def test_update_enrollment_status(teacher_group, student_group):
     _, course = create_course(teacher["access"])
     enroll(student["access"], course["id"])
     enrollment = CourseEnrollment.objects.get(
-        course__id=course["id"], user__id=student["user"]["id"]
+        course__id=course["id"], student__user__id=student["user"]["id"]
     )
     assert enrollment.status == "started"
     assert Notification.objects.filter(

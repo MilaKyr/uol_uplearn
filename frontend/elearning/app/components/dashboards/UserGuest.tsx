@@ -86,8 +86,8 @@ export default function UserGuest(props: { id: string }) {
                     >
                         <Group m={24} justify="space-between" align="flex-start">
                             <Stack>
-                                <Title >{user?.name}</Title>
-                                {user?.is_online && <Badge
+                                <Title >{user?.user.name}</Title>
+                                {user?.user.is_online && <Badge
                                     size="lg"
                                     variant="gradient"
                                     gradient={{ from: 'grape', to: 'violet', deg: 90 }}
@@ -102,14 +102,14 @@ export default function UserGuest(props: { id: string }) {
                                 size="xl"
                                 radius="lg"
                                 color="initials"
-                                name={user?.name}
-                                src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${user?.photo}`}
+                                name={user?.user.name}
+                                src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${user?.user.photo}`}
                             />
                         </Group>
 
                     </BackgroundImage>
 
-                    {user?.role === "student" ? (
+                    {user?.user.role === "student" ? (
                         <Blockquote color="indigo" radius="md" iconSize={46} icon={<IconPacman />} mt="lg">
                             {user?.status ? user?.status : "Too busy to write a status 😜"}
                         </Blockquote>) : (<>
@@ -122,7 +122,7 @@ export default function UserGuest(props: { id: string }) {
                     }
                     <Group justify="flex-end">
 
-                        <Button onClick={() => startConversation(user?.id)} color={"blue.8"}>
+                        <Button onClick={() => startConversation(user?.user.id)} color={"blue.8"}>
                             Message me
                         </Button>
                     </Group>
@@ -132,8 +132,8 @@ export default function UserGuest(props: { id: string }) {
 
                     {user?.courses && user?.courses.length > 0 ? (
                         <>
-                            <Title order={3}>{user?.role === "student" ? "📚 Currently studying" : "🧑‍🏫 Currently teaching"}</Title>
-                            {user?.role === "student" ? (
+                            <Title order={3}>{user?.user.role === "student" ? "📚 Currently studying" : "🧑‍🏫 Currently teaching"}</Title>
+                            {user?.user.role === "student" ? (
                                 <Table
                                     highlightOnHover
                                     highlightOnHoverColor={'var(--mantine-color-blue-light)'}>

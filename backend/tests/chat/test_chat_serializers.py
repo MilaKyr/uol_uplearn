@@ -41,18 +41,18 @@ def test_conversation_serializer(conversation, message, student, teacher):
     users = result.pop("users")
     expected_users = [
         {
-            "id": f"{teacher.id}",
-            "name": f"{teacher.full_name}",
+            "id": f"{teacher.user.id}",
+            "name": f"{teacher.user.full_name}",
             "photo": None,
-            "is_online": teacher.is_online,
-            "role": get_role(teacher),
+            "is_online": teacher.user.is_online,
+            "role": get_role(teacher.user),
         },
         {
-            "id": f"{student.id}",
-            "name": f"{student.full_name}",
+            "id": f"{student.user.id}",
+            "name": f"{student.user.full_name}",
             "photo": None,
-            "is_online": student.is_online,
-            "role": get_role(student),
+            "is_online": student.user.is_online,
+            "role": get_role(student.user),
         },
     ]
     for user in expected_users:
@@ -87,7 +87,6 @@ def test_conversation_detail_serializer(conversation, message, student, teacher)
             }
         ],
     }
-    print(message.sender)
     assert json.dumps(serialized.data, sort_keys=True) == json.dumps(
         expected, sort_keys=True
     )
@@ -103,12 +102,12 @@ def test_conversation_seen_serializer(conversation, message, student, teacher):
 
 
 @pytest.mark.django_db
-def test_conversation_create_serializer(student, teacher):
+def test_conversation_create_serializer(student_user, teacher_user):
     assert Conversation.objects.count() == 0
     request = HttpRequest()
-    request.user = student
+    request.user = student_user
     serialized = ConversationCreateSerializer(
-        data={"recipient_id": f"{teacher.id}"}, context={"request": request}
+        data={"recipient_id": f"{teacher_user.id}"}, context={"request": request}
     )
     serialized.is_valid(raise_exception=True)
     serialized.save()

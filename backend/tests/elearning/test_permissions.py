@@ -130,7 +130,7 @@ def test_update_enrollment_status_other_teacher_fails(teacher_group, student_gro
     _, course = create_course(teacher1["access"])
     enroll(student["access"], course["id"])
     enrollment = CourseEnrollment.objects.get(
-        course__id=course["id"], user__id=student["user"]["id"]
+        course__id=course["id"], student__user__id=student["user"]["id"]
     )
     response = client.patch(
         f"/api/enrollments/{enrollment.id}/",
@@ -226,12 +226,12 @@ def test_update_settings_forbidden(student_group, teacher):
     new_status = "new status"
     student = register_student()
     response = client.patch(
-        f"/api/home/settings/{teacher.id}",
+        f"/api/home/settings/profile/{teacher.user.id}",
         data={"status": new_status},
         format="json",
         headers={"AUTHORIZATION": f" Bearer {student['access']}"},
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.django_db

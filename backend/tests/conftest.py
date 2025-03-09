@@ -16,6 +16,8 @@ from elearning.models import (
     Topic,
     Tag,
     KeyHolder,
+    Student,
+    Teacher
 )
 from django.db.models import signals
 
@@ -40,32 +42,46 @@ def student_group():
 def teacher_group():
     return Group.objects.create(name="teacher")
 
-
 @pytest.fixture
-def teacher(key_holder, teacher_group):
-    teacher = User.objects.create(
+def teacher_user(teacher_group):
+    user = User.objects.create(
         username="test_teacher",
-        key_holder=key_holder,
         first_name="John",
         last_name="Smith",
         email="abc@abc.com",
         password="Abc12345!",
+    )
+    user.groups.add(teacher_group)
+    return user
+
+@pytest.fixture
+def student_user(student_group):
+    user = User.objects.create(
+        username="test_student",
+        first_name="John",
+        last_name="Smith",
+        email="abc@abc.com",
+        password="Abc12345!",
+    )
+    user.groups.add(student_group)
+    return user
+
+@pytest.fixture
+def teacher(key_holder, teacher_user):
+    teacher = Teacher.objects.create(
+        user=teacher_user,
+        key_holder=key_holder,
         bio="some bio",
     )
-    teacher.groups.add(teacher_group)
     return teacher
 
 
 @pytest.fixture
-def student(student_group):
-    student = User.objects.create(
-        username="student1",
-        first_name="James",
-        last_name="Johns",
-        email="abc@abc.com",
-        password="12345678!!!",
+def student(student_user):
+    student = Student.objects.create(
+        user=student_user,
+        status="some status",
     )
-    student.groups.add(student_group)
     return student
 
 
@@ -99,7 +115,7 @@ def active_course(teacher):
 @pytest.fixture
 def registered_student(student, course):
     return CourseEnrollment.objects.create(
-        user=student, course=course, status="started"
+        student=student, course=course, status="started"
     )
 
 
@@ -147,7 +163,7 @@ def lessons(topic, course, lesson):
 @pytest.fixture
 def enrolled_student(student, course):
     return CourseEnrollment.objects.create(
-        user=student, course=course, status="started"
+        student=student, course=course, status="started"
     )
 
 
@@ -157,12 +173,12 @@ def feedback(enrolled_student):
 
 
 @pytest.fixture
-def notification(course, teacher):
+def notification(course, teacher_user):
     signals.post_save.receivers = []
     inst = Notification.objects.create(
-        recipient=course.teacher,
+        recipient=course.teacher.user,
         course=course,
-        person=course.teacher,
+        person=course.teacher.user,
         text="test",
         seen=False,
     )

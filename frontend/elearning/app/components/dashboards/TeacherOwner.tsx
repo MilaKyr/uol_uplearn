@@ -39,13 +39,13 @@ export default function TeacherOwner(props: { user: HomeData }) {
             {courseId && <StudentModal onClose={close} opened={opened} courseId={courseId} />}
 
             <Stack>
-                {props.user.bio && <TeacherProfile name={props.user.name} bio={props.user.bio} />}
+                {props.user.bio && <TeacherProfile name={props.user.user.name} bio={props.user.bio} />}
                 <Divider />
                 {props.user.courses && props.user.courses.length > 0 ? (
                     <TeacherCourseTable onCourseClick={onCourseClick} courses={props.user.courses} />
                 ) : (
                     <Group justify="center">
-                        <Button component={Link} href={{ pathname: `/home/${user.id}`, query: { selected: 'addCourse' } }} w={'50%'} variant="outline" color="teal" >
+                        <Button component={Link} href={{ pathname: `/home/${user.user.id}`, query: { selected: 'addCourse' } }} w={'50%'} variant="outline" color="teal" >
                             <Group align="flex-start" gap={10}>
                                 <IconPlus />
                                 <Text>Create your first course!</Text>

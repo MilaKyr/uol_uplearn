@@ -10,16 +10,18 @@ from django.db.models import signals
 
 
 @pytest.fixture
-def conversation(teacher, student):
+def conversation(teacher_user, student_user):
     convo = Conversation.objects.create()
-    convo.users.add(teacher)
-    convo.users.add(student)
+    convo.users.add(teacher_user)
+    convo.users.add(student_user)
     convo.save()
     return convo
 
 
 @pytest.fixture
-def message(conversation, teacher, student):
+def message(conversation, teacher_user, student_user):
     return Message.objects.create(
-        conversation=conversation, text="test", recipient=teacher, sender=student
+        conversation=conversation, text="test",
+        recipient=teacher_user,
+        sender=student_user
     )

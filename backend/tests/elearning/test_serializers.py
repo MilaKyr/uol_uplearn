@@ -30,7 +30,7 @@ def test_registered_student_serializer(registered_student):
 
     expected = {
         "id": str(registered_student.id),
-        "name": f"{registered_student.user.first_name} {registered_student.user.last_name}",
+        "name": f"{registered_student.student.user.first_name} {registered_student.student.user.last_name}",
         "photo": None,
         "status": "started",
     }
@@ -41,7 +41,7 @@ def test_registered_student_serializer(registered_student):
 @pytest.mark.django_db
 def test_create_feedback(student, course, enrolled_student):
     assert Feedback.objects.count() == 0
-    enrolled = CourseEnrollment.objects.get(user=student, course=course)
+    enrolled = CourseEnrollment.objects.get(student=student, course=course)
     enrolled.status = "finished"
     enrolled.save()
     request = HttpRequest()
@@ -57,7 +57,7 @@ def test_create_feedback(student, course, enrolled_student):
 @pytest.mark.django_db
 def test_create_feedback_fails(student, course):
     request = HttpRequest()
-    request.user = student
+    request.user = student.user
     with pytest.raises(PermissionDenied):
         CourseCreateFeedback(context={"request": request}).create(
             {"course_id": course.id, "rating": 3}
@@ -68,7 +68,7 @@ def test_create_feedback_fails(student, course):
 def test_create_feedback_negative_rating(student, course):
     with pytest.raises(serializers.ValidationError):
         serializer = CourseCreateFeedback(
-            context={"student_id": student.id},
+            context={"student_id": student.user.id},
             data={"course_id": course.id, "rating": -1},
         )
         serializer.is_valid(raise_exception=True)
@@ -78,7 +78,7 @@ def test_create_feedback_negative_rating(student, course):
 def test_create_feedback_too_big_rating(student, course):
     with pytest.raises(serializers.ValidationError):
         serializer = CourseCreateFeedback(
-            context={"student_id": student.id},
+            context={"student_id": student.user.id},
             data={"course_id": course.id, "rating": 10},
         )
         serializer.is_valid(raise_exception=True)
@@ -101,7 +101,7 @@ def test_course_short_serializer(course, teacher):
         "duration": course.duration.days,
         "average_rating": 4.75,
         "n_students": 10,
-        "teacher": {"id": str(teacher.id), "name": teacher.full_name, "photo": None},
+        "teacher": {"id": str(teacher.user.id), "name": teacher.user.full_name, "photo": None},
         "tags": [],
     }
     assert compare_images(serializer.data["photo"])
@@ -130,7 +130,7 @@ def test_course_owner_short_serializer(registered_student, course):
         "registered_students": [
             {
                 "id": str(registered_student.id),
-                "name": f"{registered_student.user.first_name} {registered_student.user.last_name}",
+                "name": f"{registered_student.student.user.first_name} {registered_student.student.user.last_name}",
                 "photo": None,
                 "status": "started",
             }
@@ -145,11 +145,13 @@ def test_course_owner_short_serializer(registered_student, course):
 @pytest.mark.django_db
 def test_teacher_serializer(teacher):
     expected = {
-        "id": str(teacher.id),
-        "name": f"{teacher.first_name} {teacher.last_name}",
-        "photo": None,
-        "is_online": teacher.is_online,
-        "role": get_role(teacher),
+        "user": {
+            "id": str(teacher.user.id),
+            "name": f"{teacher.user.first_name} {teacher.user.last_name}",
+            "photo": None,
+            "is_online": teacher.user.is_online,
+            "role": get_role(teacher.user),
+        },
         "bio": teacher.bio,
     }
     serialized = TeacherSerializer(teacher)
@@ -178,8 +180,8 @@ def test_course_serializer(course, feedback, lesson, student, enrolled_student):
         "n_students": 3,
         "duration": course.duration.days,
         "teacher": {
-            "id": str(course.teacher.id),
-            "name": f"{course.teacher.first_name} {course.teacher.last_name}",
+            "id": str(course.teacher.user.id),
+            "name": f"{course.teacher.user.first_name} {course.teacher.user.last_name}",
             "photo": None,
         },
         "topics": [
@@ -202,8 +204,8 @@ def test_course_serializer(course, feedback, lesson, student, enrolled_student):
             {
                 "id": str(feedback.id),
                 "user": {
-                    "id": str(feedback.enrollment.user.id),
-                    "name": f"{feedback.enrollment.user.first_name} {feedback.enrollment.user.last_name}",
+                    "id": str(feedback.enrollment.student.user.id),
+                    "name": f"{feedback.enrollment.student.user.first_name} {feedback.enrollment.student.user.last_name}",
                     "photo": None,
                 },
                 "text": feedback.text,
@@ -231,7 +233,7 @@ def test_course_w_progress_short_serializer(course, student, enrolled_student):
         .prefetch_related("topics")
         .prefetch_related("topics__study_lessons")
         .prefetch_related("registered_students__feedback")
-        .filter(registered_students__user=enrolled_student.user)
+        .filter(registered_students__student=enrolled_student.student)
         .annotate(overall=Value(5))
         .all()
     )
@@ -245,7 +247,7 @@ def test_course_w_progress_short_serializer(course, student, enrolled_student):
     done = [
         (
             enrolled_student.course.id,
-            enrolled_student.user.id,
+            enrolled_student.student.user.id,
             enrolled_student.created.strftime("%d %B, %Y"),
             0,
         )
@@ -266,7 +268,7 @@ def test_course_w_progress_short_serializer_no_tasks(course, student, enrolled_s
         .prefetch_related("topics")
         .prefetch_related("topics__study_lessons")
         .prefetch_related("registered_students__feedback")
-        .filter(registered_students__user=enrolled_student.user)
+        .filter(registered_students__student=enrolled_student.student)
         .annotate(overall=Value(0))
         .all()
     )
@@ -280,7 +282,7 @@ def test_course_w_progress_short_serializer_no_tasks(course, student, enrolled_s
     done = [
         (
             enrolled_student.course.id,
-            enrolled_student.user.id,
+            enrolled_student.student.user.id,
             enrolled_student.created.strftime("%d %B, %Y"),
             0,
         )
@@ -370,7 +372,7 @@ def test_student_feedback_serializer(student, lesson):
 def test_update_create_progress_serializer(lesson, enrolled_student):
     assert enrolled_student.done_lessons.count() == 0
     request = HttpRequest()
-    request.user = enrolled_student.user
+    request.user = enrolled_student.student.user
     CreateProgressSerializer(context={"request": request}).update(
         lesson, {"course_id": enrolled_student.course.id}
     )
@@ -382,12 +384,12 @@ def test_update_create_progress_serializer(lesson, enrolled_student):
 def test_update_create_progress_serializer_fails(lesson, student):
     assert (
         not Lesson.objects.prefetch_related("students")
-        .filter(id=lesson.id, students__user=student)
+        .filter(id=lesson.id, students__student=student)
         .exists()
     )
     with pytest.raises(NotFound):
         request = HttpRequest()
-        request.user = student
+        request.user = student.user
         CreateProgressSerializer(context={"request": request}).update(
             lesson, {"course_id": lesson.course.id}
         )
@@ -426,7 +428,7 @@ def test_course_create_serializer_start_fail(teacher):
     }
     with pytest.raises(ValidationError):
         serializer = CourseShortSerializer(
-            context={"teacher_id": teacher.id}, data=new_course
+            context={"teacher_id": teacher.user.id}, data=new_course
         )  # CHANGED
         serializer.is_valid(raise_exception=True)
 
@@ -492,15 +494,15 @@ def test_course_create_serializer(teacher):
 def test_prefetch_enrollment_serializer(enrolled_student):
     enrollment = (
         CourseEnrollment.objects.select_related("course")
-        .prefetch_related("user")
-        .get(user__id=enrolled_student.user.id)
+        .select_related("student__user")
+        .get(student__user=enrolled_student.student.user)
     )
     serializier = PrefetchEnrollmentSerializer(enrollment)
     expected = {
         "id": str(enrolled_student.id),
-        "user_id": str(enrolled_student.user.id),
-        "name": enrolled_student.user.full_name,
-        "role": get_role(enrolled_student.user),
+        "user_id": str(enrolled_student.student.user.id),
+        "name": enrolled_student.student.user.full_name,
+        "role": get_role(enrolled_student.student.user),
         "photo": None,
         "status": enrolled_student.status,
     }
@@ -555,7 +557,7 @@ def test_custom_login(student_group):
 @pytest.mark.django_db
 def test_login_fails(student):
     assert User.objects.count() == 1
-    assert not User.objects.get(id=student.id).is_online
+    assert not User.objects.get(id=student.user.id).is_online
     data = {"email": "abc@abc.com", "password": "abcdfghjk123"}
     with pytest.raises(ValidationError):
         CustomLoginSerializer(context={"request": {}}).validate(data)

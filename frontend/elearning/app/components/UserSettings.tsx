@@ -78,9 +78,29 @@ export default function UserSettings(props: UserSettingsProps) {
         }
     }
 
+    const getProfileSettings = async () => {
+        const { data, status } = await api.get(`/api/home/settings/profile/${props.userId}`)
+        if (status === 401 || status === 403) {
+            notifications.show({
+                title: "Session expired",
+                message: "Please log in to continue",
+                autoClose: 5000,
+                icon: <IconExclamationCircle />,
+                color: 'red',
+            });
+            router.push('/')
+        }
+        if (user?.role === "student") {
+            formStatus.setValues({ status: data.status })
+        } else {
+            formBio.setValues({ bio: data.bio })
+        }
+    }
+
 
     React.useEffect(() => {
         getSettings();
+        getProfileSettings();
     }, [])
 
     if (isLoading) return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />

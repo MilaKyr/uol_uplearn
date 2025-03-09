@@ -18,7 +18,7 @@ from .models import (
     CourseEnrollment,
     Tag,
     Files,
-    KeyHolder,
+    KeyHolder, Teacher, Student,
 )
 from .validators import validate_start_date
 
@@ -100,25 +100,25 @@ class UserAuthSerializer(UserShortSerializer):
         fields = UserShortSerializer.Meta.fields + ["role", "is_online"]
 
 
-class TeacherSerializer(UserAuthSerializer):
+class TeacherSerializer(serializers.ModelSerializer):
     """ Serializes teacher. Extends UserAuthSerializer with `bio` field """
+    user = UserAuthSerializer()
 
     class Meta(UserAuthSerializer.Meta):
-        model = User
-        fields = UserAuthSerializer.Meta.fields + ["bio"]
+        model = Teacher
+        fields = ["user", "bio"]
 
 
-class StudentSerializer(UserAuthSerializer):
+class StudentSerializer(serializers.ModelSerializer):
     """ Serializes student. Extends UserAuthSerializer with `status` field """
-
+    user = UserAuthSerializer()
     class Meta(UserAuthSerializer.Meta):
-        model = User
-        fields = UserAuthSerializer.Meta.fields + ["status"]
+        model = Student
+        fields = ["user", "status"]
 
 
 class SettingsSerializer(serializers.ModelSerializer):
     """ Serializes settings options. """
-
     role = serializers.SerializerMethodField(read_only=True)
 
     @extend_schema_field(OpenApiTypes.STR)
@@ -130,20 +130,20 @@ class SettingsSerializer(serializers.ModelSerializer):
         fields = ["id", "first_name", "last_name", "email", "role"]
 
 
-class StudentSettingsSerializer(SettingsSerializer):
+class StudentSettingsSerializer(serializers.ModelSerializer):
     """ Serializes student settings. Extends SettingsSerializer with `status` field """
+    class Meta:
+        model = Student
+        fields = ["status"]
 
-    class Meta(SettingsSerializer.Meta):
-        model = User
-        fields = SettingsSerializer.Meta.fields + ["status"]
 
-
-class TeacherSettingsSerializer(SettingsSerializer):
+class TeacherSettingsSerializer(serializers.ModelSerializer):
     """ Serializes teacher settings. Extends SettingsSerializer with `bio` field """
+    bio = serializers.CharField()
 
-    class Meta(SettingsSerializer.Meta):
-        model = User
-        fields = SettingsSerializer.Meta.fields + ["bio"]
+    class Meta:
+        model = Teacher
+        fields = ["bio"]
 
 
 class RegisteredStudentSerializer(serializers.ModelSerializer):
@@ -154,11 +154,11 @@ class RegisteredStudentSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(OpenApiTypes.URI)
     def get_photo(self, instance):
-        return instance.user.photo.url if instance.user.photo else None
+        return instance.student.user.photo.url if instance.student.user.photo else None
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_name(self, instance):
-        serializer = FullNameSerializer(instance.user)
+        serializer = FullNameSerializer(instance.student.user)
         return serializer.data.get("name", "")
 
     class Meta:
@@ -175,7 +175,7 @@ class StudentFeedbackSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(OpenApiTypes.OBJECT)
     def get_user(self, instance):
-        return UserShortSerializer(instance.enrollment.user).data
+        return UserShortSerializer(instance.enrollment.student.user).data
 
     class Meta:
         model = Feedback
@@ -191,7 +191,7 @@ class LessonBasicSerializer(serializers.ModelSerializer):
     @extend_schema_field(OpenApiTypes.BOOL)
     def get_done(self, instance):
         req = self.context.get("request")
-        return instance.students.filter(user=req.user).exists() if req else False
+        return instance.students.filter(student__user=req.user).exists() if req else False
 
     class Meta:
         model = Lesson
@@ -338,13 +338,17 @@ class CourseOwnerSerializer(CourseBasicSerializer):
 class CourseShortSerializer(CourseBasicSerializer):
     """ Serializes course information"""
 
-    teacher = UserShortSerializer(read_only=True)
+    teacher = serializers.SerializerMethodField(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     average_rating = serializers.SerializerMethodField(read_only=True)
     n_students = serializers.SerializerMethodField(read_only=True)
     created = serializers.DateTimeField(format="%d/%m/%Y", read_only=True)
     start_date = serializers.DateTimeField(format="%d %B, %Y")
     duration = serializers.SerializerMethodField()
+
+    def get_teacher(self, instance):
+        serializer = UserShortSerializer(instance.teacher.user)
+        return serializer.data
 
     @extend_schema_field(OpenApiTypes.INT)
     def get_duration(self, instance):
@@ -447,7 +451,8 @@ class CourseCreateSerializer(serializers.Serializer):
         return model_tags
 
     def _save_course(self, validated_data):
-        teacher = self.context["request"].user
+        user = self.context["request"].user
+        teacher = Teacher.objects.get(user=user)
         start_date = validated_data.pop("start_date")
         duration = validated_data.pop("end_date") - start_date
 
@@ -500,7 +505,6 @@ class CourseWithProgressSerializer(CourseBasicSerializer):
     """ Serializes course by adding information about progress, enrollment status and enrollment date
     used on Student's Dashboard
     """
-
     progress = serializers.SerializerMethodField()
     enrolled = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
@@ -517,7 +521,7 @@ class CourseWithProgressSerializer(CourseBasicSerializer):
         if len(user_ids) == 1:
             # return the status of the first user enrollment.
             # This context is already pre-filtered with user's id from request
-            return instance.registered_students.get(user__id=user_ids[0]).status
+            return instance.registered_students.get(student__user__id=user_ids[0]).status
 
     @extend_schema_field(OpenApiTypes.DATETIME)
     def get_enrolled(self, instance):
@@ -588,7 +592,7 @@ class CourseCreateFeedback(serializers.Serializer):
             course = Course.objects.get(id=course_id)
             # get enrollment
             course_enrollment = CourseEnrollment.objects.get(
-                user=student, course=course
+                student__user=student, course=course
             )
             feedback = Feedback.objects.create(
                 enrollment=course_enrollment, **validated_data
@@ -657,9 +661,9 @@ class CreateProgressSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         try:
-            student = self.context["request"].user
+            user = self.context["request"].user
             enrollment = CourseEnrollment.objects.get(
-                user=student, course=instance.course
+                student__user=user, course=instance.course
             )
             enrollment.done_lessons.add(instance)
             last_lesson = Lesson.objects.filter(course=instance.course).latest(
@@ -683,19 +687,19 @@ class PrefetchEnrollmentSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_name(self, instance):
-        return instance.user.full_name
+        return instance.student.user.full_name
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_user_id(self, instance):
-        return instance.user.id
+        return instance.student.user.id
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_role(self, instance):
-        return "student" if instance.user.is_student() else "teacher"
+        return "student" if instance.student.user.is_student() else "teacher"
 
     @extend_schema_field(OpenApiTypes.URI)
     def get_photo(self, instance):
-        return instance.user.photo.url if instance.user.photo else None
+        return instance.student.user.photo.url if instance.student.user.photo else None
 
     class Meta:
         model = CourseEnrollment
@@ -724,10 +728,11 @@ class EnrollmentCreateSerializer(serializers.Serializer):
     def create(self, validated_data):
         try:
             user = self.context["request"].user
+            student = Student.objects.get(user=user)
             course_id = self.validated_data.get("course_id")
             course = Course.objects.get(id=course_id)
             enrollment = CourseEnrollment.objects.create(
-                user=user, course=course, status="started"
+                student=student, course=course, status="started"
             )
             return enrollment
         except Course.DoesNotExist as error:
@@ -778,13 +783,17 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.first_name = self.cleaned_data.get("first_name")
         user.last_name = self.cleaned_data.get("last_name")
         user.photo = self.cleaned_data.get("photo")
-        if token:
-            user.token = token
         user.is_online = True
         user.save()
         adapter.save_user(request, user, self)
         user_group = Group.objects.get(name=role)
         user_group.user_set.add(user)
+        if role == "student":
+            Student.objects.create(user=user)
+        elif role == "teacher":
+            Teacher.objects.create(user=user, key_holder=token.get())
+        else:
+            return PermissionDenied()
         return user
 
     def save(self, request):

@@ -13,10 +13,10 @@ export const StudentOwner = (props: { user: HomeData, setTodo: (todos: TodoData[
     <SimpleGrid cols={{ base: 1, sm: 1, md: 2, lg: 2 }} spacing="md">
         <Stack>
             <StudentProfile
-                id={props.user?.id}
-                photo={props.user?.photo}
-                name={props.user?.name}
-                role={props.user?.role}
+                id={props.user.user?.id}
+                photo={props.user.user?.photo}
+                name={props.user.user?.name}
+                role={props.user.user?.role}
                 user_id=""
                 status={props.user?.status || ""} />
             <Divider />
@@ -26,7 +26,7 @@ export const StudentOwner = (props: { user: HomeData, setTodo: (todos: TodoData[
         </Stack>
 
         <Stack align='center' py={12} style={{ backgroundColor: 'var(--mantine-color-blue-light)', borderRadius: 10 }}>
-            <WeeklyCalendar userId={props.user?.id} onClick={props.setTodo} />
+            <WeeklyCalendar userId={props.user.user?.id} onClick={props.setTodo} />
             {props.user?.todo.map((task) => <TodoTask key={task.id} task={task} />)}
         </Stack>
 

@@ -34,6 +34,7 @@ urlpatterns = [
     path("dashboard/photo/<str:pk>", views.UserPhotoRetrieveUpdateView.as_view()),
     path("home/course_titles", views.CourseTitlesView.as_view()),
     path("home/settings/<str:pk>", views.SettingsRetrieveUpdateSerializer.as_view()),
+    path("home/settings/profile/<str:pk>", views.SettingsProfileSerializer.as_view()),
     path("todo_for", views.TodoListView.as_view()),
     path("users/avatar/<str:pk>/", views.UserAvatarRetrieveView.as_view()),
     path("users/search", views.UserSearchListView.as_view()),
@@ -41,6 +42,7 @@ urlpatterns = [
     path("enrollments/students", views.EnrolledStudentsView.as_view()),
     path("enrollments/<str:pk>/", views.EnrollmentStatusUpdateView.as_view()),
     path("enrollments/", views.EnrollmentCreateView.as_view()),
+
     path("register/", RegisterView.as_view(), name="rest_register"),
     path("login/", LoginView.as_view(), name="rest_login"),
     path("logout/", views.CustomLogoutView.as_view(), name="rest_logout"),
