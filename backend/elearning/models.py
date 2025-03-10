@@ -145,6 +145,6 @@ class Feedback(models.Model):
     enrollment = models.OneToOneField(
         to=CourseEnrollment, on_delete=models.CASCADE, related_name="feedback"
     )
-    text = models.CharField(max_length=256)
+    text = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField()

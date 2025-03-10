@@ -591,13 +591,13 @@ class UserRetrieveView(generics.RetrieveAPIView):
 
     def get_profile(self, user):
         if user.is_student():
-            return Student.objects.get(user=user)
-        return Teacher.objects.get(user=user)
+            student = Student.objects.get(user=user)
+            return StudentSerializer(student)
+        teacher = Teacher.objects.get(user=user)
+        return TeacherSerializer(teacher)
 
     def get_base_data(self, user):
-        profile = self.get_profile(user)
-        serializer = self.get_serializer_class()
-        serializer = serializer(profile)
+        serializer = self.get_profile(user)
         return serializer.data
 
     def retrieve(self, request, *args, **kwargs):

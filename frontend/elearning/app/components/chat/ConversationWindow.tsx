@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import { Card, Group, Stack, Center, Textarea, ActionIcon, Avatar, Text, ScrollArea } from "@mantine/core";
 import { IconSend, IconExclamationCircle } from "@tabler/icons-react";
 import { ConversationWindowProps, Message, ConversationUserData } from "@/app/types";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { notifications } from "@mantine/notifications";
 import useWebSocket from 'react-use-websocket';
 import { getHotkeyHandler } from '@mantine/hooks';
@@ -12,6 +12,7 @@ import { api } from "@/app/actions/api";
 export default function ConversationWindow(props: ConversationWindowProps) {
 
     const router = useRouter()
+    const pathname = usePathname();
     const lastDate = React.useRef<string>("")
     const searchParams = useSearchParams();
     const messageDiv = React.useRef<HTMLDivElement>(null);
@@ -29,7 +30,8 @@ export default function ConversationWindow(props: ConversationWindowProps) {
     )
 
     const getConversation = async () => {
-        const { data, status } = await api.get(`/api/chat/conversations/${props.conversation.id}/`)
+        const id = searchParams.get("selected")
+        const { data, status } = await api.get(`/api/chat/conversations/${id}/`)
         if (status === 401 || status === 403) {
             notifications.show({
                 title: "Session expired",
@@ -40,12 +42,14 @@ export default function ConversationWindow(props: ConversationWindowProps) {
             });
             router.push('/')
         }
+        console.log("Conversation window", data.messages)
+
         setRTMessages(data.messages);
     }
 
     React.useEffect(() => {
         getConversation();
-    }, [searchParams])
+    }, [searchParams, pathname])
 
     React.useEffect(() => {
         console.log("Connection status", readyState)

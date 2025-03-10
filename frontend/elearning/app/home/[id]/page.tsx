@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Suspense } from "react";
-import { AppShell, Avatar, } from "@mantine/core";
+import { AppShell, Avatar, LoadingOverlay } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import { Header } from "@/app/components/header/Header";
 import UserNavbarSearch from "../../components/navbars/UserNavBar";
@@ -195,7 +195,7 @@ function UserDashboard() {
               componentName === "feedbacks" ? <Feedbacks /> :
                 componentName === "settings" ? <UserSettings userId={userId} /> :
                   componentName === "users" ? <UsersTable /> : componentName === "notifications" ?
-                    <Notifications /> : <CreateCourse />
+                    <Notifications /> :  componentName === "courses" ? <CreateCourse /> : <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
         }
 
 

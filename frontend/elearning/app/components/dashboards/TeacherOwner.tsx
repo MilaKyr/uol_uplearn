@@ -25,6 +25,7 @@ const StudentModal = (props: { opened: boolean, courseId: string, onClose: () =>
 
 
 export default function TeacherOwner(props: { user: HomeData }) {
+    console.log("props", props)
     const [opened, { open, close }] = useDisclosure(false);
     const [courseId, setCourseId] = React.useState<string | undefined>();
     const user = getUser();
@@ -39,7 +40,7 @@ export default function TeacherOwner(props: { user: HomeData }) {
             {courseId && <StudentModal onClose={close} opened={opened} courseId={courseId} />}
 
             <Stack>
-                {props.user.bio && <TeacherProfile name={props.user.user.name} bio={props.user.bio} />}
+                {props.user && <TeacherProfile name={props.user.user.name} bio={props.user.bio || ""} />}
                 <Divider />
                 {props.user.courses && props.user.courses.length > 0 ? (
                     <TeacherCourseTable onCourseClick={onCourseClick} courses={props.user.courses} />

@@ -111,7 +111,7 @@ export default function UserGuest(props: { id: string }) {
 
                     {user?.user.role === "student" ? (
                         <Blockquote color="indigo" radius="md" iconSize={46} icon={<IconPacman />} mt="lg">
-                            {user?.status ? user?.status : "Too busy to write a status 😜"}
+                            {user?.status ? user?.status : "..."}
                         </Blockquote>) : (<>
                             <Title order={3}>🧊 About me</Title>
                             <Spoiler hideLabel="Show less" showLabel="Show more">

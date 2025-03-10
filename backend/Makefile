@@ -16,17 +16,17 @@ migrate:
 	python manage.py migrate
 
 create-super-user:
-	export DJANGO_SUPERUSER_PASSWORD=CA9eWjFR7nL3wm && ./manage.py createsuperuser --noinput --username admin --email test@test.com
+	export DJANGO_SUPERUSER_PASSWORD=kds84md93 && ./manage.py createsuperuser --noinput --username admin --email test@test.com
 
 load:
-	python ./scripts/import_data.py
+	python seeding/run.py
 
 locust-ui:
 	locust -f locustfile.py
 
 
 run:
-	python manage.py runserver --insecure
+	python manage.py runserver
 
 start-redis:
 	docker run --rm -d -p 6379:6379 --name redis redis:7

@@ -29,6 +29,7 @@ export default function Dashboard(props: { userId: string }) {
             });
             router.push('/')
         }
+        console.log(data)
         setUser(data);
         setLoading(false);
     }

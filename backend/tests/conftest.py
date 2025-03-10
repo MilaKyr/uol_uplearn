@@ -20,6 +20,7 @@ from elearning.models import (
     Teacher
 )
 from django.db.models import signals
+from utils import random_email
 
 COURSE_IMG_PATH = (
     "seeding/data/photos/courses/rubaitul-azad-ZIPFteu-R8k-unsplash_JRGhzsf.jpg"
@@ -48,7 +49,7 @@ def teacher_user(teacher_group):
         username="test_teacher",
         first_name="John",
         last_name="Smith",
-        email="abc@abc.com",
+        email=random_email(),
         password="Abc12345!",
     )
     user.groups.add(teacher_group)
@@ -60,7 +61,7 @@ def student_user(student_group):
         username="test_student",
         first_name="John",
         last_name="Smith",
-        email="abc@abc.com",
+        email=random_email(),
         password="Abc12345!",
     )
     user.groups.add(student_group)
