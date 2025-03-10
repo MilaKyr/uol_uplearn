@@ -54,7 +54,7 @@ export function HeaderTabs(props: burgerOption) {
       </Grid.Col>
 
       <Grid.Col span={{ base: 3, xs: 3, sm: 2, md: 3, lg: 1, xl: 2 }}>
-        <Link href={`/home/${user.id}`} >
+        <Link href={`/`} >
           <Image
             height={48}
             w="auto"
@@ -134,7 +134,7 @@ export function HeaderTabs(props: burgerOption) {
                 component={Link}
                 href={{
                   pathname: `/home/${user.id}`,
-                  query: { selected: 'add_course' },
+                  query: { selected: 'addCourse' },
                 }}
                 leftSection={<IconPlus size={16} color={theme.colors.yellow[6]} stroke={1.5} />}
               >

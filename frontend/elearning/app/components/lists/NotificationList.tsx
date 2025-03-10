@@ -7,6 +7,7 @@ import { NotificationData } from "@/app/types";
 
 
 const NotificationListItem = (props: {notification: NotificationData }) => {
+    console.log(props.notification)
     const themeIconColor = props.notification.seen ? "gray" : "violet";
     return (
         <List.Item
@@ -24,7 +25,7 @@ const NotificationListItem = (props: {notification: NotificationData }) => {
                 <Link href={`/users/${props.notification.person.id}`} >
                     <Group>
                         <Avatar
-                            src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${props.notification.person.photo}`}
+                            src={`${props.notification.person.photo}`}
                             name={props.notification.person.name}
                         />
                         <Text>{props.notification.person.name}</Text>
@@ -36,7 +37,7 @@ const NotificationListItem = (props: {notification: NotificationData }) => {
                 <Link href={`/courses/${props.notification.course.id}`} >
                     <Group>
                         <Avatar
-                            src={`${process.env.NEXT_PUBLIC_HTTP_ADDRESS}${props.notification.course.photo}`}
+                            src={`${props.notification.course.photo}`}
                             name={props.notification.course.title}
                         />
                         <Text>{props.notification.course.title}</Text>

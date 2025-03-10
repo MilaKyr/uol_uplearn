@@ -20,7 +20,6 @@ export default function Notifications() {
 
     const handleRouteChange = async () => {
         const ids = notifications.filter((not) => {
-            console.log(not.seen);
             return !not.seen
         });
         ids.map(async (id) => {

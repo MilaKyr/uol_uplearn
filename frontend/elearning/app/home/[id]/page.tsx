@@ -195,7 +195,7 @@ function UserDashboard() {
               componentName === "feedbacks" ? <Feedbacks /> :
                 componentName === "settings" ? <UserSettings userId={userId} /> :
                   componentName === "users" ? <UsersTable /> : componentName === "notifications" ?
-                    <Notifications /> :  componentName === "courses" ? <CreateCourse /> : <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
+                    <Notifications /> :  componentName === "addCourse" ? <CreateCourse /> : <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
         }
 
 
