@@ -1,0 +1,2497 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /api/chat/conversations/:
+    get:
+      operationId: chat_conversations_list
+      tags:
+      - chat
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conversation'
+          description: ''
+  /api/chat/conversations/{id}/:
+    get:
+      operationId: chat_conversations_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - chat
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationDetail'
+          description: ''
+  /api/chat/conversations/{id}/seen:
+    put:
+      operationId: chat_conversations_seen_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - chat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeenMessages'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SeenMessages'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SeenMessages'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeenMessages'
+          description: ''
+    patch:
+      operationId: chat_conversations_seen_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - chat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSeenMessages'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSeenMessages'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSeenMessages'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeenMessages'
+          description: ''
+  /api/chat/conversations/new:
+    post:
+      operationId: chat_conversations_new_create
+      tags:
+      - chat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversationCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConversationCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConversationCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationCreate'
+          description: ''
+  /api/courses/:
+    get:
+      operationId: courses_list
+      description: List all courses and creates new one
+      tags:
+      - courses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseShort'
+          description: ''
+    post:
+      operationId: courses_create
+      description: List all courses and creates new one
+      tags:
+      - courses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CourseCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CourseCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseCreate'
+          description: ''
+  /api/courses/{id}/:
+    get:
+      operationId: courses_retrieve
+      description: 'Returns course details with statistics: average rating and number
+        of students rated the course'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - courses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+          description: ''
+    delete:
+      operationId: courses_destroy
+      description: 'Returns course details with statistics: average rating and number
+        of students rated the course'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - courses
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/courses/{id}/photo:
+    get:
+      operationId: courses_photo_retrieve
+      description: Retrieve course photo
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - courses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoursePhoto'
+          description: ''
+    put:
+      operationId: courses_photo_update
+      description: Retrieve course photo
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - courses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoursePhoto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CoursePhoto'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CoursePhoto'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoursePhoto'
+          description: ''
+    patch:
+      operationId: courses_photo_partial_update
+      description: Retrieve course photo
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - courses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCoursePhoto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCoursePhoto'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCoursePhoto'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoursePhoto'
+          description: ''
+  /api/courses/edit/{id}/:
+    get:
+      operationId: courses_edit_retrieve
+      description: Retrieve and update course details to edit
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - courses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseRetireveUpdate'
+          description: ''
+    put:
+      operationId: courses_edit_update
+      description: Retrieve and update course details to edit
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - courses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseRetireveUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CourseRetireveUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CourseRetireveUpdate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseRetireveUpdate'
+          description: ''
+    patch:
+      operationId: courses_edit_partial_update
+      description: Retrieve and update course details to edit
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - courses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCourseRetireveUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCourseRetireveUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCourseRetireveUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseRetireveUpdate'
+          description: ''
+  /api/courses/search:
+    get:
+      operationId: courses_search_list
+      description: List all courses and creates new one
+      tags:
+      - courses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseShort'
+          description: ''
+    post:
+      operationId: courses_search_create
+      description: List all courses and creates new one
+      tags:
+      - courses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CourseCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CourseCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseCreate'
+          description: ''
+  /api/courses/study/{id}/:
+    get:
+      operationId: courses_study_retrieve
+      description: |-
+        Retrieve course details. If student requests page, also returns indicator
+        if the lesson is done
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - courses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+          description: ''
+  /api/dashboard/{id}:
+    get:
+      operationId: dashboard_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - dashboard
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/dashboard/photo/{id}:
+    get:
+      operationId: dashboard_photo_retrieve
+      description: Retrieve and update user's photo
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - dashboard
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPhoto'
+          description: ''
+    put:
+      operationId: dashboard_photo_update
+      description: Retrieve and update user's photo
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - dashboard
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPhoto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserPhoto'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserPhoto'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPhoto'
+          description: ''
+    patch:
+      operationId: dashboard_photo_partial_update
+      description: Retrieve and update user's photo
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - dashboard
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPhoto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPhoto'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserPhoto'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPhoto'
+          description: ''
+  /api/enrollments/:
+    get:
+      operationId: enrollments_list
+      description: Creates new enrollment
+      tags:
+      - enrollments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnrollmentCreate'
+          description: ''
+    post:
+      operationId: enrollments_create
+      description: Creates new enrollment
+      tags:
+      - enrollments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrollmentCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EnrollmentCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EnrollmentCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollmentCreate'
+          description: ''
+  /api/enrollments/{id}/:
+    put:
+      operationId: enrollments_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - enrollments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrollmentUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EnrollmentUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EnrollmentUpdate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollmentUpdate'
+          description: ''
+    patch:
+      operationId: enrollments_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - enrollments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEnrollmentUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEnrollmentUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEnrollmentUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollmentUpdate'
+          description: ''
+  /api/enrollments/students:
+    get:
+      operationId: enrollments_students_list
+      description: Lists all enrolled students in a course
+      tags:
+      - enrollments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PrefetchEnrollment'
+          description: ''
+  /api/feedbacks/:
+    get:
+      operationId: feedbacks_list
+      description: Lists all feedbacks and creates a new one
+      tags:
+      - feedbacks
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseFeedback'
+          description: ''
+    post:
+      operationId: feedbacks_create
+      description: Lists all feedbacks and creates a new one
+      tags:
+      - feedbacks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseCreateFeedback'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CourseCreateFeedback'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CourseCreateFeedback'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseCreateFeedback'
+          description: ''
+  /api/feedbacks/{id}/:
+    put:
+      operationId: feedbacks_update
+      description: Updates feedback
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - feedbacks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentFeedback'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudentFeedback'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudentFeedback'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentFeedback'
+          description: ''
+    patch:
+      operationId: feedbacks_partial_update
+      description: Updates feedback
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - feedbacks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentFeedback'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentFeedback'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentFeedback'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentFeedback'
+          description: ''
+  /api/home/course_titles:
+    get:
+      operationId: home_course_titles_list
+      description: Lists all teacher's course titles
+      tags:
+      - home
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseTitle'
+          description: ''
+  /api/home/settings/{id}:
+    get:
+      operationId: home_settings_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - home
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: home_settings_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - home
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: home_settings_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - home
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/lessons/{id}/:
+    get:
+      operationId: lessons_retrieve
+      description: Retrieves, destroys lesson. Updates lesson's content (html field)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - lessons
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonWithFilesCheck'
+          description: ''
+    put:
+      operationId: lessons_update
+      description: Retrieves, destroys lesson. Updates lesson's content (html field)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - lessons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LessonWithFilesCheck'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LessonWithFilesCheck'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LessonWithFilesCheck'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonWithFilesCheck'
+          description: ''
+    patch:
+      operationId: lessons_partial_update
+      description: Retrieves, destroys lesson. Updates lesson's content (html field)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - lessons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLessonWithFilesCheck'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLessonWithFilesCheck'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLessonWithFilesCheck'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonWithFilesCheck'
+          description: ''
+    delete:
+      operationId: lessons_destroy
+      description: Retrieves, destroys lesson. Updates lesson's content (html field)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - lessons
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/lessons/files/{id}/:
+    get:
+      operationId: lessons_files_retrieve
+      description: Retrieves or updates lesson's files
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - lessons
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonEditFiles'
+          description: ''
+    put:
+      operationId: lessons_files_update
+      description: Retrieves or updates lesson's files
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - lessons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LessonEditFiles'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LessonEditFiles'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LessonEditFiles'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonEditFiles'
+          description: ''
+    patch:
+      operationId: lessons_files_partial_update
+      description: Retrieves or updates lesson's files
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - lessons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLessonEditFiles'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLessonEditFiles'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLessonEditFiles'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonEditFiles'
+          description: ''
+  /api/lessons/progress/{id}/:
+    put:
+      operationId: lessons_progress_update
+      description: Updates course progress
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - lessons
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: lessons_progress_partial_update
+      description: Updates course progress
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - lessons
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/login/:
+    post:
+      operationId: login_create
+      description: |-
+        Check the credentials and return the REST Token
+        if the credentials are valid and authenticated.
+        Calls Django Auth login method to register User ID
+        in Django session framework
+
+        Accept the following POST parameters: username, password
+        Return the REST Framework Token Object's key.
+      tags:
+      - login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomLogin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomLogin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomLogin'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWT'
+          description: ''
+  /api/logout/:
+    get:
+      operationId: logout_retrieve
+      description: Custom logout view. Sets user offline
+      tags:
+      - logout
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: logout_create
+      description: Custom logout view. Sets user offline
+      tags:
+      - logout
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/new_course_id:
+    get:
+      operationId: new_course_id_retrieve
+      description: Returns new UUID for course. It's called before course creation
+      tags:
+      - new_course_id
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/notifications/:
+    get:
+      operationId: notifications_list
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/notifications/{id}:
+    put:
+      operationId: notifications_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationSeen'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NotificationSeen'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NotificationSeen'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSeen'
+          description: ''
+    patch:
+      operationId: notifications_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationSeen'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationSeen'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationSeen'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSeen'
+          description: ''
+  /api/register/:
+    post:
+      operationId: register_create
+      description: |-
+        Registers a new user.
+
+        Accepts the following POST parameters: username, email, password1, password2.
+      tags:
+      - register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomRegister'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomRegister'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomRegister'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWT'
+          description: ''
+  /api/schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/tags/:
+    get:
+      operationId: tags_list
+      description: Lists all tags
+      tags:
+      - tags
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+          description: ''
+  /api/todo_for:
+    get:
+      operationId: todo_for_list
+      description: List all todo tasks for the given week
+      tags:
+      - todo_for
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoList'
+          description: ''
+  /api/token/refresh/:
+    post:
+      operationId: token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/token/verify/:
+    post:
+      operationId: token_verify_create
+      description: |-
+        Takes a token and indicates if it is valid.  This view provides no
+        information about a token's fitness for a particular use.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenVerify'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenVerify'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenVerify'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenVerify'
+          description: ''
+  /api/topics/{id}/:
+    get:
+      operationId: topics_retrieve
+      description: Retieves or destroyes topic
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - topics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Topic'
+          description: ''
+    delete:
+      operationId: topics_destroy
+      description: Retieves or destroyes topic
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - topics
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/users/avatar/{id}/:
+    get:
+      operationId: users_avatar_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPhoto'
+          description: ''
+  /api/users/search:
+    get:
+      operationId: users_search_list
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserAuth'
+          description: ''
+components:
+  schemas:
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserAuth'
+        unread_messages:
+          type: integer
+          readOnly: true
+        unread_messages_ids:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        last_message:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+      required:
+      - id
+      - last_message
+      - unread_messages
+      - unread_messages_ids
+      - users
+    ConversationCreate:
+      type: object
+      properties:
+        recipient_id:
+          type: string
+          format: uuid
+          writeOnly: true
+      required:
+      - recipient_id
+    ConversationDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+      required:
+      - id
+      - messages
+    Course:
+      type: object
+      description: Serializes course with topics and feedback.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 256
+        photo:
+          type: string
+          format: uri
+        teacher:
+          allOf:
+          - $ref: '#/components/schemas/UserShort'
+          readOnly: true
+        start_date:
+          type: string
+          format: date-time
+        duration:
+          type: string
+        average_rating:
+          type: number
+          format: float
+          readOnly: true
+        n_students:
+          type: integer
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+          readOnly: true
+        is_active:
+          type: boolean
+        description:
+          type: string
+        topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopicWithLessons'
+          readOnly: true
+        feedback:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        enrolled:
+          type: boolean
+          readOnly: true
+      required:
+      - average_rating
+      - created
+      - description
+      - duration
+      - enrolled
+      - feedback
+      - id
+      - n_students
+      - photo
+      - start_date
+      - tags
+      - teacher
+      - title
+      - topics
+    CourseBasic:
+      type: object
+      description: 'Serializes only essential info about the course: id, title and
+        image'
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 256
+        photo:
+          type: string
+          format: uri
+      required:
+      - id
+      - photo
+      - title
+    CourseCreate:
+      type: object
+      description: Creates new course
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+          writeOnly: true
+        tags:
+          type: array
+          items:
+            type: string
+        topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopicCreate'
+      required:
+      - description
+      - end_date
+      - id
+      - start_date
+      - tags
+      - title
+      - topics
+    CourseCreateFeedback:
+      type: object
+      description: Creates new feedback for the course
+      properties:
+        course_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        text:
+          type: string
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        rating:
+          type: integer
+      required:
+      - course_id
+      - created
+      - rating
+      - text
+    CourseFeedback:
+      type: object
+      description: Serializes feedback and course from CourseEnrollment model
+      properties:
+        course:
+          allOf:
+          - $ref: '#/components/schemas/CourseBasic'
+          readOnly: true
+        feedback:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+      required:
+      - course
+      - feedback
+    CoursePhoto:
+      type: object
+      description: Serializes photo as image from User model. Used for update and
+        create methods
+      properties:
+        photo:
+          type: string
+          format: uri
+      required:
+      - photo
+    CourseRetireveUpdate:
+      type: object
+      description: Serializes course for edit page
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 256
+        photo:
+          type: string
+          format: uri
+        start_date:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+          readOnly: true
+        topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopicWithLessons'
+          readOnly: true
+        is_active:
+          type: boolean
+        description:
+          type: string
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+      required:
+      - created
+      - description
+      - duration
+      - id
+      - photo
+      - start_date
+      - tags
+      - title
+      - topics
+    CourseShort:
+      type: object
+      description: Serializes course information
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 256
+        photo:
+          type: string
+          format: uri
+        teacher:
+          allOf:
+          - $ref: '#/components/schemas/UserShort'
+          readOnly: true
+        start_date:
+          type: string
+          format: date-time
+        duration:
+          type: string
+        average_rating:
+          type: number
+          format: float
+          readOnly: true
+        n_students:
+          type: integer
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+          readOnly: true
+      required:
+      - average_rating
+      - created
+      - duration
+      - id
+      - n_students
+      - photo
+      - start_date
+      - tags
+      - teacher
+      - title
+    CourseTitle:
+      type: object
+      description: Serializes only course title
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 256
+      required:
+      - id
+      - title
+    CustomLogin:
+      type: object
+      description: Custom Login. Sets user as online once they logged in
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+      - password
+    CustomRegister:
+      type: object
+      description: Custom registration. Adds role and group to the user
+      properties:
+        username:
+          type: string
+          maxLength: 150
+          minLength: 1
+        email:
+          type: string
+          format: email
+        password1:
+          type: string
+          writeOnly: true
+        password2:
+          type: string
+          writeOnly: true
+        first_name:
+          type: string
+        last_name:
+          type: string
+        photo:
+          type: string
+          format: uri
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        key_holder:
+          type: string
+          format: uuid
+      required:
+      - email
+      - first_name
+      - last_name
+      - password1
+      - password2
+      - role
+    EnrollmentCreate:
+      type: object
+      properties:
+        course_id:
+          type: string
+          format: uuid
+      required:
+      - course_id
+    EnrollmentUpdate:
+      type: object
+      description: Updates enrollment status to `removed`
+      properties:
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+      required:
+      - status
+    JWT:
+      type: object
+      description: Serializer for JWT authentication.
+      properties:
+        access:
+          type: string
+        refresh:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserAuth'
+      required:
+      - access
+      - refresh
+      - user
+    LessonBasic:
+      type: object
+      description: Serializes lesson. Returns additional field `done` that checks
+        if user did this lesson
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 256
+        deadline:
+          type: string
+          format: date-time
+        done:
+          type: boolean
+          readOnly: true
+      required:
+      - deadline
+      - done
+      - id
+      - title
+    LessonCreate:
+      type: object
+      description: Creates new lesson
+      properties:
+        title:
+          type: string
+        deadline:
+          type: string
+          format: date-time
+      required:
+      - deadline
+      - title
+    LessonEditFiles:
+      type: object
+      description: Updates lesson's files
+      properties:
+        files:
+          type: string
+          format: uri
+      required:
+      - files
+    LessonWithFilesCheck:
+      type: object
+      description: Extends LessonBasicSerializer. Returns additional field `has_files`,
+        `html` and `created`
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 256
+        deadline:
+          type: string
+          format: date-time
+        done:
+          type: boolean
+          readOnly: true
+        html:
+          type: string
+          nullable: true
+        created:
+          type: string
+          format: date-time
+        has_files:
+          type: integer
+          readOnly: true
+        topic_id:
+          type: string
+          readOnly: true
+      required:
+      - created
+      - deadline
+      - done
+      - has_files
+      - id
+      - title
+      - topic_id
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        recipient:
+          $ref: '#/components/schemas/UserAuth'
+        sender:
+          $ref: '#/components/schemas/UserAuth'
+        text:
+          type: string
+        created:
+          type: string
+          format: date-time
+      required:
+      - created
+      - id
+      - recipient
+      - sender
+      - text
+    Notification:
+      type: object
+      description: Serializes notification
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        person:
+          $ref: '#/components/schemas/UserAuth'
+        course:
+          $ref: '#/components/schemas/CourseBasic'
+        text:
+          type: string
+          maxLength: 250
+        created:
+          type: string
+          format: date-time
+        seen:
+          type: boolean
+      required:
+      - course
+      - created
+      - id
+      - person
+      - text
+    NotificationSeen:
+      type: object
+      description: Receives list of notification ids and sets all of them as seen
+      properties:
+        seen:
+          type: boolean
+    PatchedCoursePhoto:
+      type: object
+      description: Serializes photo as image from User model. Used for update and
+        create methods
+      properties:
+        photo:
+          type: string
+          format: uri
+    PatchedCourseRetireveUpdate:
+      type: object
+      description: Serializes course for edit page
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 256
+        photo:
+          type: string
+          format: uri
+        start_date:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+          readOnly: true
+        topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopicWithLessons'
+          readOnly: true
+        is_active:
+          type: boolean
+        description:
+          type: string
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    PatchedEnrollmentUpdate:
+      type: object
+      description: Updates enrollment status to `removed`
+      properties:
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+    PatchedLessonEditFiles:
+      type: object
+      description: Updates lesson's files
+      properties:
+        files:
+          type: string
+          format: uri
+    PatchedLessonWithFilesCheck:
+      type: object
+      description: Extends LessonBasicSerializer. Returns additional field `has_files`,
+        `html` and `created`
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 256
+        deadline:
+          type: string
+          format: date-time
+        done:
+          type: boolean
+          readOnly: true
+        html:
+          type: string
+          nullable: true
+        created:
+          type: string
+          format: date-time
+        has_files:
+          type: integer
+          readOnly: true
+        topic_id:
+          type: string
+          readOnly: true
+    PatchedNotificationSeen:
+      type: object
+      description: Receives list of notification ids and sets all of them as seen
+      properties:
+        seen:
+          type: boolean
+    PatchedSeenMessages:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          writeOnly: true
+    PatchedStudentFeedback:
+      type: object
+      description: Serializes feedback and author of feedback from Feedback model.
+        Used for update method
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        text:
+          type: string
+          maxLength: 256
+        rating:
+          type: integer
+        user:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+    PatchedUserPhoto:
+      type: object
+      description: Serializes photo as image from User model. Used for update and
+        create methods
+      properties:
+        photo:
+          type: string
+          format: uri
+    PrefetchEnrollment:
+      type: object
+      description: Get enrollment information on the prefetched instance
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        role:
+          type: string
+          readOnly: true
+        photo:
+          type: string
+          format: uri
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+      required:
+      - id
+      - name
+      - photo
+      - role
+      - status
+    RoleEnum:
+      enum:
+      - teacher
+      - student
+      type: string
+      description: |-
+        * `teacher` - Teacher
+        * `student` - Student
+    SeenMessages:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          writeOnly: true
+      required:
+      - ids
+    StatusEnum:
+      enum:
+      - started
+      - finished
+      - blocked
+      - removed
+      type: string
+      description: |-
+        * `started` - In Progress
+        * `finished` - Done
+        * `blocked` - Blocked
+        * `removed` - Removed
+    StudentFeedback:
+      type: object
+      description: Serializes feedback and author of feedback from Feedback model.
+        Used for update method
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        text:
+          type: string
+          maxLength: 256
+        rating:
+          type: integer
+        user:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+      required:
+      - created
+      - id
+      - rating
+      - text
+      - user
+    Tag:
+      type: object
+      description: Serializes Tag model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 256
+        color:
+          type: string
+          maxLength: 24
+      required:
+      - id
+      - name
+    TodoList:
+      type: object
+      description: Serializes a to-do task for student
+      properties:
+        course_id:
+          type: string
+          readOnly: true
+        course_title:
+          type: string
+          readOnly: true
+        topic_title:
+          type: string
+          readOnly: true
+        topic_id:
+          type: string
+          readOnly: true
+        id:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        deadline:
+          type: string
+          readOnly: true
+      required:
+      - course_id
+      - course_title
+      - deadline
+      - id
+      - title
+      - topic_id
+      - topic_title
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    TokenVerify:
+      type: object
+      properties:
+        token:
+          type: string
+          writeOnly: true
+      required:
+      - token
+    Topic:
+      type: object
+      description: Serializes topic
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 256
+        description:
+          type: string
+        n_hours:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+      required:
+      - description
+      - id
+      - n_hours
+      - title
+    TopicCreate:
+      type: object
+      description: Creates new topic
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        n_hours:
+          type: integer
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/LessonCreate'
+      required:
+      - description
+      - lessons
+      - n_hours
+      - title
+    TopicWithLessons:
+      type: object
+      description: Extends TopicSerializer. Adds lessons
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 256
+        description:
+          type: string
+        n_hours:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/LessonBasic'
+      required:
+      - description
+      - id
+      - lessons
+      - n_hours
+      - title
+    UserAuth:
+      type: object
+      description: Basic user serializer
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        photo:
+          type: string
+          format: uri
+        role:
+          type: string
+          readOnly: true
+        is_online:
+          type: boolean
+      required:
+      - id
+      - name
+      - photo
+      - role
+    UserPhoto:
+      type: object
+      description: Serializes photo as image from User model. Used for update and
+        create methods
+      properties:
+        photo:
+          type: string
+          format: uri
+      required:
+      - photo
+    UserShort:
+      type: object
+      description: Serializes teacher's data for course serializer
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        photo:
+          type: string
+          format: uri
+      required:
+      - id
+      - name
+      - photo
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,97 @@
+services:
+  nginx:
+    build: ./nginx
+    expose:
+      - 80
+    ports:
+      - '80:80'
+    depends_on:
+      - backend
+      - backend-asgi
+      - www-frontend
+    volumes:
+      - static-data:/var/www/uplearn/static
+      - media-data:/var/www/uplearn/media
+
+  postgres:
+    image: "postgres:alpine"
+    shm_size: 128mb
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USERNAME}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+
+  www-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend/ :/user/src/frontend/
+    depends_on:
+      - backend
+      - backend-asgi
+
+  backend:
+    build: ./backend
+    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./backend/ :/user/src/backend/
+      - static-data:/var/www/uplearn/static
+      - media-data:/var/www/uplearn/media
+    ports:
+      - '8000:8000'
+    depends_on:
+      - backend-asgi
+      - redis
+      - postgres
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - DJANGO_LOGLEVEL=${DJANGO_LOGLEVEL}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - DATABASE_ENGINE=${DATABASE_ENGINE}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST}
+
+  backend-asgi:
+    build:
+      context: ./backend
+      dockerfile: daphne.Dockerfile
+    command: daphne --bind 0.0.0.0 -p 8005 backend.asgi:application
+    volumes:
+      - ./backend/ :/user/src/backend/
+      - static-data:/var/www/uplearn/static
+      - media-data:/var/www/uplearn/media
+    ports:
+      - '8005:8005'
+    depends_on:
+      - redis
+  redis:
+    image: "redis:alpine"
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - redis_cache:/data
+
+volumes:
+  redis_cache:
+  static-data:
+  media-data:
+  postgres_data:
+
+
+
+

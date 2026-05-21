@@ -1,0 +1,216 @@
+import logging
+import datetime
+import json
+import uuid
+
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
+
+from elearning.models import *
+from chat.models import Conversation, Message
+from notifications.models import Notification
+from django.contrib.auth import get_user_model
+from django.core.files.images import ImageFile
+from django.utils.timezone import make_aware
+from django.db.models import signals
+from .permissions import permissions
+
+# disable signals
+signals.post_save.receivers = []
+signals.post_delete.receivers = []
+
+BATCH_SIZE = 20
+
+
+def add_users_to_groups(users_data) -> None:
+    teacher_group = Group.objects.get(name="teacher")
+    student_group = Group.objects.get(name="student")
+    for user in users_data:
+        instance = User.objects.get(
+            email=user["email"],
+            first_name=user["first_name"],
+            last_name=user["last_name"],
+        )
+        if user["role"] == "student":
+            instance.groups.add(student_group)
+        else:
+            instance.groups.add(teacher_group)
+
+
+def delete_all_objects() -> None:
+    User = get_user_model()
+    Student.objects.all().delete()
+    KeyHolder.objects.all().delete()
+    Teacher.objects.all().delete()
+    Group.objects.all().delete()
+    User.objects.all().delete()
+    Tag.objects.all().delete()
+    Course.objects.all().delete()
+    Topic.objects.all().delete()
+    Files.objects.all().delete()
+    Lesson.objects.all().delete()
+    CourseEnrollment.objects.all().delete()
+    Feedback.objects.all().delete()
+    Notification.objects.all().delete()
+    Conversation.objects.all().delete()
+    Message.objects.all().delete()
+
+
+def fill_database() -> None:
+    delete_all_objects()
+    with open("seeding/data/data.json") as f:
+        data = json.load(f)
+
+    logging.info("saving Groups...")
+    objs = (Group(name="student"), Group(name="teacher"))
+    Group.objects.bulk_create(objs, BATCH_SIZE)
+    ### Permissions
+    for (group_name, permission) in permissions.items():
+        for (table_name, table_perms) in permission.items():
+            content_type = ContentType.objects.get(
+                app_label="elearning", model=table_name
+            )
+            # get all permssions for this model
+            perms = Permission.objects.filter(content_type=content_type)
+            group = Group.objects.get(name=group_name)
+            for perm in perms:
+                if perm.name in table_perms:
+                    group.permissions.add(perm)
+            group.save()
+
+    logging.info("saving KeyHolders...")
+    objs = (
+        KeyHolder(name=holder["name"], token=holder["token"])
+        for holder in data["key_holders"]
+    )
+    KeyHolder.objects.bulk_create(objs, BATCH_SIZE)
+
+    logging.info("saving User...")
+
+    objs = (
+        User(
+            first_name=user["first_name"],
+            last_name=user["last_name"],
+            email=user["email"],
+            username=f'{user["first_name"]}_{user["last_name"]}',
+            password="pbkdf2_sha256$870000$HNHM7k1iJjGoBgM8gEUZ4A$IKgMAdZNB5zLpPAn9q7QkTZsFZt/PAxVzxL03yqtYow=",
+            photo=ImageFile(open(f'seeding/data/photos/users/{user["photo"]}', "rb")),
+        )
+        for user in data["users"]
+    )
+    User.objects.bulk_create(objs, BATCH_SIZE)
+    add_users_to_groups(data["users"])
+    for user in data["users"]:
+        if user["role"] == "student":
+            Student.objects.create(
+                user=User.objects.get(email=user["email"]),
+                status=user.get("status"),
+            )
+        else:
+            Teacher.objects.create(
+                user=User.objects.get(email=user["email"]),
+                bio=user.get("bio"),
+                key_holder=KeyHolder.objects.get(name=user["company_name"])
+            )
+
+    logging.info("saving Tags...")
+    objs = (Tag(name=tag) for tag in data["tags"])
+    Tag.objects.bulk_create(objs, BATCH_SIZE)
+
+    logging.info("saving Courses...")
+    objs = (
+        Course(
+            teacher=Teacher.objects.get(user__email=course["teacher"]),
+            is_active=course["is_active"],
+            photo=ImageFile(
+                open(f'seeding/data/photos/courses/{course["photo"]}', "rb")
+            ),
+            title=course["title"],
+            description=course["description"],
+            start_date=make_aware(
+                datetime.datetime.strptime(course["start_date"], "%d/%m/%Y")
+            ),
+            duration=datetime.timedelta(days=course["duration"]),
+        )
+        for course in data["courses"]
+    )
+
+    Course.objects.bulk_create(objs, BATCH_SIZE)
+
+    logging.info("adding Tags to Courses...")
+    through_objs = []
+    objects = Course.objects.all()
+    for obj in objects:
+        course_data = [
+            course for course in data["courses"] if course["title"] == obj.title
+        ][0]
+        for tag_name in course_data["tags"]:
+            through_objs.append(
+                Course.tags.through(course=obj, tag=Tag.objects.get(name=tag_name))
+            )
+    Course.tags.through.objects.bulk_create(through_objs)
+
+    logging.info("saving Topics...")
+    objs = (
+        Topic(
+            course=Course.objects.get(title=course["title"]),
+            title=topic["title"],
+            description=topic["description"],
+            n_hours=topic["n_hours"],
+        )
+        for course in data["courses"]
+        for topic in course["topics"]
+    )
+    Topic.objects.bulk_create(objs, BATCH_SIZE)
+
+    logging.info("saving Lessons...")
+    objs = (
+        Lesson(
+            topic=Topic.objects.get(
+                title=topic["title"], course__title=course["title"]
+            ),
+            course=Course.objects.get(title=course["title"]),
+            title=lesson["title"],
+            html=lesson.get("html"),
+            deadline=make_aware(
+                datetime.datetime.strptime(lesson["deadline"], "%d/%m/%Y")
+            ),
+        )
+        for course in data["courses"]
+        for topic in course["topics"]
+        for lesson in topic["lessons"]
+    )
+    Lesson.objects.bulk_create(objs, BATCH_SIZE)
+
+    logging.info("saving Course Enrollments...")
+
+    objs = (
+        CourseEnrollment(
+            student=Student.objects.get(user__email=enrollment["user"]),
+            course=Course.objects.get(title=enrollment["course"]),
+            status=enrollment["status"],
+        )
+        for enrollment in data["enrollments"]
+    )
+    CourseEnrollment.objects.bulk_create(objs, BATCH_SIZE)
+    for progress in data["course_progress"]:
+        enrollment = CourseEnrollment.objects.get(
+            student__user__email=progress["user"], course__title=progress["course"]
+        )
+        lesson = Lesson.objects.get(
+            title=progress["item"], course__title=progress["course"]
+        )
+        enrollment.done_lessons.add(lesson)
+
+    logging.info("saving Feedback...")
+    objs = (
+        Feedback(
+            enrollment=CourseEnrollment.objects.get(
+                student__user__email=feedback["user"], course__title=feedback["course"]
+            ),
+            text=feedback["text"],
+            rating=feedback["rating"],
+        )
+        for feedback in data["feedback"]
+    )
+    Feedback.objects.bulk_create(objs, BATCH_SIZE)
